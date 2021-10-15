@@ -1,13 +1,10 @@
-from datetime import datetime
 from json import load
 from unittest.mock import patch
 
-from pandas import DataFrame, DatetimeIndex, Series
-from pandas.testing import assert_frame_equal, assert_series_equal
-from numpy import dtype
-from pytest import raises
+from pandas import Series
+from pandas.testing import assert_series_equal
 
-from fipiran import FundProfile, _core
+from fipiran import FundProfile, _core, list_funds
 
 
 disable_api = patch.object(_core, 'api', side_effect=RuntimeError(
@@ -48,7 +45,7 @@ def test_issue_cancel_history():
     df = fp.issue_cancel_history()
     assert_series_equal(df.dtypes, Series(['float64', 'float64'], ['issueNav', 'cancelNav']))
     assert len(df) == 366
-    assert df.index.dtype == dtype('<M8[ns]')
+    assert df.index.dtype == '<M8[ns]'
 
 
 @patch_api('getfundnetassetchart_atlas')
@@ -56,7 +53,7 @@ def test_nav_history():
     df = fp.nav_history()
     assert_series_equal(df.dtypes, Series(['int64'], ['netAsset']))
     assert len(df) == 366
-    assert df.index.dtype == dtype('<M8[ns]')
+    assert df.index.dtype == '<M8[ns]'
 
 
 @patch_api('getfund_atlas')
