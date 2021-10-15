@@ -9,7 +9,7 @@ def api(path) -> dict | list:
     return get(API + path).json()
 
 
-def list_funds() -> DataFrame:
+def funds() -> DataFrame:
     return DataFrame(api('fund/fundlist')['items'])
 
 

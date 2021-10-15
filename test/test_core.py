@@ -4,7 +4,7 @@ from unittest.mock import patch
 from pandas import Series
 from pandas.testing import assert_series_equal
 
-from fipiran import FundProfile, _core, list_funds
+from fipiran import FundProfile, _core, funds
 
 
 disable_api = patch.object(_core, 'api', side_effect=RuntimeError(
@@ -61,3 +61,9 @@ def test_info():
     info = fp.info()
     assert len(info) == 54
     assert type(info) is dict
+
+
+@patch_api('fundlist')
+def test_funds():
+    df = funds()
+    assert len(df) == 272
