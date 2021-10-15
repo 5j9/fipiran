@@ -4,7 +4,8 @@ from unittest.mock import patch
 from pandas import Series
 from pandas.testing import assert_series_equal
 
-from fipiran import FundProfile, _core, funds
+# noinspection PyProtectedMember
+from fipiran import FundProfile, _core, funds, search
 
 
 disable_api = patch.object(_core, 'api', side_effect=RuntimeError(
@@ -67,3 +68,13 @@ def test_info():
 def test_funds():
     df = funds()
     assert len(df) == 272
+
+
+@patch_api('autocomplete_arzesh')
+def test_search():
+    assert search('ارزش') == [
+        {'LVal18AFC': 'وآفر', 'LSoc30': ' سرمايه گذاري ارزش آفرينان'},
+        {'LVal18AFC': 'وارزش', 'LSoc30': 'ارزش آفرينان پاسارگاد'},
+        {'LVal18AFC': 'وآفر', 'LSoc30': 'سرمايه گذاري ارزش آفرينان'},
+        {'LVal18AFC': 'ارزش', 'LSoc30': 'صندوق س ارزش آفرين بيدار-سهام'},
+        {'LVal18AFC': 'ومدير', 'LSoc30': 'گ.مديريت ارزش سرمايه ص ب كشوري'}]

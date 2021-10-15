@@ -5,14 +5,6 @@ from pandas import DataFrame, to_datetime
 API = 'https://fund.fipiran.ir/api/v1/'
 
 
-def api(path) -> dict | list:
-    return get(API + path).json()
-
-
-def funds() -> DataFrame:
-    return DataFrame(api('fund/fundlist')['items'])
-
-
 class FundProfile:
     __slots__ = 'reg_no'
 
@@ -42,3 +34,17 @@ class FundProfile:
 
     def info(self):
         return api(f'fund/getfund?regno={self.reg_no}')['item']
+
+
+def api(path) -> dict | list:
+    return get(API + path).json()
+
+
+def funds() -> DataFrame:
+    return DataFrame(api('fund/fundlist')['items'])
+
+
+def search(term) -> list[dict]:
+    return get(
+        'https://www.fipiran.com/Home/AutoComplete', data=(('term', term),)
+    ).json()
