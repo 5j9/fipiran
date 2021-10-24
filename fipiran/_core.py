@@ -97,7 +97,7 @@ class Symbol:
         return d
 
     def best_limit_data(self) -> list[DataFrame]:
-        text = fipiran(f'Symbol/_priceData?inscode={self.inscode}')
+        text = fipiran(f'Symbol/_BestLimitData?inscode={self.inscode}')
         return read_html(text)
 
     def refrence_data(self) -> dict:
