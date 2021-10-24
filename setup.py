@@ -17,7 +17,7 @@ setup(
     package_data={'fipiran': ['ids.json']},
     zip_safe=False,
     python_requires='>=3.10',
-    install_requires=['requests', 'pandas'],
+    install_requires=['requests', 'pandas', 'beautifulsoup4', 'lxml', 'jdatetime'],
     tests_require=['pytest'],
     classifiers=[
         'Intended Audience :: End Users/Desktop',
