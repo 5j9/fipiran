@@ -46,26 +46,25 @@ class FundProfile:
 
 
 class Symbol:
-    __slots__ = 'inscode', 'name'
+    __slots__ = '_inscode', 'name'
 
-    def __init__(self, inscode: int | str, name: str):
+    def __init__(self, name: str, inscode: int | str = None):
         """Use `from_name` or `from_inscode` if only 1 parameter is known."""
-        self.inscode = inscode
+        self._inscode = inscode
         self.name = name
 
     def __repr__(self):
-        return f'{type(self).__name__}({self.inscode!r}, {self.name!r})'
+        return f'{type(self).__name__}({self.name!r})'
 
-    @staticmethod
-    def from_name(symbolpara: str, /) -> Symbol:
-        text = fipiran(f'Symbol?symbolpara={symbolpara}')
+    @property
+    def inscode(self):
+        if (inscode := self._inscode) is not None:
+            return inscode
+        text = fipiran(f'Symbol?symbolpara={self.name}')
         start = text.find("'inscode': '") + 12
         end = text.find("'", start)
-        inscode = int(text[start: end])
-        start = text.find("var symbolpara = '") + 18
-        end = text.find("'", start)
-        name = text[start: end]
-        return Symbol(inscode, name)
+        self._inscode = inscode = int(text[start: end])
+        return inscode
 
     def price_data(self) -> dict:
         # note: some fields like Trailing P/E and Forward P/E are *currently*
@@ -114,6 +113,13 @@ class Symbol:
     def statistic(self, days: Literal[365, 180, 90, 30, 7]) -> DataFrame:
         return read_html(
             fipiran(f'Symbol/statistic{days}?inscode={self.inscode}'))[0]
+
+    def company_info(self):
+        text = fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self.name}')
+        bs = soup(text)
+        keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
+        values = [i.text.strip() for i in bs.select('.media-body span')]
+        return dict(zip(keys, values))
 
 
 soup = partial(BeautifulSoup, features='lxml')
