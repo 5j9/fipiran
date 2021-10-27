@@ -74,11 +74,17 @@ class Symbol:
         so = bs.select_one
         d = {}
 
-        def num(s: str) -> float:
+        def int_or_float(s: str) -> int | float:
+            try:
+                return int(s)
+            except ValueError:
+                return float(s)
+
+        def num(s: str) -> int | float:
             s = s.replace(',', '').strip(' ')
             if s[0] == '(':  # negative value
                 return -float(s.strip('()'))
-            return float(s)
+            return int_or_float(s)
 
         for k in (  # numerical values
             'PriceMin', 'PriceMax', 'PDrCotVal', 'PriceFirst',
