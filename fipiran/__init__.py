@@ -5,6 +5,11 @@ from requests import get as _get
 
 
 _FIPIRAN = 'https://www.fipiran.com/'
+_YK = ''.maketrans('يك', 'یک')
+
+
+def _fipiran(path: str) -> str:
+    return _get(f'{_FIPIRAN}{path}').content.decode().translate(_YK)
 
 
 def search(term) -> list[dict]:

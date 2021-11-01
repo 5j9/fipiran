@@ -1,6 +1,7 @@
-from pandas import DataFrame as _DataFrame, to_datetime as _to_datetime
+from pandas import DataFrame as _DataFrame, to_datetime as _to_datetime, \
+    read_html as _read_html
 
-from . import _get
+from . import _get, _fipiran
 
 
 _API = 'https://fund.fipiran.ir/api/v1/'
@@ -43,3 +44,7 @@ def _api(path) -> dict | list:
 
 def funds() -> _DataFrame:
     return _DataFrame(_api('fund/fundlist')['items'])
+
+
+def average_return() -> _DataFrame:
+    return _read_html(_fipiran('Fund/MFBazdehAVG'))[0]

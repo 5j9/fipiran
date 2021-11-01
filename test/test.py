@@ -5,10 +5,10 @@ from jdatetime import datetime as jdatetime
 from pandas import Series, DataFrame
 from pandas.testing import assert_series_equal
 
-from fipiran.fund import FundProfile, funds
+from fipiran.fund import FundProfile, funds, average_return
+from fipiran.symbol import Symbol
 # noinspection PyProtectedMember
-from fipiran.symbol import Symbol, _YK
-from fipiran import search, fund, symbol
+from fipiran import search, fund, symbol, _YK
 
 
 disable_get = patch.object(fund, '_get', side_effect=RuntimeError(
@@ -148,3 +148,11 @@ def test_company_info():
             'فرابورس ایران، گواهی سپرده کالایی،'
             ' اوراق بهادار با درآمد ثابت، سپرده\u200cها و گواهی¬های'
             ' سپردۀ بانکی است.')}
+
+
+@patch_fipiran('MFBazdehAVG')
+def test_average_return():
+    df = average_return()
+    assert type(df) is DataFrame
+    assert len(df) == 4
+    assert df.query('`نوع صندوق` == "در سهام"')['میانگین بازدهی سال(%)'][0] == 28.4

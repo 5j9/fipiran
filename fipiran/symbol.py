@@ -5,10 +5,7 @@ from pandas import DataFrame as _DataFrame, read_html as _read_html
 from bs4 import BeautifulSoup as _BeautifulSoup
 from jdatetime import datetime as _jdatetime
 
-from . import _FIPIRAN, _get
-
-
-_YK = ''.maketrans('يك', 'یک')
+from . import _fipiran
 
 
 class Symbol:
@@ -95,7 +92,3 @@ class Symbol:
 
 
 _soup = _partial(_BeautifulSoup, features='lxml')
-
-
-def _fipiran(path: str) -> str:
-    return _get(f'{_FIPIRAN}{path}').content.decode().translate(_YK)
