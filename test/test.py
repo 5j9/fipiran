@@ -1,36 +1,38 @@
 from json import load
 from unittest.mock import patch
 
-from pandas import Series
+from jdatetime import datetime as jdatetime
+from pandas import Series, DataFrame
 from pandas.testing import assert_series_equal
 
+from fipiran.fund import FundProfile, funds
 # noinspection PyProtectedMember
-from fipiran import FundProfile, _core, funds, search, Symbol
-# noinspection PyProtectedMember
-from fipiran._core import YK, jdatetime, DataFrame
+from fipiran.symbol import Symbol, _YK
+from fipiran import search, fund, symbol
 
-disable_api = patch.object(_core, 'api', side_effect=RuntimeError(
-    'api should not be called during tests'))
+
+disable_get = patch.object(fund, '_get', side_effect=RuntimeError(
+    '_get should not be called during tests'))
 
 
 def setup_module():
-    disable_api.start()
+    disable_get.start()
 
 
 def teardown_module():
-    disable_api.stop()
+    disable_get.stop()
 
 
 def patch_api(name):
     with open(f'{__file__}/../testdata/{name}.json', 'rb') as f:
         j = load(f)
-    return patch.object(_core, 'api', lambda _: j)
+    return patch.object(fund, '_api', lambda _: j)
 
 
 def patch_fipiran(name):
     with open(f'{__file__}/../testdata/{name}.html', 'r', encoding='utf8') as f:
         text = f.read()
-    return patch.object(_core, 'fipiran', lambda _: text.translate(YK))
+    return patch.object(symbol, '_fipiran', lambda _: text.translate(_YK))
 
 
 fp = FundProfile(11215)
