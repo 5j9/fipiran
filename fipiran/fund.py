@@ -1,7 +1,8 @@
 from pandas import DataFrame as _DataFrame, to_datetime as _to_datetime, \
-    read_html as _read_html
+    read_html as _read_html, to_numeric as _to_numeric, NA as _NA
 
 from . import _get, _fipiran
+from jdatetime import datetime as _jdatetime
 
 
 _API = 'https://fund.fipiran.ir/api/v1/'
@@ -48,3 +49,17 @@ def funds() -> _DataFrame:
 
 def average_returns() -> _DataFrame:
     return _read_html(_fipiran('Fund/MFBazdehAVG'))[0]
+
+
+def ratings() -> _DataFrame:
+    df = _read_html(_fipiran('Fund/Rating'))[0]
+    # Cannot use iloc in LHS, see: https://stackoverflow.com/questions/52395179
+    df[df.columns[1:4]] = df.iloc[:, 1:4].apply(_to_numeric, args=('coerce',))
+
+    def to_date(s):
+        try:
+            return _jdatetime.strptime(s, '%Y/%m/%d')
+        except ValueError:
+            return _NA
+    df.iloc[:, -1] = df.iloc[:, -1].apply(to_date)
+    return df

@@ -2,10 +2,10 @@ from json import load
 from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
-from pandas import Series, DataFrame
+from pandas import Series, DataFrame, NA
 from pandas.testing import assert_series_equal
 
-from fipiran.fund import FundProfile, funds, average_returns
+from fipiran.fund import FundProfile, funds, average_returns, ratings
 from fipiran.symbol import Symbol
 # noinspection PyProtectedMember
 from fipiran import search, fund, symbol, _YK
@@ -156,3 +156,15 @@ def test_average_returns():
     assert type(df) is DataFrame
     assert len(df) == 4
     assert df.query('`نوع صندوق` == "در سهام"')['میانگین بازدهی سال(%)'][0] == 28.4
+
+
+@patch_fipiran('Rating')
+def test_ratings():
+    df = ratings()
+    assert len(df) == 258
+    assert df.columns.to_list() == [
+        'نام صندوق', 'عملکرد 1 ساله', 'عملکرد 3 ساله', 'عملکرد 5 ساله',
+        'تاریخ بروزرسانی']
+    assert all(t == float for t in df.dtypes[1:4])
+    assert type(df.iat[1, -1]) is jdatetime
+    assert df.iat[0, -1] is NA
