@@ -1,4 +1,4 @@
-This is package is still in initial development phase and its API may change without deprecation.
+Note: This is package is incomplete and still in initial development phase. The API may change without deprecation.
 
 Requires Python 3.10+.
 
