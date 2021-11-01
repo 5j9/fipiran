@@ -46,5 +46,5 @@ def funds() -> _DataFrame:
     return _DataFrame(_api('fund/fundlist')['items'])
 
 
-def average_return() -> _DataFrame:
+def average_returns() -> _DataFrame:
     return _read_html(_fipiran('Fund/MFBazdehAVG'))[0]

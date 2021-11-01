@@ -5,7 +5,7 @@ from jdatetime import datetime as jdatetime
 from pandas import Series, DataFrame
 from pandas.testing import assert_series_equal
 
-from fipiran.fund import FundProfile, funds, average_return
+from fipiran.fund import FundProfile, funds, average_returns
 from fipiran.symbol import Symbol
 # noinspection PyProtectedMember
 from fipiran import search, fund, symbol, _YK
@@ -151,8 +151,8 @@ def test_company_info():
 
 
 @patch_fipiran('MFBazdehAVG')
-def test_average_return():
-    df = average_return()
+def test_average_returns():
+    df = average_returns()
     assert type(df) is DataFrame
     assert len(df) == 4
     assert df.query('`نوع صندوق` == "در سهام"')['میانگین بازدهی سال(%)'][0] == 28.4
