@@ -1,11 +1,8 @@
 from pandas import DataFrame as _DataFrame, to_datetime as _to_datetime, \
     read_html as _read_html, to_numeric as _to_numeric, NA as _NA
 
-from . import _get, _fipiran
+from . import _api, _fipiran
 from jdatetime import datetime as _jdatetime
-
-
-_API = 'https://fund.fipiran.ir/api/v1/'
 
 
 class FundProfile:
@@ -39,11 +36,8 @@ class FundProfile:
         return _api(f'fund/getfund?regno={self.reg_no}')['item']
 
 
-def _api(path) -> dict | list:
-    return _get(_API + path).json()
-
-
 def funds() -> _DataFrame:
+    """Also see fipiran.data_service.mutual_fund_list function."""
     return _DataFrame(_api('fund/fundlist')['items'])
 
 

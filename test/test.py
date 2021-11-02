@@ -1,4 +1,4 @@
-from json import load
+from json import loads
 from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
@@ -7,11 +7,11 @@ from pandas.testing import assert_series_equal
 
 from fipiran.fund import FundProfile, funds, average_returns, ratings
 from fipiran.symbol import Symbol
-# noinspection PyProtectedMember
-from fipiran import search, fund, symbol, _YK
+from fipiran import search
+from fipiran.data_service import mutual_fund_list
 
 
-disable_get = patch.object(fund, '_get', side_effect=RuntimeError(
+disable_get = patch('fipiran._get', side_effect=RuntimeError(
     '_get should not be called during tests'))
 
 
@@ -23,16 +23,21 @@ def teardown_module():
     disable_get.stop()
 
 
-def patch_api(name):
-    with open(f'{__file__}/../testdata/{name}.json', 'rb') as f:
-        j = load(f)
-    return patch.object(fund, '_api', lambda _: j)
+class FakeResponse:
+    def __init__(self, content):
+        self.content = content
+
+    def json(self):
+        return loads(self.content)
 
 
-def patch_fipiran(name):
-    with open(f'{__file__}/../testdata/{name}.html', 'r', encoding='utf8') as f:
-        text = f.read()
-    return patch.object(symbol, '_fipiran', lambda _: text.translate(_YK))
+def patch_get(filename):
+    with open(f'{__file__}/../testdata/{filename}', 'rb') as f:
+        content = f.read()
+
+    def fake_get(*_, **__):
+        return FakeResponse(content)
+    return patch('fipiran._get', fake_get)
 
 
 fp = FundProfile(11215)
@@ -43,14 +48,14 @@ def test_repr():
     assert repr(FundProfile('11215')) == "FundProfile('11215')"
 
 
-@patch_api('getfundchartasset_atlas')
+@patch_get('getfundchartasset_atlas.json')
 def test_asset_allocation():
     d = fp.asset_allocation()
     del d['fiveBest']
     assert sum(d.values()) == 100
 
 
-@patch_api('getfundchart_atlas')
+@patch_get('getfundchart_atlas.json')
 def test_issue_cancel_history():
     df = fp.issue_cancel_history()
     assert_series_equal(df.dtypes, Series(['float64', 'float64'], ['issueNav', 'cancelNav']))
@@ -58,7 +63,7 @@ def test_issue_cancel_history():
     assert df.index.dtype == '<M8[ns]'
 
 
-@patch_api('getfundnetassetchart_atlas')
+@patch_get('getfundnetassetchart_atlas.json')
 def test_nav_history():
     df = fp.nav_history()
     assert_series_equal(df.dtypes, Series(['int64'], ['netAsset']))
@@ -66,20 +71,20 @@ def test_nav_history():
     assert df.index.dtype == '<M8[ns]'
 
 
-@patch_api('getfund_atlas')
+@patch_get('getfund_atlas.json')
 def test_info():
     info = fp.info()
     assert len(info) == 54
     assert type(info) is dict
 
 
-@patch_api('fundlist')
+@patch_get('fundlist.json')
 def test_funds():
     df = funds()
     assert len(df) == 272
 
 
-@patch_api('autocomplete_arzesh')
+@patch_get('autocomplete_arzesh.html')
 def test_search():
     assert search('ارزش') == [
         {'LVal18AFC': 'وآفر', 'LSoc30': ' سرمايه گذاري ارزش آفرينان'},
@@ -93,7 +98,7 @@ def test_symbol_from_name():
     assert f'{Symbol("فملی")!r}' == "Symbol('فملی')"
 
 
-@patch_fipiran('SymbolFMelli')
+@patch_get('SymbolFMelli.html')
 def test_inscode_cache():
     s = Symbol("فملی")
     assert s._inscode is None
@@ -101,7 +106,7 @@ def test_inscode_cache():
     assert s._inscode is not None
 
 
-@patch_fipiran('priceDataFMelli')
+@patch_get('priceDataFMelli.html')
 def test_symbol_price_data():
     s = Symbol('فملی', 35425587644337450)
     assert s.price_data() == {
@@ -112,13 +117,13 @@ def test_symbol_price_data():
         'Deven': jdatetime(1400, 8, 1, 12, 30), 'tmin': 12860.0, 'tmax': 14200.0}
 
 
-@patch_fipiran('BestLimitDataFMelli')
+@patch_get('BestLimitDataFMelli.html')
 def test_symbol_best_limit_data():
     d1, d2 = Symbol('فملی', 35425587644337450).best_limit_data()
     assert type(d1) is type(d2) is DataFrame
 
 
-@patch_fipiran('RefrenceDataFmelli')
+@patch_get('RefrenceDataFmelli.html')
 def test_symbol_refrence_data():
     assert Symbol('فملی', 35425587644337450).refrence_data() == {
         'نام نماد': 'فملی',
@@ -128,12 +133,12 @@ def test_symbol_refrence_data():
         'حجم مبنا': '8869180', 'کد معاملاتی نماد': 'IRO1MSMI0001'}
 
 
-@patch_fipiran('statistic30Fmelli')
+@patch_get('statistic30Fmelli.html')
 def test_symbol_refrence_data():
     assert type(Symbol('فملی', 35425587644337450).statistic(30)) is DataFrame
 
 
-@patch_fipiran('CompanyInfoIndexSarv')
+@patch_get('CompanyInfoIndexSarv.html')
 def test_company_info():
     assert Symbol('سرو', 64942549055019553).company_info() == {
         'نام نماد': 'سرو',
@@ -150,7 +155,7 @@ def test_company_info():
             ' سپردۀ بانکی است.')}
 
 
-@patch_fipiran('MFBazdehAVG')
+@patch_get('MFBazdehAVG.html')
 def test_average_returns():
     df = average_returns()
     assert type(df) is DataFrame
@@ -158,7 +163,7 @@ def test_average_returns():
     assert df.query('`نوع صندوق` == "در سهام"')['میانگین بازدهی سال(%)'][0] == 28.4
 
 
-@patch_fipiran('Rating')
+@patch_get('Rating.html')
 def test_ratings():
     df = ratings()
     assert len(df) == 258
@@ -168,3 +173,12 @@ def test_ratings():
     assert all(t == float for t in df.dtypes[1:4])
     assert type(df.iat[1, -1]) is jdatetime
     assert df.iat[0, -1] is NA
+
+
+@patch_get('MutualFundList.xls.html')
+def test_mutual_fund_list():
+    df = mutual_fund_list()
+    assert len(df) == 259
+    assert df.columns.to_list() == [
+        'RegNo', 'FundType', 'Custodian', 'Guarantor', 'Manager', 'Name',
+        'WebSite']

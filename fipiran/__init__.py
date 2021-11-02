@@ -6,6 +6,11 @@ from requests import get as _get
 
 _FIPIRAN = 'https://www.fipiran.com/'
 _YK = ''.maketrans('يك', 'یک')
+_API = 'https://fund.fipiran.ir/api/v1/'
+
+
+def _api(path) -> dict | list:
+    return _get(_API + path).json()
 
 
 def _fipiran(path: str) -> str:
