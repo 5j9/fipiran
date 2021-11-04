@@ -4,6 +4,7 @@ from unittest.mock import patch
 from jdatetime import datetime as jdatetime
 from pandas import Series, DataFrame, NA, Timestamp
 from pandas.testing import assert_series_equal
+from pytest import raises
 
 from fipiran.fund import FundProfile, funds, average_returns, ratings
 from fipiran.symbol import Symbol
@@ -14,7 +15,7 @@ from fipiran.data_service import auto_complete_symbol, export_symbol, \
     mutual_fund_data, auto_complete_index, export_index
 
 
-disable_get = patch('fipiran._get', side_effect=RuntimeError(
+disable_get = patch('fipiran._get', side_effect=ConnectionError(
     '_get should not be called during tests'))
 
 
@@ -199,11 +200,18 @@ def test_auto_complete_fund():
 @patch_get('ExportMFAva.xls.html')
 def test_mutual_fund_data():
     df = mutual_fund_data(
-        'قابل معامله آوای معیار', 11729, '1400/01/01', '1400/12/29')
+        'قابل معامله آوای معیار', '1400/01/01', '1400/12/29', 11729)
     assert df.iloc[-1].to_list() == [
         'قابل معامله آوای معیار',
         jdatetime(1400, 1, 6, 0, 0), 8373, 8431, 8373,
         jdatetime(1399, 5, 6, 0, 0), 3666009617642, 437849851]
+
+
+@patch('fipiran.data_service.auto_complete_fund', side_effect=NotImplementedError)
+def test_mutual_fund_data_no_reg_no(mock):
+    with raises(NotImplementedError):
+        mutual_fund_data('آوای معیار', '1400/01/01', '1400/12/29')
+    mock.assert_called_once_with('آوای معیار')
 
 
 @patch_get('AutoCompleteindexHamVazn.json')
@@ -217,9 +225,16 @@ def test_auto_complete_index():
 @patch_get('ExportIndexHamVazn.xls.html')
 def test_export_index():
     df = export_index(
-        'شاخص كل (هم وزن)', 'IRX6XTPI0026', 14000101, 15000101)
+        'شاخص كل (هم وزن)', 14000101, 15000101, 'IRX6XTPI0026')
     assert df.iloc[-1].to_list() == [
         'شاخص', jdatetime(1400, 1, 8, 0, 0), 442552.0]
+
+
+@patch('fipiran.data_service.auto_complete_index', side_effect=NotImplementedError)
+def test_export_index_no_instrument_id(mock):
+    with raises(NotImplementedError):
+        export_index('هم وزن', 14000101, 15000101)
+    mock.assert_called_once_with('هم وزن')
 
 
 @patch_get('AutoCompleteSymbolMadira.json')
@@ -232,7 +247,7 @@ def test_auto_complete_symbol():
 
 @patch_get('ExportSymbolMadira.xls.html')
 def test_export_symbol():
-    df = export_symbol('ماديرا', 'IRO3IOMZ0001', 14000801, 15000101)
+    df = export_symbol('ماديرا', 14000801, 15000101, 'IRO3IOMZ0001')
     # noinspection PyTypeChecker
     assert df.iloc[-1].to_list() == [
         'مادیرا',
@@ -240,3 +255,10 @@ def test_export_symbol():
         Timestamp('2021-10-23 00:00:00'),
         373.0, 4505128.0, 32545145672.0, 7224.0, 7224.0, 7224.0,
         7230.0, 7224.0, 7604.0]
+
+
+@patch('fipiran.data_service.auto_complete_symbol', side_effect=NotImplementedError)
+def test_export_symbol_no_instrument_id(mock):
+    with raises(NotImplementedError):
+        export_symbol('ماديرا', 14000801, 15000101)
+    mock.assert_called_once_with('ماديرا')

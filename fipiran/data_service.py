@@ -21,19 +21,27 @@ def auto_complete_fund(id_: str) -> list[
 
 
 def mutual_fund_data(
-    fund_name: str, reg_no: int, start_date: str, end_date: str
+    name: str, start_date: str, end_date: str,
+    reg_no: int = None
 ) -> _pd.DataFrame:
     """Return history of NAV, units, issue, and cancel.
 
     There various functions in this library to retrieve `reg_no`. If you
-    want the names and numbers for all funds, you can use `mutual_fund_list`,
-    but if only a single fund is desired the `auto_complete_fund` function
-    can be used.
+        want the names and numbers for all funds, you can use
+        `mutual_fund_list`, but if only a single fund is desired the
+        `auto_complete_fund` function can be used.
+    `reg_no` is optional and if left out then the first result of
+        `auto_complete_fund` will be used.
+
     Date parameters should be strings representing SH dates e.g.:
         '1394/01/01'
     """
+    if reg_no is None:
+        d = auto_complete_fund(name)[0]
+        reg_no = d['RegNo']
+        name = d['Name']
     xls = _fipiran('DataService/ExportMF', (
-        ('Mutualpara', fund_name),
+        ('Mutualpara', name),
         ('RegNoN', reg_no),
         ('MFStart', start_date),
         ('MFEnd', end_date)))
@@ -50,15 +58,22 @@ def auto_complete_index(id_: str) -> list[
 
 
 def export_index(
-    lval30: str, instrument_id: str, start_date: str | int, end_date: str | int
+    lval30: str, start_date: str | int, end_date: str | int,
+    instrument_id: str = None
 ) -> _pd.DataFrame:
     """Return history of requested index.
 
     Use the `auto_complete_index` function to retrieve lval30 and instrument_id
         of the desired index.
+    `instrument_id` is optional and if left out then the first result of
+        `auto_complete_symbol` will be used.
     Date parameters should be SH dates in YYYYMMDD format e.g.:
         '13940101'
     """
+    if instrument_id is None:
+        d = auto_complete_index(lval30)[0]
+        lval30 = d['LVal30']
+        instrument_id = d['InstrumentID']
     xls = _fipiran('DataService/ExportIndex', (
         ('indexpara', lval30),
         ('inscodeindex', instrument_id),
@@ -76,15 +91,23 @@ def auto_complete_symbol(id_: str) -> list[
 
 
 def export_symbol(
-    lval18afc: str, instrument_id: str, start_date: str | int, end_date: str | int
+    lval18afc: str, start_date: str | int, end_date: str | int,
+    instrument_id: str = None
 ) -> _pd.DataFrame:
     """Return history of requested index.
 
     Use the `auto_complete_symbol` function to retrieve `lval18afc` and
         `instrument_id` of the desired symbol.
+    `instrument_id` is optional and if left out then the first result of
+        `auto_complete_symbol` will be used.
+
     Date parameters should be SH dates in YYYYMMDD format e.g.:
         '13940101'
     """
+    if instrument_id is None:
+        d = auto_complete_symbol(lval18afc)[0]
+        lval18afc = d['LVal18AFC']
+        instrument_id = d['InstrumentID']
     xls = _fipiran('DataService/Exportsymbol', (
         ('symboldatapara', lval18afc),
         ('inscodesymbol', instrument_id),
