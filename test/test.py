@@ -2,13 +2,15 @@ from json import loads
 from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
-from pandas import Series, DataFrame, NA
+from pandas import Series, DataFrame, NA, Timestamp
 from pandas.testing import assert_series_equal
 
 from fipiran.fund import FundProfile, funds, average_returns, ratings
 from fipiran.symbol import Symbol
 from fipiran import search
-from fipiran.data_service import mutual_fund_list, auto_complete_fund, \
+from fipiran.data_service import auto_complete_symbol, export_symbol, \
+    mutual_fund_list, \
+    auto_complete_fund, \
     mutual_fund_data, auto_complete_index, export_index
 
 
@@ -218,3 +220,23 @@ def test_export_index():
         'شاخص كل (هم وزن)', 'IRX6XTPI0026', 14000101, 15000101)
     assert df.iloc[-1].to_list() == [
         'شاخص', jdatetime(1400, 1, 8, 0, 0), 442552.0]
+
+
+@patch_get('AutoCompleteSymbolMadira.json')
+def test_auto_complete_symbol():
+    assert auto_complete_symbol('مادیرا') == [
+        {'LVal18AFC': 'ماديرا', 'InstrumentID': 'IRO3IOMZ0001'},
+        {'LVal18AFC': 'ماديرا', 'InstrumentID': 'IRO7IOMZ0001'},
+        {'LVal18AFC': 'ماديراح', 'InstrumentID': 'IRR3IOMZ0101'}]
+
+
+@patch_get('ExportSymbolMadira.xls.html')
+def test_export_symbol():
+    df = export_symbol('ماديرا', 'IRO3IOMZ0001', 14000801, 15000101)
+    # noinspection PyTypeChecker
+    assert df.iloc[-1].to_list() == [
+        'مادیرا',
+        jdatetime(1400, 8, 1, 0, 0),
+        Timestamp('2021-10-23 00:00:00'),
+        373.0, 4505128.0, 32545145672.0, 7224.0, 7224.0, 7224.0,
+        7230.0, 7224.0, 7604.0]
