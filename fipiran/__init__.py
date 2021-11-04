@@ -1,6 +1,10 @@
 __version__ = '0.4.1.dev0'
 
+from typing import TypedDict as _TypedDict
+from functools import partial as _partial
 
+from jdatetime import datetime as _jdatetime
+from pandas import NA as _NA
 from requests import get as _get
 
 
@@ -13,9 +17,24 @@ def _api(path) -> dict | list:
     return _get(_API + path).json()
 
 
-def _fipiran(path: str) -> str:
-    return _get(f'{_FIPIRAN}{path}').content.decode().translate(_YK)
+def _fipiran(path: str, data=None, json_resp=False) -> str | dict | list:
+    resp = _get(f'{_FIPIRAN}{path}', data)
+    if json_resp is True:
+        return resp.json()
+    return resp.content.decode().translate(_YK)
 
 
-def search(term) -> list[dict]:
-    return _get(_FIPIRAN + 'Home/AutoComplete', data=(('term', term),)).json()
+_parse_jdate = _partial(_jdatetime.strptime, format='%Y/%m/%d')
+
+
+def _to_jdate(s: str):
+    try:
+        return _parse_jdate(s)
+    except ValueError:
+        return _NA
+
+
+def search(term) -> list[
+    _TypedDict('AutoComplete', {'LVal18AFC': str, 'LSoc30': str})
+]:
+    return _fipiran('Home/AutoComplete', (('term', term),), True)

@@ -8,7 +8,8 @@ from pandas.testing import assert_series_equal
 from fipiran.fund import FundProfile, funds, average_returns, ratings
 from fipiran.symbol import Symbol
 from fipiran import search
-from fipiran.data_service import mutual_fund_list
+from fipiran.data_service import mutual_fund_list, auto_complete_fund, \
+    mutual_fund_data
 
 
 disable_get = patch('fipiran._get', side_effect=RuntimeError(
@@ -182,3 +183,22 @@ def test_mutual_fund_list():
     assert df.columns.to_list() == [
         'RegNo', 'FundType', 'Custodian', 'Guarantor', 'Manager', 'Name',
         'WebSite']
+
+
+@patch_get('AutoCompleteFundAva.json')
+def test_auto_complete_fund():
+    assert auto_complete_fund('آوا') == [
+        {'RegNo': 11477, 'Name': 'آوای سهام کیان'},
+        {'RegNo': 11884, 'Name': 'بازارگردانی آوای زاگرس'},
+        {'RegNo': 11729, 'Name': 'قابل معامله آوای معیار'},
+        {'RegNo': 11776, 'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس'}]
+
+
+@patch_get('ExportMFAva.xls.html')
+def test_mutual_fund_data():
+    df = mutual_fund_data(
+        'قابل معامله آوای معیار', 11729, '1400/01/01', '1400/12/29')
+    assert df.iloc[0].to_list() == [
+        'قابل معامله آوای معیار',
+        jdatetime(1400, 8, 10, 0, 0), 7835, 7886, 7835,
+        jdatetime(1399, 5, 6, 0, 0), 848853125486, 108349851]
