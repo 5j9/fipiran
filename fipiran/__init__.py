@@ -1,10 +1,7 @@
 __version__ = '0.4.1.dev0'
 
 from typing import TypedDict as _TypedDict
-from functools import partial as _partial
 
-from jdatetime import datetime as _jdatetime
-from pandas import NA as _NA
 from requests import get as _get
 
 
@@ -22,16 +19,6 @@ def _fipiran(path: str, data=None, json_resp=False) -> str | dict | list:
     if json_resp is True:
         return resp.json()
     return resp.content.decode().translate(_YK)
-
-
-_parse_jdate = _partial(_jdatetime.strptime, format='%Y/%m/%d')
-
-
-def _to_jdate(s: str):
-    try:
-        return _parse_jdate(s)
-    except ValueError:
-        return _NA
 
 
 def search(term) -> list[

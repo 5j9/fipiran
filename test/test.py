@@ -9,7 +9,7 @@ from fipiran.fund import FundProfile, funds, average_returns, ratings
 from fipiran.symbol import Symbol
 from fipiran import search
 from fipiran.data_service import mutual_fund_list, auto_complete_fund, \
-    mutual_fund_data
+    mutual_fund_data, auto_complete_index, export_index
 
 
 disable_get = patch('fipiran._get', side_effect=RuntimeError(
@@ -198,7 +198,23 @@ def test_auto_complete_fund():
 def test_mutual_fund_data():
     df = mutual_fund_data(
         'قابل معامله آوای معیار', 11729, '1400/01/01', '1400/12/29')
-    assert df.iloc[0].to_list() == [
+    assert df.iloc[-1].to_list() == [
         'قابل معامله آوای معیار',
-        jdatetime(1400, 8, 10, 0, 0), 7835, 7886, 7835,
-        jdatetime(1399, 5, 6, 0, 0), 848853125486, 108349851]
+        jdatetime(1400, 1, 6, 0, 0), 8373, 8431, 8373,
+        jdatetime(1399, 5, 6, 0, 0), 3666009617642, 437849851]
+
+
+@patch_get('AutoCompleteindexHamVazn.json')
+def test_auto_complete_index():
+    assert auto_complete_index('هم وزن') == [
+        {'LVal30': 'شاخص كل (هم وزن)', 'InstrumentID': 'IRX6XTPI0026'},
+        {'LVal30': 'شاخص قيمت (هم وزن)', 'InstrumentID': 'IRXYXTPI0026'},
+        {'LVal30': 'شاخص كل هم وزن فرابورس', 'InstrumentID': 'IRXZXOCI0026'}]
+
+
+@patch_get('ExportIndexHamVazn.xls.html')
+def test_export_index():
+    df = export_index(
+        'شاخص كل (هم وزن)', 'IRX6XTPI0026', 14000101, 15000101)
+    assert df.iloc[-1].to_list() == [
+        'شاخص', jdatetime(1400, 1, 8, 0, 0), 442552.0]

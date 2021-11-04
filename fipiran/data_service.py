@@ -1,7 +1,12 @@
-from pandas import read_html as _read_html, DataFrame as _DataFrame
 from typing import TypedDict as _TypedDict
 
-from . import _fipiran, _to_jdate
+from jdatetime import datetime as _jdatetime
+from pandas import read_html as _read_html, DataFrame as _DataFrame
+
+from . import _fipiran
+
+
+_jstrptime = _jdatetime.strptime
 
 
 def mutual_fund_list() -> _DataFrame:
@@ -33,6 +38,32 @@ def mutual_fund_data(
         ('MFStart', start_date),
         ('MFEnd', end_date)))
     df = _read_html(xls)[0]
-    df['Date'] = df['Date'].apply(_to_jdate)
-    df['AghazFaliat'] = df['AghazFaliat'].apply(_to_jdate)
+    df['Date'] = df['Date'].apply(_jstrptime, args=('%Y/%m/%d',))
+    df['AghazFaliat'] = df['AghazFaliat'].apply(_jstrptime, args=('%Y/%m/%d',))
+    return df
+
+
+def auto_complete_index(id_: str) -> list[
+    _TypedDict('IndexAutoComplete', {'LVal30': str, 'InstrumentID': str})
+]:
+    return _fipiran('DataService/AutoCompleteindex', (('id', id_),), True)
+
+
+def export_index(
+    lval30: str, instrument_id: str, start_date: str | int, end_date: str | int
+) -> _DataFrame:
+    """Return history of requested index.
+
+    Use the `auto_complete_index` function to retrieve lval30 and instrument_id
+        of the desired index.
+    Date parameters should be SH dates in YYYYMMDD format e.g.:
+        '13940101'
+    """
+    xls = _fipiran('DataService/ExportIndex', (
+        ('indexpara', lval30),
+        ('inscodeindex', instrument_id),
+        ('indexStart', start_date),
+        ('indexEnd', end_date)))
+    df = _read_html(xls)[0]
+    df['dateissue'] = df['dateissue'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
     return df
