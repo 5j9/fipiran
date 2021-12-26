@@ -1,6 +1,0 @@
-{
-    "version_paths":  [
-        "fipiran/__init__.py:__version__",
-        "setup.py:version"
-    ]
-}
