@@ -272,7 +272,6 @@ def test_price_history():
     data = ph['data']
     assert len(data) == 3
     assert [*data.dtypes.items()] == [
-        ('gDate', dtype('<M8[ns]')),
         ('DEven', dtype('O')),
         ('ZTotTran', dtype('float64')),
         ('QTotTran5J', dtype('float64')),
@@ -287,5 +286,6 @@ def test_price_history():
         ('PriceMin', dtype('float64')),
         ('PriceMax', dtype('float64')),
         ('PriceFirst', dtype('float64'))]
+    assert data.index.dtype == dtype('<M8[ns]')
     assert ph['records'] == 599
     assert ph['total'] == 199

@@ -100,6 +100,7 @@ class Symbol:
             json_resp=True)
         df = j['data'] = _DataFrame(j['data'], copy=False)
         df['gDate'] = _to_datetime(df['gDate'])
+        df.set_index('gDate', inplace=True)
         return j
 
 
