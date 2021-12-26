@@ -1,7 +1,5 @@
 __version__ = '0.5.1.dev0'
 
-from typing import TypedDict as _TypedDict
-
 from requests import get as _get
 
 
@@ -19,9 +17,3 @@ def _fipiran(path: str, data=None, json_resp=False) -> str | dict | list:
     if json_resp is True:
         return resp.json()
     return resp.content.decode().translate(_YK)
-
-
-def search(term) -> list[
-    _TypedDict('AutoComplete', {'LVal18AFC': str, 'LSoc30': str})
-]:
-    return _fipiran('Home/AutoComplete', (('term', term),), True)

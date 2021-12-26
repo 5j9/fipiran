@@ -7,8 +7,7 @@ from pandas.testing import assert_series_equal
 from pytest import raises
 
 from fipiran.fund import FundProfile, funds, average_returns, ratings
-from fipiran.symbol import Symbol
-from fipiran import search
+from fipiran.symbol import Symbol, search
 from fipiran.data_service import auto_complete_symbol, export_symbol, \
     mutual_fund_list, \
     auto_complete_fund, \
@@ -90,12 +89,14 @@ def test_funds():
 
 @patch_get('autocomplete_arzesh.html')
 def test_search():
-    assert search('ارزش') == [
-        {'LVal18AFC': 'وآفر', 'LSoc30': ' سرمايه گذاري ارزش آفرينان'},
-        {'LVal18AFC': 'وارزش', 'LSoc30': 'ارزش آفرينان پاسارگاد'},
-        {'LVal18AFC': 'وآفر', 'LSoc30': 'سرمايه گذاري ارزش آفرينان'},
-        {'LVal18AFC': 'ارزش', 'LSoc30': 'صندوق س ارزش آفرين بيدار-سهام'},
-        {'LVal18AFC': 'ومدير', 'LSoc30': 'گ.مديريت ارزش سرمايه ص ب كشوري'}]
+    symbols = search('ارزش')
+    assert symbols == [
+        Symbol('وآفر'),
+        Symbol('وارزش'),
+        Symbol('وآفر'),
+        Symbol('ارزش'),
+        Symbol('ومدير')]
+    assert symbols[3].l30 == 'صندوق س ارزش آفرين بيدار-سهام'
 
 
 def test_symbol_from_name():
@@ -107,7 +108,7 @@ def test_inscode_cache():
     s = Symbol("فملی")
     assert s._inscode is None
     assert s.inscode == 35425587644337450
-    assert s._inscode is not None
+    assert s._inscode == 35425587644337450
 
 
 @patch_get('priceDataFMelli.html')
@@ -129,7 +130,7 @@ def test_symbol_best_limit_data():
 
 @patch_get('RefrenceDataFmelli.html')
 def test_symbol_refrence_data():
-    assert Symbol('فملی', 35425587644337450).refrence_data() == {
+    assert Symbol('فملی', 35425587644337450).reference_data() == {
         'نام نماد': 'فملی',
         'نام شرکت': 'ملی\u200c صنایع\u200c مس\u200c ایران\u200c\u200c',
         'نام صنعت': 'فلزات اساسی', 'وضعیت': 'مجاز',

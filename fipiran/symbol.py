@@ -9,21 +9,23 @@ from . import _fipiran
 
 
 class Symbol:
-    __slots__ = '_inscode', 'name'
+    __slots__ = '_inscode', 'l18', 'l30'
 
-    def __init__(self, name: str, inscode: int | str = None):
-        """Use `from_name` or `from_inscode` if only 1 parameter is known."""
+    def __init__(self, l18: str, inscode: int | str = None):
+        self.l18 = l18
         self._inscode = inscode
-        self.name = name
 
     def __repr__(self):
-        return f'{type(self).__name__}({self.name!r})'
+        return f'{type(self).__name__}({self.l18!r})'
+
+    def __eq__(self, other):
+        return isinstance(other, Symbol) and other.l18 == self.l18
 
     @property
     def inscode(self):
-        if (inscode := self._inscode) is not None:
+        if (inscode := getattr(self, '_inscode', None)) is not None:
             return inscode
-        text = _fipiran(f'Symbol?symbolpara={self.name}')
+        text = _fipiran(f'Symbol?symbolpara={self.l18}')
         start = text.find("'inscode': '") + 12
         end = text.find("'", start)
         self._inscode = inscode = int(text[start: end])
@@ -68,8 +70,8 @@ class Symbol:
         text = _fipiran(f'Symbol/_BestLimitData?inscode={self.inscode}')
         return _read_html(text)
 
-    def refrence_data(self) -> dict:
-        text = _fipiran(f'Symbol/_RefrenceData?symbolpara={self.name}')
+    def reference_data(self) -> dict:
+        text = _fipiran(f'Symbol/_RefrenceData?symbolpara={self.l18}')
         bs = _soup(text)
         h4s = [i.text.strip(': ') for i in bs.select('h4')]
         spans = [i.text for i in bs.select('span')]
@@ -84,11 +86,22 @@ class Symbol:
             _fipiran(f'Symbol/statistic{days}?inscode={self.inscode}'))[0]
 
     def company_info(self):
-        text = _fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self.name}')
+        text = _fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self.l18}')
         bs = _soup(text)
         keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
         values = [i.text.strip() for i in bs.select('.media-body span')]
         return dict(zip(keys, values))
+
+
+def search(term) -> list[Symbol]:
+    """Note: the returned symbol objects will have `l30` attribute."""
+    symbols = []
+    append = symbols.append
+    for result in _fipiran('Home/AutoComplete', (('term', term),), True):
+        symbol = Symbol(result['LVal18AFC'])
+        symbol.l30 = result['LSoc30']
+        append(symbol)
+    return symbols
 
 
 _soup = _partial(_BeautifulSoup, features='lxml')
