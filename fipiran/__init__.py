@@ -3,7 +3,7 @@ __version__ = '0.5.1.dev0'
 from requests import get as _get
 
 
-_FIPIRAN = 'https://www.fipiran.com/'
+_FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'
 
