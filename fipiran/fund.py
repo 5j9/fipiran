@@ -6,7 +6,7 @@ from pandas import DataFrame as _DataFrame, to_datetime as _to_datetime, \
 from . import _api, _fipiran
 
 
-class FundProfile:
+class Fund:
     __slots__ = 'reg_no'
 
     def __init__(self, reg_no: int | str):

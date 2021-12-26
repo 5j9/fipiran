@@ -7,7 +7,7 @@ from pandas import Series, DataFrame, NA, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
 
-from fipiran.fund import FundProfile, funds, average_returns, ratings
+from fipiran.fund import Fund, funds, average_returns, ratings
 from fipiran.symbol import Symbol, search
 from fipiran.data_service import auto_complete_symbol, export_symbol, \
     mutual_fund_list, \
@@ -44,12 +44,12 @@ def patch_get(filename):
     return patch('fipiran._get', fake_get)
 
 
-fp = FundProfile(11215)
+fp = Fund(11215)
 
 
 def test_repr():
-    assert repr(fp) == 'FundProfile(11215)'
-    assert repr(FundProfile('11215')) == "FundProfile('11215')"
+    assert repr(fp) == 'Fund(11215)'
+    assert repr(Fund('11215')) == "Fund('11215')"
 
 
 @patch_get('getfundchartasset_atlas.json')
