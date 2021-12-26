@@ -1,7 +1,8 @@
 from functools import partial as _partial
 from typing import Literal as _Literal
 
-from pandas import DataFrame as _DataFrame, read_html as _read_html
+from pandas import DataFrame as _DataFrame, read_html as _read_html, \
+    to_datetime as _to_datetime
 from bs4 import BeautifulSoup as _BeautifulSoup
 from jdatetime import datetime as _jdatetime
 
@@ -91,6 +92,15 @@ class Symbol:
         keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
         values = [i.text.strip() for i in bs.select('.media-body span')]
         return dict(zip(keys, values))
+
+    def price_history(self, rows: int = 365, page : int = 1) -> dict:
+        j = _fipiran(
+            'Symbol/HistoryPricePaging?'
+            f'symbolpara={self.l18}&rows={rows}&page={page}',
+            json_resp=True)
+        df = j['data'] = _DataFrame(j['data'], copy=False)
+        df['gDate'] = _to_datetime(df['gDate'])
+        return j
 
 
 def search(term) -> list[Symbol]:

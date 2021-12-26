@@ -2,6 +2,7 @@ from json import loads
 from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
+from numpy import dtype
 from pandas import Series, DataFrame, NA, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
@@ -263,3 +264,28 @@ def test_export_symbol_no_instrument_id(mock):
     with raises(NotImplementedError):
         export_symbol('ماديرا', 14000801, 15000101)
     mock.assert_called_once_with('ماديرا')
+
+
+@patch_get('HistoryPricePaging_sarv.json')
+def test_price_history():
+    ph = Symbol('سرو').price_history(rows=3)
+    data = ph['data']
+    assert len(data) == 3
+    assert [*data.dtypes.items()] == [
+        ('gDate', dtype('<M8[ns]')),
+        ('DEven', dtype('O')),
+        ('ZTotTran', dtype('float64')),
+        ('QTotTran5J', dtype('float64')),
+        ('QTotCap', dtype('float64')),
+        ('PClosing', dtype('float64')),
+        ('PcCh', dtype('float64')),
+        ('PcChPercent', dtype('float64')),
+        ('PDrCotVal', dtype('float64')),
+        ('LTPCh', dtype('float64')),
+        ('LTPChPercent', dtype('float64')),
+        ('PriceYesterday', dtype('float64')),
+        ('PriceMin', dtype('float64')),
+        ('PriceMax', dtype('float64')),
+        ('PriceFirst', dtype('float64'))]
+    assert ph['records'] == 599
+    assert ph['total'] == 199
