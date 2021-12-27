@@ -289,3 +289,13 @@ def test_price_history():
     assert data.index.dtype == dtype('<M8[ns]')
     assert ph['records'] == 599
     assert ph['total'] == 199
+
+
+@patch('fipiran.symbol._fipiran', side_effect=NotImplementedError)
+def test_price_history_url(get_mock):
+    with raises(NotImplementedError):
+        # l18 uses persian ی and ک
+        Symbol('دارا یکم').price_history()
+    get_mock.assert_called_once_with(  # needs to be called with arabic ي and ك
+        'Symbol/HistoryPricePaging?symbolpara=دارا يكم&rows=365&page=1',
+        json_resp=True)

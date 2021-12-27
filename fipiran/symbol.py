@@ -9,11 +9,15 @@ from jdatetime import datetime as _jdatetime
 from . import _fipiran
 
 
+_KY = ''.maketrans('کی', 'كي')
+
+
 class Symbol:
-    __slots__ = '_inscode', 'l18', 'l30'
+    __slots__ = '_inscode', 'l18', 'l30', '_symbolpara'
 
     def __init__(self, l18: str, inscode: int | str = None):
         self.l18 = l18
+        self._symbolpara = self.l18.translate(_KY)
         self._inscode = inscode
 
     def __repr__(self):
@@ -26,7 +30,7 @@ class Symbol:
     def inscode(self):
         if (inscode := getattr(self, '_inscode', None)) is not None:
             return inscode
-        text = _fipiran(f'Symbol?symbolpara={self.l18}')
+        text = _fipiran(f'Symbol?symbolpara={self._symbolpara}')
         start = text.find("'inscode': '") + 12
         end = text.find("'", start)
         self._inscode = inscode = int(text[start: end])
@@ -72,7 +76,7 @@ class Symbol:
         return _read_html(text)
 
     def reference_data(self) -> dict:
-        text = _fipiran(f'Symbol/_RefrenceData?symbolpara={self.l18}')
+        text = _fipiran(f'Symbol/_RefrenceData?symbolpara={self._symbolpara}')
         bs = _soup(text)
         h4s = [i.text.strip(': ') for i in bs.select('h4')]
         spans = [i.text for i in bs.select('span')]
@@ -87,7 +91,8 @@ class Symbol:
             _fipiran(f'Symbol/statistic{days}?inscode={self.inscode}'))[0]
 
     def company_info(self):
-        text = _fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self.l18}')
+        text = _fipiran(
+            f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}')
         bs = _soup(text)
         keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
         values = [i.text.strip() for i in bs.select('.media-body span')]
@@ -96,7 +101,7 @@ class Symbol:
     def price_history(self, rows: int = 365, page : int = 1) -> dict:
         j = _fipiran(
             'Symbol/HistoryPricePaging?'
-            f'symbolpara={self.l18}&rows={rows}&page={page}',
+            f'symbolpara={self._symbolpara}&rows={rows}&page={page}',
             json_resp=True)
         df = j['data'] = _DataFrame(j['data'], copy=False)
         df['gDate'] = _to_datetime(df['gDate'])
