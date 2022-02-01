@@ -7,8 +7,8 @@ from pandas import CategoricalDtype, Series, DataFrame, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
 
-from fipiran.fund import Fund, funds, average_returns
-from fipiran.symbol import Symbol, search
+from fipiran.funds import Fund, funds, average_returns
+from fipiran.symbols import Symbol, search
 from fipiran.data_service import (
     auto_complete_symbol,
     export_symbol,
@@ -374,7 +374,7 @@ def test_price_history():
     assert ph['total'] == 199
 
 
-@patch('fipiran.symbol._fipiran', side_effect=NotImplementedError)
+@patch('fipiran.symbols._fipiran', side_effect=NotImplementedError)
 def test_price_history_url(get_mock):
     with raises(NotImplementedError):
         # l18 uses persian ی and ک
