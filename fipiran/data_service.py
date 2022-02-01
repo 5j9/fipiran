@@ -133,3 +133,26 @@ def profit_loss(
         df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
     )
     return df
+
+
+def financial_ratios(
+    l18: str,
+    year: str | int,
+) -> _DataFrame:
+    """Return financial ratios for the requested symbol and year.
+
+    https://www.fipiran.ir/DataService/RatioIndex
+    """
+    xls = _fipiran(
+        'DataService/ExportRatio',
+        (
+            ('symbolparaR', l18),
+            ('year', year),
+        ),
+    )
+    df = _read_html(xls)[0]
+    jdate_cols = ['PublishDate', 'FinancialYear']
+    df[jdate_cols] = (
+        df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
+    )
+    return df

@@ -1,0 +1,15 @@
+<style> .textmode { mso-number-format:\@; } </style> <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'><div>
+	<table cellspacing="0" rules="all" border="1" style="border-collapse:collapse;">
+		<tr>
+			<th scope="col">Symbol</th><th scope="col">PublishDate</th><th scope="col">FinancialYear</th><th scope="col">Year</th><th scope="col">Priod</th><th scope="col">CurrentRatio</th><th scope="col">CashRatio</th><th scope="col">QuickRatio</th><th scope="col">DebtRatio</th><th scope="col">DebtEquityRatio</th><th scope="col">ROA</th><th scope="col">ROE</th><th scope="col">AssetTurnoverRatio</th><th scope="col">ReceivablesTurnoverRatio</th><th scope="col">DaySalesInReceivablesTurnoverRatio</th><th scope="col">InventoryTurnoverRatio</th><th scope="col">DaySalesInInventoryTurnoverRatio</th><th scope="col">PayableTurnoverRatio</th><th scope="col">DaySalesInPayableTurnoverRatio</th><th scope="col">ProfitMargin</th><th scope="col">GrossProfitRatio</th>
+		</tr><tr>
+			<td>فملي</td><td>1394/04/30</td><td>1394/12/29</td><td>1394</td><td>3</td><td>1.15</td><td>0.10</td><td>0.48</td><td>38.90</td><td>0.64</td><td>1.08</td><td>1.77</td><td>0.06</td><td>0.72</td><td>501.28</td><td>0.26</td><td>1387.05</td><td>15.05</td><td>23.93</td><td>19.52</td><td>35.77</td>
+		</tr><tr>
+			<td>فملي</td><td>1394/10/28</td><td>1394/12/29</td><td>1394</td><td>9</td><td>1.06</td><td>0.05</td><td>0.42</td><td>41.62</td><td>0.71</td><td>3.14</td><td>5.38</td><td>0.21</td><td>2.89</td><td>124.35</td><td>0.98</td><td>368.97</td><td>121.07</td><td>2.97</td><td>14.89</td><td>33.22</td>
+		</tr><tr>
+			<td>فملي</td><td>1394/09/15</td><td>1394/12/29</td><td>1394</td><td>6</td><td>1.02</td><td>0.07</td><td>0.42</td><td>42.90</td><td>0.75</td><td>1.91</td><td>3.34</td><td>0.13</td><td>1.83</td><td>197.17</td><td>0.62</td><td>581.48</td><td>16.70</td><td>21.55</td><td>14.56</td><td>30.52</td>
+		</tr><tr>
+			<td>فملي</td><td>1396/04/18</td><td>1394/12/29</td><td>1394</td><td>12</td><td>1.01</td><td>0.02</td><td>0.42</td><td>41.68</td><td>0.71</td><td>3.13</td><td>5.36</td><td>0.32</td><td>0.00</td><td>0.00</td><td>1.53</td><td>235.94</td><td>0.00</td><td>0.00</td><td>9.77</td><td>30.87</td>
+		</tr>
+	</table>
+</div>

@@ -16,6 +16,7 @@ from fipiran.data_service import (
     auto_complete_fund,
     auto_complete_index,
     export_index,
+    financial_ratios,
     profit_loss,
 )
 
@@ -492,5 +493,35 @@ def test_profit_loss():
         ('NetIncome', dtype('int64')),
         ('Capital', dtype('int64')),
         ('Eps', dtype('int64')),
+    ]
+    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+
+
+@patch_get('financial_ratios_fmelli_1394.xls')
+def test_financial_ratios():
+    df = financial_ratios('فملی', 1394)
+    assert len(df) == 4
+    assert [*df.dtypes.items()] == [
+        ('Symbol', dtype('O')),
+        ('PublishDate', dtype('O')),
+        ('FinancialYear', dtype('O')),
+        ('Year', dtype('int64')),
+        ('Priod', dtype('int64')),
+        ('CurrentRatio', dtype('float64')),
+        ('CashRatio', dtype('float64')),
+        ('QuickRatio', dtype('float64')),
+        ('DebtRatio', dtype('float64')),
+        ('DebtEquityRatio', dtype('float64')),
+        ('ROA', dtype('float64')),
+        ('ROE', dtype('float64')),
+        ('AssetTurnoverRatio', dtype('float64')),
+        ('ReceivablesTurnoverRatio', dtype('float64')),
+        ('DaySalesInReceivablesTurnoverRatio', dtype('float64')),
+        ('InventoryTurnoverRatio', dtype('float64')),
+        ('DaySalesInInventoryTurnoverRatio', dtype('float64')),
+        ('PayableTurnoverRatio', dtype('float64')),
+        ('DaySalesInPayableTurnoverRatio', dtype('float64')),
+        ('ProfitMargin', dtype('float64')),
+        ('GrossProfitRatio', dtype('float64')),
     ]
     assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
