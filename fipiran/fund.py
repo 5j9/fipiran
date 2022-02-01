@@ -40,16 +40,19 @@ def funds() -> _DataFrame:
 
     Also see fipiran.data_service.mutual_fund_list function.
     """
-    df = _DataFrame(_api('fund/fundcompare')['items'], copy=False).astype({
-        'regNo': 'int64',
-        'name': 'string',
-        'manager': 'string',
-        'auditor': 'string',
-        'custodian': 'string',
-        'guarantor': 'string',
-        'date': 'datetime64',
-        'typeOfInvest': 'category',
-    }, copy=False)
+    df = _DataFrame(_api('fund/fundcompare')['items'], copy=False).astype(
+        {
+            'regNo': 'int64',
+            'name': 'string',
+            'manager': 'string',
+            'auditor': 'string',
+            'custodian': 'string',
+            'guarantor': 'string',
+            'date': 'datetime64',
+            'typeOfInvest': 'category',
+        },
+        copy=False,
+    )
     return df
 
 
@@ -68,5 +71,6 @@ def ratings() -> _DataFrame:
             return _parse_jdate(s)
         except ValueError:
             return _NA
+
     df.iloc[:, -1] = df.iloc[:, -1].apply(_jdate_na)
     return df

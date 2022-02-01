@@ -30,7 +30,7 @@ class Symbol:
         text = _fipiran(f'Symbol?symbolpara={self._symbolpara}')
         start = text.find("'inscode': '") + 12
         end = text.find("'", start)
-        self._inscode = inscode = int(text[start: end])
+        self._inscode = inscode = int(text[start:end])
         return inscode
 
     def price_data(self) -> dict:
@@ -54,9 +54,17 @@ class Symbol:
             return int_or_float(s)
 
         for k in (  # numerical values
-            'PriceMin', 'PriceMax', 'PDrCotVal', 'PriceFirst',
-            'PClosing', 'changepdr', 'changepc', 'prevPrice', 'ZTotTran',
-            'QTotTran5J', 'QTotCap'
+            'PriceMin',
+            'PriceMax',
+            'PDrCotVal',
+            'PriceFirst',
+            'PClosing',
+            'changepdr',
+            'changepc',
+            'prevPrice',
+            'ZTotTran',
+            'QTotTran5J',
+            'QTotCap',
         ):
             d[k] = num(so(f'#{k}').text)
 
@@ -84,22 +92,21 @@ class Symbol:
         return d
 
     def statistic(self, days: _Literal[365, 180, 90, 30, 7]) -> _DataFrame:
-        return _read_html(
-            _fipiran(f'Symbol/statistic{days}?inscode={self.inscode}'))[0]
+        return _read_html(_fipiran(f'Symbol/statistic{days}?inscode={self.inscode}'))[0]
 
     def company_info(self):
-        text = _fipiran(
-            f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}')
+        text = _fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}')
         bs = _soup(text)
         keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
         values = [i.text.strip() for i in bs.select('.media-body span')]
         return dict(zip(keys, values))
 
-    def price_history(self, rows: int = 365, page : int = 1) -> dict:
+    def price_history(self, rows: int = 365, page: int = 1) -> dict:
         j = _fipiran(
             'Symbol/HistoryPricePaging?'
             f'symbolpara={self._symbolpara}&rows={rows}&page={page}',
-            json_resp=True)
+            json_resp=True,
+        )
         df = j['data'] = _DataFrame(j['data'], copy=False)
         df['gDate'] = _to_datetime(df['gDate'])
         df.set_index('gDate', inplace=True)
