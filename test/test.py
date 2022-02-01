@@ -2,7 +2,7 @@ from json import loads
 from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
-from numpy import dtype
+from numpy import dtype, nan
 from pandas import CategoricalDtype, Series, DataFrame, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
@@ -11,6 +11,7 @@ from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, m
 from fipiran.symbols import Symbol, search
 from fipiran.data_service import (
     auto_complete_symbol,
+    balance_sheet,
     export_symbol,
     auto_complete_fund,
     auto_complete_index,
@@ -435,3 +436,37 @@ def test_dependency_graph_data():
         ('alpha', dtype('float64')),
     ]
     assert len(df) == 287
+
+
+@patch_get('BS_Fmelli_1394.xls')
+def test_balance_sheet():
+    df = balance_sheet('فملی', 1394)
+    assert len(df) == 11
+    assert [*df.dtypes.items()] == [
+        ('Symbol', dtype('O')),
+        ('PublishDate', dtype('O')),
+        ('FinanceYear', dtype('O')),
+        ('Year', dtype('int64')),
+        ('period', dtype('int64')),
+        ('IsAudit', dtype('float64')),
+        ('cash', dtype('int64')),
+        ('NetReceivables', dtype('int64')),
+        ('OtherReceivables', dtype('int64')),
+        ('ShortTermInvestments', dtype('int64')),
+        ('Inventory', dtype('int64')),
+        ('PrePayment', dtype('int64')),
+        ('TotalCurrentAssets', dtype('int64')),
+        ('LongTermInvestments', dtype('int64')),
+        ('PropertyPlantAndEquipment', dtype('int64')),
+        ('IntangibleAssets', dtype('int64')),
+        ('TotalAssets', dtype('int64')),
+        ('AccountsPayable', dtype('int64')),
+        ('OtherPayable', dtype('int64')),
+        ('PreRecive', dtype('int64')),
+        ('TotalCurrentLiabilities', dtype('int64')),
+        ('TotalLiabilities', dtype('int64')),
+        ('capital', dtype('int64')),
+        ('RetainedEarnings', dtype('int64')),
+        ('TotalStockholderEquity', dtype('int64')),
+    ]
+    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa

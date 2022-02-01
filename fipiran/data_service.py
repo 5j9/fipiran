@@ -87,3 +87,26 @@ def export_symbol(
     df['PDate'] = df['PDate'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
     df['GDate'] = _to_datetime(df['GDate'], format='%Y%m%d')
     return df
+
+
+def balance_sheet(
+    l18: str,
+    year: str | int,
+) -> _DataFrame:
+    """Return balance sheet for the requested symbol name as DataFrame.
+
+    https://www.fipiran.ir/DataService/BSIndex
+    """
+    xls = _fipiran(
+        'DataService/ExportBS',
+        (
+            ('symbolparaBS', l18),
+            ('year', year),
+        ),
+    )
+    df = _read_html(xls)[0]
+    jdate_cols = ['PublishDate', 'FinanceYear']
+    df[jdate_cols] = (
+        df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
+    )
+    return df
