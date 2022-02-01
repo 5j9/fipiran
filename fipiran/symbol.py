@@ -1,12 +1,9 @@
 from functools import partial as _partial
 from typing import Literal as _Literal
 
-from pandas import DataFrame as _DataFrame, read_html as _read_html, \
-    to_datetime as _to_datetime
 from bs4 import BeautifulSoup as _BeautifulSoup
-from jdatetime import datetime as _jdatetime
 
-from . import _fipiran
+from . import _fipiran, _DataFrame, _read_html, _to_datetime, _jdatetime
 
 
 _KY = ''.maketrans('کی', 'كي')

@@ -1,17 +1,14 @@
 from typing import TypedDict as _TypedDict
 
-from jdatetime import datetime as _jdatetime
-import pandas as _pd
-
-from . import _fipiran
+from . import _fipiran, _DataFrame, _read_html, _to_datetime, _jdatetime
 
 
 _jstrptime = _jdatetime.strptime
 
 
-def mutual_fund_list() -> _pd.DataFrame:
+def mutual_fund_list() -> _DataFrame:
     """Also see fipiran.fund.funds function."""
-    return _pd.read_html(_fipiran('DataService/ExportMFList'))[0]
+    return _read_html(_fipiran('DataService/ExportMFList'))[0]
 
 
 def auto_complete_fund(id_: str) -> list[
@@ -23,7 +20,7 @@ def auto_complete_fund(id_: str) -> list[
 def mutual_fund_data(
     name: str, start_date: str, end_date: str,
     reg_no: int = None
-) -> _pd.DataFrame:
+) -> _DataFrame:
     """Return history of NAV, units, issue, and cancel.
 
     There various functions in this library to retrieve `reg_no`. If you
@@ -45,7 +42,7 @@ def mutual_fund_data(
         ('RegNoN', reg_no),
         ('MFStart', start_date),
         ('MFEnd', end_date)))
-    df = _pd.read_html(xls)[0]
+    df = _read_html(xls)[0]
     df['Date'] = df['Date'].apply(_jstrptime, args=('%Y/%m/%d',))
     df['AghazFaliat'] = df['AghazFaliat'].apply(_jstrptime, args=('%Y/%m/%d',))
     return df
@@ -60,7 +57,7 @@ def auto_complete_index(id_: str) -> list[
 def export_index(
     lval30: str, start_date: str | int, end_date: str | int,
     instrument_id: str = None
-) -> _pd.DataFrame:
+) -> _DataFrame:
     """Return history of requested index.
 
     Use the `auto_complete_index` function to retrieve lval30 and instrument_id
@@ -79,7 +76,7 @@ def export_index(
         ('inscodeindex', instrument_id),
         ('indexStart', start_date),
         ('indexEnd', end_date)))
-    df = _pd.read_html(xls)[0]
+    df = _read_html(xls)[0]
     df['dateissue'] = df['dateissue'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
     return df
 
@@ -93,7 +90,7 @@ def auto_complete_symbol(id_: str) -> list[
 def export_symbol(
     lval18afc: str, start_date: str | int, end_date: str | int,
     instrument_id: str = None
-) -> _pd.DataFrame:
+) -> _DataFrame:
     """Return history of requested index.
 
     Use the `auto_complete_symbol` function to retrieve `lval18afc` and
@@ -113,7 +110,7 @@ def export_symbol(
         ('inscodesymbol', instrument_id),
         ('symbolStart', start_date),
         ('symbolEnd', end_date)))
-    df = _pd.read_html(xls)[0]
+    df = _read_html(xls)[0]
     df['PDate'] = df['PDate'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
-    df['GDate'] = _pd.to_datetime(df['GDate'], format='%Y%m%d')
+    df['GDate'] = _to_datetime(df['GDate'], format='%Y%m%d')
     return df

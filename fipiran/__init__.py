@@ -1,6 +1,11 @@
 __version__ = '0.7.1.dev0'
 
 from requests import get as _get
+# noinspection PyUnresolvedReferences
+from pandas import DataFrame as _DataFrame, read_html as _read_html, \
+    to_datetime as _to_datetime
+# noinspection PyUnresolvedReferences
+from jdatetime import datetime as _jdatetime
 
 
 _FIPIRAN = 'https://www.fipiran.ir/'
