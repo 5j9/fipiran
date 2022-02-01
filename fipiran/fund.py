@@ -1,7 +1,4 @@
-from functools import partial as _partial
-
-from pandas import to_numeric as _to_numeric, NA as _NA
-from . import _api, _fipiran, _DataFrame, _read_html, _to_datetime, _jdatetime
+from . import _api, _fipiran, _DataFrame, _read_html, _to_datetime
 
 
 class Fund:

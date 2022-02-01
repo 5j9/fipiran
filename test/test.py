@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
 from numpy import dtype
-from pandas import CategoricalDtype, Series, DataFrame, NA, Timestamp
+from pandas import CategoricalDtype, Series, DataFrame, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
 
