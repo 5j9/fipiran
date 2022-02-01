@@ -110,3 +110,26 @@ def balance_sheet(
         df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
     )
     return df
+
+
+def profit_loss(
+    l18: str,
+    year: str | int,
+) -> _DataFrame:
+    """Return profit and loss statements for the requested symbol and year.
+
+    https://www.fipiran.ir/DataService/ISIndex
+    """
+    xls = _fipiran(
+        'DataService/ExportIS',
+        (
+            ('symbolparaIS', l18),
+            ('year', year),
+        ),
+    )
+    df = _read_html(xls)[0]
+    jdate_cols = ['publishDate', 'FinanceYear']
+    df[jdate_cols] = (
+        df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
+    )
+    return df

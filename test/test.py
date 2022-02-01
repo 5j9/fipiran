@@ -16,6 +16,7 @@ from fipiran.data_service import (
     auto_complete_fund,
     auto_complete_index,
     export_index,
+    profit_loss,
 )
 
 
@@ -468,5 +469,28 @@ def test_balance_sheet():
         ('capital', dtype('int64')),
         ('RetainedEarnings', dtype('int64')),
         ('TotalStockholderEquity', dtype('int64')),
+    ]
+    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+
+
+@patch_get('IS_Fmelli_1394.xls')
+def test_profit_loss():
+    df = profit_loss('فملی', 1394)
+    assert len(df) == 14
+    assert [*df.dtypes.items()] == [
+        ('Symbol', dtype('O')),
+        ('publishDate', dtype('O')),
+        ('FinanceYear', dtype('O')),
+        ('Year', dtype('int64')),
+        ('priod', dtype('int64')),
+        ('IsAudit', dtype('float64')),
+        ('TotalRevenue', dtype('int64')),
+        ('GrossProfit', dtype('int64')),
+        ('OperatingIncomeOrLoss', dtype('int64')),
+        ('InterestExpense', dtype('int64')),
+        ('IncomeBeforeTax', dtype('int64')),
+        ('NetIncome', dtype('int64')),
+        ('Capital', dtype('int64')),
+        ('Eps', dtype('int64')),
     ]
     assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa

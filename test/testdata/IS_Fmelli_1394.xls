@@ -1,0 +1,35 @@
+<style> .textmode { mso-number-format:\@; } </style> <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'><div>
+	<table cellspacing="0" rules="all" border="1" style="border-collapse:collapse;">
+		<tr>
+			<th scope="col">Symbol</th><th scope="col">publishDate</th><th scope="col">FinanceYear</th><th scope="col">Year</th><th scope="col">priod</th><th scope="col">IsAudit</th><th scope="col">TotalRevenue</th><th scope="col">GrossProfit</th><th scope="col">OperatingIncomeOrLoss</th><th scope="col">InterestExpense</th><th scope="col">IncomeBeforeTax</th><th scope="col">NetIncome</th><th scope="col">Capital</th><th scope="col">Eps</th>
+		</tr><tr>
+			<td>فملي</td><td>1394/04/30</td><td>1394/12/29</td><td>1394</td><td>3</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl02_ctl00_0" type="checkbox" name="ctl02$ctl00" disabled="disabled" /></span></td><td>6201867</td><td>2218633</td><td>1723382</td><td>-649696</td><td>0</td><td>1210601</td><td>43400000</td><td>28</td>
+		</tr><tr>
+			<td>فملي</td><td>1394/07/28</td><td>1394/12/29</td><td>1394</td><td>6</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl03_ctl00_1" type="checkbox" name="ctl03$ctl00" disabled="disabled" /></span></td><td>14715879</td><td>4477025</td><td>3064407</td><td>-1651153</td><td>0</td><td>1879387</td><td>43400000</td><td>43</td>
+		</tr><tr>
+			<td>فملي</td><td>1394/09/15</td><td>1394/12/29</td><td>1394</td><td>6</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl04_ctl00_2" type="checkbox" name="ctl04$ctl00" checked="checked" disabled="disabled" /></span></td><td>14715879</td><td>4490574</td><td>3064213</td><td>-1651153</td><td>0</td><td>1879377</td><td>43400000</td><td>43</td>
+		</tr><tr>
+			<td>فملي</td><td>1394/10/28</td><td>1394/12/29</td><td>1394</td><td>9</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl05_ctl00_3" type="checkbox" name="ctl05$ctl00" disabled="disabled" /></span></td><td>23750371</td><td>7889255</td><td>5070174</td><td>-2511418</td><td>0</td><td>3536725</td><td>43400000</td><td>81</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/03/19</td><td>1394/12/29</td><td>1394</td><td>12</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl06_ctl00_4" type="checkbox" name="ctl06$ctl00" disabled="disabled" /></span></td><td>36542323</td><td>11279334</td><td>7254607</td><td>-3236766</td><td>0</td><td>5620855</td><td>43400000</td><td>130</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/04/10</td><td>1394/12/29</td><td>1394</td><td>12</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl07_ctl00_5" type="checkbox" name="ctl07$ctl00" checked="checked" disabled="disabled" /></span></td><td>36542323</td><td>11279334</td><td>7165053</td><td>-3202070</td><td>0</td><td>4688135</td><td>43400000</td><td>108</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/04/28</td><td>1394/12/29</td><td>1394</td><td>12</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl08_ctl00_6" type="checkbox" name="ctl08$ctl00" disabled="disabled" /></span></td><td>36542323</td><td>11260095</td><td>7184289</td><td>-3202070</td><td>0</td><td>4705705</td><td>43400000</td><td>108</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/04/28</td><td>1394/12/29</td><td>1394</td><td>3</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl09_ctl00_7" type="checkbox" name="ctl09$ctl00" disabled="disabled" /></span></td><td>6201867</td><td>2218633</td><td>1723382</td><td>-649696</td><td>0</td><td>1210601</td><td>43400000</td><td>28</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/07/27</td><td>1394/12/29</td><td>1394</td><td>12</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl10_ctl00_8" type="checkbox" name="ctl10$ctl00" disabled="disabled" /></span></td><td>36542323</td><td>11260095</td><td>7184289</td><td>-3202070</td><td>0</td><td>4705705</td><td>50000000</td><td>94</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/07/27</td><td>1394/12/29</td><td>1394</td><td>6</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl11_ctl00_9" type="checkbox" name="ctl11$ctl00" disabled="disabled" /></span></td><td>14715879</td><td>4490574</td><td>3327273</td><td>-1651153</td><td>0</td><td>2142437</td><td>50000000</td><td>43</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/10/28</td><td>1394/12/29</td><td>1394</td><td>12</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl12_ctl00_10" type="checkbox" name="ctl12$ctl00" disabled="disabled" /></span></td><td>36542323</td><td>11260096</td><td>7184289</td><td>-3202070</td><td>0</td><td>4705705</td><td>50000000</td><td>94</td>
+		</tr><tr>
+			<td>فملي</td><td>1395/10/28</td><td>1394/12/29</td><td>1394</td><td>9</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl13_ctl00_11" type="checkbox" name="ctl13$ctl00" disabled="disabled" /></span></td><td>23750371</td><td>7889255</td><td>5070174</td><td>-2511418</td><td>0</td><td>3536725</td><td>50000000</td><td>71</td>
+		</tr><tr>
+			<td>فملي</td><td>1396/03/30</td><td>1394/12/29</td><td>1394</td><td>12</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl14_ctl00_12" type="checkbox" name="ctl14$ctl00" disabled="disabled" /></span></td><td>36542323</td><td>11279334</td><td>7165053</td><td>-3202070</td><td>0</td><td>4688135</td><td>43400000</td><td>108</td>
+		</tr><tr>
+			<td>فملي</td><td>1396/04/18</td><td>1394/12/29</td><td>1394</td><td>12</td><td><span class="aspNetDisabled" title="IsAudit"><input id="ctl15_ctl00_13" type="checkbox" name="ctl15$ctl00" checked="checked" disabled="disabled" /></span></td><td>36542323</td><td>11279334</td><td>6565292</td><td>-3202070</td><td>0</td><td>3570575</td><td>43400000</td><td>82</td>
+		</tr>
+	</table>
+</div>
