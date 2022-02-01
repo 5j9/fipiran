@@ -6,49 +6,10 @@ from . import _fipiran, _DataFrame, _read_html, _to_datetime, _jdatetime
 _jstrptime = _jdatetime.strptime
 
 
-def mutual_fund_list() -> _DataFrame:
-    """Also see fipiran.fund.funds function."""
-    return _read_html(_fipiran('DataService/ExportMFList'))[0]
-
-
 def auto_complete_fund(
     id_: str,
 ) -> list[_TypedDict('FundAutoComplete', {'RegNo': int, 'Name': str})]:
     return _fipiran('DataService/AutoCompletefund', (('id', id_),), True)
-
-
-def mutual_fund_data(
-    name: str, start_date: str, end_date: str, reg_no: int = None
-) -> _DataFrame:
-    """Return history of NAV, units, issue, and cancel.
-
-    There various functions in this library to retrieve `reg_no`. If you
-        want the names and numbers for all funds, you can use
-        `mutual_fund_list`, but if only a single fund is desired the
-        `auto_complete_fund` function can be used.
-    `reg_no` is optional and if left out then the first result of
-        `auto_complete_fund` will be used.
-
-    Date parameters should be strings representing SH dates e.g.:
-        '1394/01/01'
-    """
-    if reg_no is None:
-        d = auto_complete_fund(name)[0]
-        reg_no = d['RegNo']
-        name = d['Name']
-    xls = _fipiran(
-        'DataService/ExportMF',
-        (
-            ('Mutualpara', name),
-            ('RegNoN', reg_no),
-            ('MFStart', start_date),
-            ('MFEnd', end_date),
-        ),
-    )
-    df = _read_html(xls)[0]
-    df['Date'] = df['Date'].apply(_jstrptime, args=('%Y/%m/%d',))
-    df['AghazFaliat'] = df['AghazFaliat'].apply(_jstrptime, args=('%Y/%m/%d',))
-    return df
 
 
 def auto_complete_index(

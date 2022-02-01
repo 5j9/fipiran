@@ -12,9 +12,7 @@ from fipiran.symbols import Symbol, search
 from fipiran.data_service import (
     auto_complete_symbol,
     export_symbol,
-    mutual_fund_list,
     auto_complete_fund,
-    mutual_fund_data,
     auto_complete_index,
     export_index,
 )
@@ -243,21 +241,6 @@ def test_average_returns():
     assert df.query('`نوع صندوق` == "در سهام"')['میانگین بازدهی سال(%)'][0] == 28.4
 
 
-@patch_get('MutualFundList.xls.html')
-def test_mutual_fund_list():
-    df = mutual_fund_list()
-    assert len(df) == 259
-    assert df.columns.to_list() == [
-        'RegNo',
-        'FundType',
-        'Custodian',
-        'Guarantor',
-        'Manager',
-        'Name',
-        'WebSite',
-    ]
-
-
 @patch_get('AutoCompleteFundAva.json')
 def test_auto_complete_fund():
     assert auto_complete_fund('آوا') == [
@@ -266,28 +249,6 @@ def test_auto_complete_fund():
         {'RegNo': 11729, 'Name': 'قابل معامله آوای معیار'},
         {'RegNo': 11776, 'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس'},
     ]
-
-
-@patch_get('ExportMFAva.xls.html')
-def test_mutual_fund_data():
-    df = mutual_fund_data('قابل معامله آوای معیار', '1400/01/01', '1400/12/29', 11729)
-    assert df.iloc[-1].to_list() == [
-        'قابل معامله آوای معیار',
-        jdatetime(1400, 1, 6, 0, 0),
-        8373,
-        8431,
-        8373,
-        jdatetime(1399, 5, 6, 0, 0),
-        3666009617642,
-        437849851,
-    ]
-
-
-@patch('fipiran.data_service.auto_complete_fund', side_effect=NotImplementedError)
-def test_mutual_fund_data_no_reg_no(mock):
-    with raises(NotImplementedError):
-        mutual_fund_data('آوای معیار', '1400/01/01', '1400/12/29')
-    mock.assert_called_once_with('آوای معیار')
 
 
 @patch_get('AutoCompleteindexHamVazn.json')
