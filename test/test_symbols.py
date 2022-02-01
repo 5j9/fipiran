@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
 from numpy import dtype
-from pandas import CategoricalDtype, DataFrame
+from pandas import DataFrame
 from pytest import raises
 
 from fipiran.symbols import Symbol, search
