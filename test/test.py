@@ -7,7 +7,7 @@ from pandas import CategoricalDtype, Series, DataFrame, NA, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
 
-from fipiran.fund import Fund, funds, average_returns, ratings
+from fipiran.fund import Fund, funds, average_returns
 from fipiran.symbol import Symbol, search
 from fipiran.data_service import (
     auto_complete_symbol,
@@ -241,22 +241,6 @@ def test_average_returns():
     assert type(df) is DataFrame
     assert len(df) == 4
     assert df.query('`نوع صندوق` == "در سهام"')['میانگین بازدهی سال(%)'][0] == 28.4
-
-
-@patch_get('Rating.html')
-def test_ratings():
-    df = ratings()
-    assert len(df) == 258
-    assert df.columns.to_list() == [
-        'نام صندوق',
-        'عملکرد 1 ساله',
-        'عملکرد 3 ساله',
-        'عملکرد 5 ساله',
-        'تاریخ بروزرسانی',
-    ]
-    assert all(t == float for t in df.dtypes[1:4])
-    assert type(df.iat[1, -1]) is jdatetime
-    assert df.iat[0, -1] is NA
 
 
 @patch_get('MutualFundList.xls.html')

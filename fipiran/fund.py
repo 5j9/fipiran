@@ -58,19 +58,3 @@ def funds() -> _DataFrame:
 
 def average_returns() -> _DataFrame:
     return _read_html(_fipiran('Fund/MFBazdehAVG'))[0]
-
-
-def ratings() -> _DataFrame:
-    df = _read_html(_fipiran('Fund/Rating'))[0]
-    # Cannot use iloc in LHS, see: https://stackoverflow.com/questions/52395179
-    df[df.columns[1:4]] = df.iloc[:, 1:4].apply(_to_numeric, args=('coerce',))
-    _parse_jdate = _partial(_jdatetime.strptime, format='%Y/%m/%d')
-
-    def _jdate_na(s: str):
-        try:
-            return _parse_jdate(s)
-        except ValueError:
-            return _NA
-
-    df.iloc[:, -1] = df.iloc[:, -1].apply(_jdate_na)
-    return df
