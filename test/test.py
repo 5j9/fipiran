@@ -7,7 +7,7 @@ from pandas import CategoricalDtype, Series, DataFrame, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
 
-from fipiran.funds import Fund, funds, average_returns, map_data
+from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
 from fipiran.symbols import Symbol, search
 from fipiran.data_service import (
     auto_complete_symbol,
@@ -430,5 +430,47 @@ def test_map_data():
         ('alpha', dtype('float64')),
         ('isCompleted', dtype('bool')),
         ('fundWatch', dtype('O')),
+    ]
+    assert len(df) == 287
+
+
+@patch_get('dependencygraph.json')
+def test_dependency_graph_data():
+    df = dependency_graph_data()
+    assert [*df.dtypes.items()] == [
+        ('regNo', dtype('int64')),
+        ('name', 'string[python]'),
+        ('fundType', dtype('int64')),
+        ('fundSize', dtype('int64')),
+        ('dailyEfficiency', dtype('float64')),
+        ('weeklyEfficiency', dtype('float64')),
+        ('monthlyEfficiency', dtype('float64')),
+        ('quarterlyEfficiency', dtype('float64')),
+        ('sixMonthEfficiency', dtype('float64')),
+        ('annualEfficiency', dtype('float64')),
+        ('efficiency', dtype('float64')),
+        ('cancelNav', dtype('float64')),
+        ('issueNav', dtype('float64')),
+        ('date', dtype('<M8[ns]')),
+        ('netAsset', dtype('int64')),
+        ('managerId', dtype('int64')),
+        ('manager', 'string[python]'),
+        ('managerCode', 'string[python]'),
+        ('guarantorId', dtype('float64')),
+        ('guarantor', 'string[python]'),
+        ('guarantorCode', 'string[python]'),
+        ('rankOf12Month', dtype('int64')),
+        ('rankOf36Month', dtype('int64')),
+        ('rankOf60Month', dtype('int64')),
+        ('rankLastUpdate', dtype('O')),
+        (
+            'typeOfInvest',
+            CategoricalDtype(
+                categories=['IssuanceAndCancellation', 'Negotiable'], ordered=False
+            ),
+        ),
+        ('initiationDate', dtype('<M8[ns]')),
+        ('beta', dtype('float64')),
+        ('alpha', dtype('float64')),
     ]
     assert len(df) == 287

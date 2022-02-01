@@ -72,3 +72,21 @@ def map_data() -> _DataFrame:
         },
         copy=False,
     )
+
+
+def dependency_graph_data() -> _DataFrame:
+    return _DataFrame(_api('fund/dependencygraph')['items'], copy=False).astype(
+        {
+            'regNo': 'int64',
+            'name': 'string',
+            'date': 'datetime64',
+            'manager': 'string',
+            'managerCode': 'string',
+            'guarantor': 'string',
+            'guarantorCode': 'string',
+            # 'rankLastUpdate': 'datetime64',
+            'typeOfInvest': 'category',
+            'initiationDate': 'datetime64',
+        },
+        copy=False,
+    )
