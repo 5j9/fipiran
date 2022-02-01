@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from jdatetime import datetime as jdatetime
 from numpy import dtype
-from pandas import Series, DataFrame, NA, Timestamp
+from pandas import CategoricalDtype, Series, DataFrame, NA, Timestamp
 from pandas.testing import assert_series_equal
 from pytest import raises
 
@@ -82,10 +82,50 @@ def test_info():
     assert type(info) is dict
 
 
-@patch_get('fundlist.json')
+@patch_get('fundcompare.json')
 def test_funds():
     df = funds()
-    assert len(df) == 272
+    assert len(df) == 307
+    assert [*df.dtypes.items()] == [
+        ('regNo', dtype('int64')),
+        ('name', 'string'),
+        ('rankOf12Month', dtype('int64')),
+        ('rankOf36Month', dtype('int64')),
+        ('rankOf60Month', dtype('int64')),
+        ('rankLastUpdate', dtype('O')),
+        ('fundType', dtype('int64')),
+        ('typeOfInvest', CategoricalDtype(
+            categories=['IssuanceAndCancellation', 'Negotiable'],
+            ordered=False)),
+        ('fundSize', dtype('float64')),
+        ('initiationDate', dtype('O')),
+        ('dailyEfficiency', dtype('float64')),
+        ('weeklyEfficiency', dtype('float64')),
+        ('monthlyEfficiency', dtype('float64')),
+        ('quarterlyEfficiency', dtype('float64')),
+        ('sixMonthEfficiency', dtype('float64')),
+        ('annualEfficiency', dtype('float64')),
+        ('statisticalNav', dtype('float64')),
+        ('efficiency', dtype('float64')),
+        ('cancelNav', dtype('float64')),
+        ('issueNav', dtype('float64')),
+        ('dividendIntervalPeriod', dtype('float64')),
+        ('guaranteedEarningRate', dtype('O')),
+        ('date', dtype('<M8[ns]')),
+        ('netAsset', dtype('float64')),
+        ('estimatedEarningRate', dtype('float64')),
+        ('investedUnits', dtype('float64')),
+        ('articlesOfAssociationLink', dtype('O')),
+        ('prosoectusLink', dtype('O')),
+        ('websiteAddress', dtype('O')),
+        ('manager', 'string'),
+        ('auditor', 'string'),
+        ('custodian', 'string'),
+        ('guarantor', 'string'),
+        ('beta', dtype('float64')),
+        ('alpha', dtype('float64')),
+        ('isCompleted', dtype('bool')),
+        ('fundWatch', dtype('O'))]
 
 
 @patch_get('autocomplete_arzesh.html')

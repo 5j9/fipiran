@@ -21,14 +21,14 @@ class Fund:
 
     def issue_cancel_history(self) -> _DataFrame:
         j = _api(f'chart/getfundchart?regno={self.reg_no}')
-        df = _DataFrame(j)
+        df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
         return df
 
     def nav_history(self) -> _DataFrame:
         j = _api(f'chart/getfundnetassetchart?regno={self.reg_no}')
-        df = _DataFrame(j)
+        df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
         return df
@@ -38,8 +38,21 @@ class Fund:
 
 
 def funds() -> _DataFrame:
-    """Also see fipiran.data_service.mutual_fund_list function."""
-    return _DataFrame(_api('fund/fundlist')['items'])
+    """Return the data available at https://fund.fipiran.ir/mf/list.
+
+    Also see fipiran.data_service.mutual_fund_list function.
+    """
+    df = _DataFrame(_api('fund/fundcompare')['items'], copy=False).astype({
+        'regNo': 'int64',
+        'name': 'string',
+        'manager': 'string',
+        'auditor': 'string',
+        'custodian': 'string',
+        'guarantor': 'string',
+        'date': 'datetime64',
+        'typeOfInvest': 'category',
+    }, copy=False)
+    return df
 
 
 def average_returns() -> _DataFrame:
