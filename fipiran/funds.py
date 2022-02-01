@@ -55,3 +55,20 @@ def funds() -> _DataFrame:
 
 def average_returns() -> _DataFrame:
     return _read_html(_fipiran('Fund/MFBazdehAVG'))[0]
+
+
+def map_data() -> _DataFrame:
+    return _DataFrame(_api('fund/treemap')['items'], copy=False).astype(
+        {
+            'regNo': 'int64',
+            'name': 'string',
+            'typeOfInvest': 'category',
+            'initiationDate': 'datetime64',
+            'date': 'datetime64',
+            'manager': 'string',
+            'auditor': 'string',
+            'custodian': 'string',
+            'guarantor': 'string',
+        },
+        copy=False,
+    )
