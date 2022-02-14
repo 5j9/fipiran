@@ -45,8 +45,9 @@ def test_auto_complete_index():
 
 @patch_get('ExportIndexHamVazn.xls.html')
 def test_export_index():
-    df = export_index('شاخص كل (هم وزن)', 14000101, 15000101, 'IRX6XTPI0026')
-    assert df.iloc[-1].to_list() == ['شاخص', jdatetime(1400, 1, 8, 0, 0), 442552.0]
+    df = export_index('شاخص كل (هم وزن)', 14000101, 14000110, 'IRX6XTPI0026')
+    assert len(df) == 3
+    assert df.iloc[-1].to_list() == ['شاخص', jdatetime(1400, 1, 7, 0, 0), 441834.0]
 
 
 @patch('fipiran.data_service.auto_complete_index', side_effect=NotImplementedError)

@@ -45,22 +45,15 @@ def test_inscode_cache():
 @patch_get('priceDataFMelli.html')
 def test_symbol_price_data():
     s = Symbol('فملی', 35425587644337450)
-    assert s.price_data() == {
-        'PriceMin': 13140.0,
-        'PriceMax': 13770.0,
-        'PDrCotVal': 13290.0,
-        'PriceFirst': 13770.0,
-        'PClosing': 13300.0,
-        'changepdr': -1.77,
-        'changepc': -1.7,
-        'prevPrice': 13530.0,
-        'ZTotTran': 10103.0,
-        'QTotTran5J': 71934487.0,
-        'QTotCap': 956433812420.0,
-        'Deven': jdatetime(1400, 8, 1, 12, 30),
-        'tmin': 12860.0,
-        'tmax': 14200.0,
-    }
+    price_data = s.price_data()
+    assert [*price_data.keys()] == [
+        'PriceMin', 'PriceMax', 'PDrCotVal', 'PriceFirst', 'PClosing',
+        'changepdr', 'changepc', 'prevPrice', 'ZTotTran', 'QTotTran5J',
+        'QTotCap', 'Deven', 'tmin', 'tmax']
+    assert type(price_data.pop('Deven')) is jdatetime
+    for key in ('changepdr', 'changepc'):
+        assert type(price_data.pop(key)) is float
+    assert all(type(v) is int for v in price_data.values())
 
 
 @patch_get('BestLimitDataFMelli.html')
@@ -132,8 +125,8 @@ def test_price_history():
         ('PriceFirst', dtype('float64')),
     ]
     assert data.index.dtype == dtype('<M8[ns]')
-    assert ph['records'] == 599
-    assert ph['total'] == 199
+    assert ph['records'] > 500
+    assert ph['total'] > 198
 
 
 @patch('fipiran.symbols._fipiran', side_effect=NotImplementedError)

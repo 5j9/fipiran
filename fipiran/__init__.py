@@ -1,7 +1,9 @@
 __version__ = '0.8.1.dev0'
 
-from urllib3 import PoolManager as _PoolManager, Timeout as _Timeout
+from json import loads
 from functools import partial as _partial
+
+from urllib3 import PoolManager as _PoolManager, Timeout as _Timeout
 
 # noinspection PyUnresolvedReferences
 from pandas import (
@@ -18,15 +20,15 @@ _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'
 _http = _PoolManager(timeout=_Timeout(total=15., connect=5., read=5.))
-_http_get = _partial(_http.request, 'GET')
+_http_get: _http.request = _partial(_http.request, 'GET')
 
 
 def _api(path) -> dict | list:
-    return _http_get(_API + path).json()
+    return loads(_http_get(_API + path).data)
 
 
-def _fipiran(path: str, data=None, json_resp=False) -> str | dict | list:
-    resp = _http_get(f'{_FIPIRAN}{path}', data)
+def _fipiran(path: str, fields=None, json_resp=False) -> str | dict | list:
+    data = _http_get(f'{_FIPIRAN}{path}', fields).data
     if json_resp is True:
-        return resp.json()
-    return resp.content.decode().translate(_YK)
+        return loads(data)
+    return data.decode().translate(_YK)
