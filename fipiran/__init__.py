@@ -1,4 +1,4 @@
-__version__ = '0.9.0'
+__version__ = '0.9.1.dev0'
 
 from json import loads
 from functools import partial as _partial
