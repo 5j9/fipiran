@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 
 disable_get = patch(
-    'fipiran._get',
+    'fipiran._http_get',
     side_effect=ConnectionError('_get should not be called during tests'),
 )
 
@@ -23,4 +23,4 @@ def patch_get(filename):
     def fake_get(*_, **__):
         return FakeResponse(content)
 
-    return patch('fipiran._get', fake_get)
+    return patch('fipiran._http_get', fake_get)
