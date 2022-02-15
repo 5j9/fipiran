@@ -21,16 +21,13 @@ class NoOPPatch:
         return
 
 
-no_op_patch = NoOPPatch()
-
-
 if OFFLINE_MODE is True:
     disable_get = patch(
         'fipiran._http_get',
-        side_effect=ConnectionError(
-            '_get should not be called in OFFLINE_MODE'))
+        side_effect=NotImplementedError(
+            '_http_get should not be called in OFFLINE_MODE'))
 else:
-    disable_get = no_op_patch
+    disable_get = NoOPPatch()
 
 
 class FakeResponse:
