@@ -13,7 +13,6 @@ def identity_fn(f):
 
 
 class NoOPPatch:
-
     def start(self):
         return
 
@@ -23,34 +22,36 @@ class NoOPPatch:
 
 if OFFLINE_MODE is True:
     disable_get = patch(
-        'fipiran._http_get',
-        side_effect=NotImplementedError(
-            '_http_get should not be called in OFFLINE_MODE'))
+        'fipiran._get',
+        side_effect=NotImplementedError('_get should not be called in OFFLINE_MODE'),
+    )
 else:
     disable_get = NoOPPatch()
 
 
 class FakeResponse:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, content):
+        self.content = content
 
     def json(self):
-        return loads(self.data)
+        return loads(self.content)
 
 
 # noinspection PyProtectedMember
-_original_http_get = fipiran._http_get
+_original_get = fipiran._get
 
 
 def patch_get(filename):
     if RECORD_MODE is True:
-        def _http_get_recorder(*args, **kwargs):
-            resp = _original_http_get(*args, **kwargs)
-            data = resp.data
+
+        def _get_recorder(*args, **kwargs):
+            resp = _original_get(*args, **kwargs)
+            content = resp.content
             with open(f'{__file__}/../testdata/{filename}', 'wb') as f:
-                f.write(data)
+                f.write(content)
             return resp
-        return patch('fipiran._http_get', _http_get_recorder)
+
+        return patch('fipiran._get', _get_recorder)
 
     if OFFLINE_MODE is False:
         return identity_fn
@@ -61,4 +62,4 @@ def patch_get(filename):
     def fake_get(*_, **__):
         return FakeResponse(content)
 
-    return patch('fipiran._http_get', fake_get)
+    return patch('fipiran._get', fake_get)

@@ -47,12 +47,24 @@ def test_symbol_price_data():
     s = Symbol('فملی', 35425587644337450)
     price_data = s.price_data()
     assert [*price_data.keys()] == [
-        'PriceMin', 'PriceMax', 'PDrCotVal', 'PriceFirst', 'PClosing',
-        'changepdr', 'changepc', 'prevPrice', 'ZTotTran', 'QTotTran5J',
-        'QTotCap', 'Deven', 'tmin', 'tmax']
+        'PriceMin',
+        'PriceMax',
+        'PDrCotVal',
+        'PriceFirst',
+        'PClosing',
+        'changepdr',
+        'changepc',
+        'prevPrice',
+        'ZTotTran',
+        'QTotTran5J',
+        'QTotCap',
+        'Deven',
+        'tmin',
+        'tmax',
+    ]
     assert type(price_data.pop('Deven')) is jdatetime
     for key in ('changepdr', 'changepc'):
-        assert type(price_data.pop(key)) is float
+        assert type(price_data.pop(key)) in (int, float)
     assert all(type(v) is int for v in price_data.values())
 
 

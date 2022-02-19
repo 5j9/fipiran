@@ -45,7 +45,8 @@ def test_nav_history():
     assert [*df.dtypes.items()] == [
         ('netAsset', dtype('int64')),
         ('unitsSubDAY', dtype('int64')),
-        ('unitsRedDAY', dtype('int64'))]
+        ('unitsRedDAY', dtype('int64')),
+    ]
     assert len(df) == 366
     assert df.index.dtype == '<M8[ns]'
 
@@ -120,7 +121,8 @@ def test_average_returns():
         ('میانگین بازدهی 3 ماهه(%)', dtype('float64')),
         ('میانگین بازدهی 6 ماهه(%)', dtype('float64')),
         ('میانگین بازدهی سال(%)', dtype('float64')),
-        ('میانگین بازدهی از آغاز فعالیت(%)', dtype('float64'))]
+        ('میانگین بازدهی از آغاز فعالیت(%)', dtype('float64')),
+    ]
 
 
 @patch_get('treemap.json')
