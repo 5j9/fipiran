@@ -83,7 +83,7 @@ Getting list of funds as a pandas DataFrame object:
     312  11933       اختصاصی بازارگردانی تثبیت پاداش  ...        False       None
     [313 rows x 37 columns]
 
-There many other functions and methods. Please explore the code-base for more info.
+There are many other functions and methods. Please explore the code-base for more info.
 
 If you are interested in other information that are available on fipiran.com but this library has no API for, please `open an issue`_ for them on github.
 
