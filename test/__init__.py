@@ -1,4 +1,3 @@
-from json import loads
 from unittest.mock import patch
 
 import fipiran
@@ -8,58 +7,21 @@ RECORD_MODE = False
 OFFLINE_MODE = True and not RECORD_MODE
 
 
-def identity_fn(f):
-    return f
+def patch_session(filename):
 
+    async def _fake_session_get(url: str, **kwargs) -> str | bytes:
+        file = f'{__file__}/../testdata/{filename}'
 
-class NoOPPatch:
-    def start(self):
-        return
+        if OFFLINE_MODE:
+            with open(file, 'rb') as f:
+                content = f.read()
+        else:
+            async with fipiran.Session() as s:
+                content = await (await s.get(url, **kwargs)).read()
+            if RECORD_MODE:
+                with open(file, 'wb') as f:
+                    f.write(content)
 
-    def stop(self):
-        return
+        return content
 
-
-if OFFLINE_MODE is True:
-    disable_get = patch(
-        'fipiran._get',
-        side_effect=NotImplementedError('_get should not be called in OFFLINE_MODE'),
-    )
-else:
-    disable_get = NoOPPatch()
-
-
-class FakeResponse:
-    def __init__(self, content):
-        self.content = content
-
-    def json(self):
-        return loads(self.content)
-
-
-# noinspection PyProtectedMember
-_original_get = fipiran._get
-
-
-def patch_get(filename):
-    if RECORD_MODE is True:
-
-        def _get_recorder(*args, **kwargs):
-            resp = _original_get(*args, **kwargs)
-            content = resp.content
-            with open(f'{__file__}/../testdata/{filename}', 'wb') as f:
-                f.write(content)
-            return resp
-
-        return patch('fipiran._get', _get_recorder)
-
-    if OFFLINE_MODE is False:
-        return identity_fn
-
-    with open(f'{__file__}/../testdata/{filename}', 'rb') as f:
-        content = f.read()
-
-    def fake_get(*_, **__):
-        return FakeResponse(content)
-
-    return patch('fipiran._get', fake_get)
+    return patch('fipiran._session_get', _fake_session_get)

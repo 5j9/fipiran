@@ -1,6 +1,8 @@
 __version__ = '0.9.1.dev0'
+from json import loads
 
-from httpx import Client as _Client
+from aiohttp import ClientSession as _ClientSession, \
+    ClientTimeout as _ClientTimeout, ClientResponse as _ClientResponse
 
 # noinspection PyUnresolvedReferences
 from pandas import (
@@ -16,16 +18,34 @@ from jdatetime import datetime as _jdatetime
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'
-_client = _Client()
-_get = _client.get
+SESSION : _ClientSession | None = None
 
 
-def _api(path) -> dict | list:
-    return _get(_API + path).json()
+class Session(_ClientSession):
+
+    def __init__(self, **kwargs):
+        if 'timeout' not in kwargs:
+            kwargs['timeout'] = _ClientTimeout(
+                total=60, sock_connect=10, sock_read=10)
+        super().__init__(**kwargs)
+
+    async def __aenter__(self) -> _ClientSession:
+        global SESSION
+        SESSION = await super().__aenter__()
+        return SESSION
 
 
-def _fipiran(path: str, params=None, json_resp=False) -> str | dict | list:
-    r = _get(f'{_FIPIRAN}{path}', params=params)
+# this function should only be called from _get below
+async def _session_get(url, **kwargs) -> bytes:
+    return await (await SESSION.get(url, **kwargs)).read()
+
+
+async def _api(path) -> dict | list:
+    return loads(await _session_get(_API + path))
+
+
+async def _fipiran(path: str, params=None, json_resp=False) -> str | dict | list:
+    content = await _session_get(f'{_FIPIRAN}{path}', params=params)
     if json_resp is True:
-        return r.json()
-    return r.content.decode().translate(_YK)
+        return loads(content)
+    return content.decode().translate(_YK)

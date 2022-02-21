@@ -6,19 +6,19 @@ from . import _fipiran, _DataFrame, _read_html, _to_datetime, _jdatetime
 _jstrptime = _jdatetime.strptime
 
 
-def auto_complete_fund(
+async def auto_complete_fund(
     id_: str,
 ) -> list[_TypedDict('FundAutoComplete', {'RegNo': int, 'Name': str})]:
-    return _fipiran('DataService/AutoCompletefund', (('id', id_),), True)
+    return await _fipiran('DataService/AutoCompletefund', (('id', id_),), True)
 
 
-def auto_complete_index(
+async def auto_complete_index(
     id_: str,
 ) -> list[_TypedDict('IndexAutoComplete', {'LVal30': str, 'InstrumentID': str})]:
-    return _fipiran('DataService/AutoCompleteindex', (('id', id_),), True)
+    return await _fipiran('DataService/AutoCompleteindex', (('id', id_),), True)
 
 
-def export_index(
+async def export_index(
     lval30: str, start_date: str | int, end_date: str | int, instrument_id: str = None
 ) -> _DataFrame:
     """Return history of requested index.
@@ -31,10 +31,10 @@ def export_index(
         '13940101'
     """
     if instrument_id is None:
-        d = auto_complete_index(lval30)[0]
+        d = (await auto_complete_index(lval30))[0]
         lval30 = d['LVal30']
         instrument_id = d['InstrumentID']
-    xls = _fipiran(
+    xls = await _fipiran(
         'DataService/ExportIndex',
         (
             ('indexpara', lval30),
@@ -48,13 +48,13 @@ def export_index(
     return df
 
 
-def auto_complete_symbol(
+async def auto_complete_symbol(
     id_: str,
 ) -> list[_TypedDict('SymbolAutoComplete', {'LVal18AFC': str, 'InstrumentID': str})]:
-    return _fipiran('DataService/AutoCompletesymbol', (('id', id_),), True)
+    return await _fipiran('DataService/AutoCompletesymbol', (('id', id_),), True)
 
 
-def export_symbol(
+async def export_symbol(
     lval18afc: str,
     start_date: str | int,
     end_date: str | int,
@@ -71,10 +71,10 @@ def export_symbol(
         '13940101'
     """
     if instrument_id is None:
-        d = auto_complete_symbol(lval18afc)[0]
+        d = (await auto_complete_symbol(lval18afc))[0]
         lval18afc = d['LVal18AFC']
         instrument_id = d['InstrumentID']
-    xls = _fipiran(
+    xls = await _fipiran(
         'DataService/Exportsymbol',
         (
             ('symboldatapara', lval18afc),
@@ -89,7 +89,7 @@ def export_symbol(
     return df
 
 
-def balance_sheet(
+async def balance_sheet(
     l18: str,
     year: str | int,
 ) -> _DataFrame:
@@ -97,7 +97,7 @@ def balance_sheet(
 
     https://www.fipiran.ir/DataService/BSIndex
     """
-    xls = _fipiran(
+    xls = await _fipiran(
         'DataService/ExportBS',
         (
             ('symbolparaBS', l18),
@@ -112,7 +112,7 @@ def balance_sheet(
     return df
 
 
-def profit_loss(
+async def profit_loss(
     l18: str,
     year: str | int,
 ) -> _DataFrame:
@@ -120,7 +120,7 @@ def profit_loss(
 
     https://www.fipiran.ir/DataService/ISIndex
     """
-    xls = _fipiran(
+    xls = await _fipiran(
         'DataService/ExportIS',
         (
             ('symbolparaIS', l18),
@@ -135,7 +135,7 @@ def profit_loss(
     return df
 
 
-def financial_ratios(
+async def financial_ratios(
     l18: str,
     year: str | int,
 ) -> _DataFrame:
@@ -143,7 +143,7 @@ def financial_ratios(
 
     https://www.fipiran.ir/DataService/RatioIndex
     """
-    xls = _fipiran(
+    xls = await _fipiran(
         'DataService/ExportRatio',
         (
             ('symbolparaR', l18),

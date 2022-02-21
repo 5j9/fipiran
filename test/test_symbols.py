@@ -6,20 +6,12 @@ from pandas import DataFrame
 from pytest import raises
 
 from fipiran.symbols import Symbol, search
-from . import disable_get, patch_get
+from . import patch_session
 
 
-def setup_module():
-    disable_get.start()
-
-
-def teardown_module():
-    disable_get.stop()
-
-
-@patch_get('autocomplete_arzesh.html')
-def test_search():
-    symbols = search('ارزش')
+@patch_session('autocomplete_arzesh.html')
+async def test_search():
+    symbols = await search('ارزش')
     assert symbols == [
         Symbol('وآفر'),
         Symbol('وارزش'),
@@ -34,18 +26,18 @@ def test_symbol_from_name():
     assert f'{Symbol("فملی")!r}' == "Symbol('فملی')"
 
 
-@patch_get('SymbolFMelli.html')
-def test_inscode_cache():
+@patch_session('SymbolFMelli.html')
+async def test_inscode_cache():
     s = Symbol("فملی")
     assert s._inscode is None
-    assert s.inscode == 35425587644337450
+    assert await s.inscode == 35425587644337450
     assert s._inscode == 35425587644337450
 
 
-@patch_get('priceDataFMelli.html')
-def test_symbol_price_data():
+@patch_session('priceDataFMelli.html')
+async def test_symbol_price_data():
     s = Symbol('فملی', 35425587644337450)
-    price_data = s.price_data()
+    price_data = await s.price_data()
     assert [*price_data.keys()] == [
         'PriceMin',
         'PriceMax',
@@ -68,15 +60,15 @@ def test_symbol_price_data():
     assert all(type(v) is int for v in price_data.values())
 
 
-@patch_get('BestLimitDataFMelli.html')
-def test_symbol_best_limit_data():
-    d1, d2 = Symbol('فملی', 35425587644337450).best_limit_data()
+@patch_session('BestLimitDataFMelli.html')
+async def test_symbol_best_limit_data():
+    d1, d2 = await Symbol('فملی', 35425587644337450).best_limit_data()
     assert type(d1) is type(d2) is DataFrame
 
 
-@patch_get('RefrenceDataFmelli.html')
-def test_symbol_refrence_data():
-    assert Symbol('فملی', 35425587644337450).reference_data() == {
+@patch_session('RefrenceDataFmelli.html')
+async def test_symbol_refrence_data():
+    assert await Symbol('فملی', 35425587644337450).reference_data() == {
         'نام نماد': 'فملی',
         'نام شرکت': 'ملی\u200c صنایع\u200c مس\u200c ایران\u200c\u200c',
         'نام صنعت': 'فلزات اساسی',
@@ -87,14 +79,14 @@ def test_symbol_refrence_data():
     }
 
 
-@patch_get('statistic30Fmelli.html')
-def test_symbol_refrence_data():
-    assert type(Symbol('فملی', 35425587644337450).statistic(30)) is DataFrame
+@patch_session('statistic30Fmelli.html')
+async def test_symbol_refrence_data():
+    assert type(await Symbol('فملی', 35425587644337450).statistic(30)) is DataFrame
 
 
-@patch_get('CompanyInfoIndexSarv.html')
-def test_company_info():
-    assert Symbol('سرو', 64942549055019553).company_info() == {
+@patch_session('CompanyInfoIndexSarv.html')
+async def test_company_info():
+    assert await Symbol('سرو', 64942549055019553).company_info() == {
         'نام نماد': 'سرو',
         'نام شرکت': 'صندوق سرمایه گذاری سرو سودمند مدبران',
         'مدیر عامل': 'رضا درخشان فر',
@@ -115,9 +107,9 @@ def test_company_info():
     }
 
 
-@patch_get('HistoryPricePaging_sarv.json')
-def test_price_history():
-    ph = Symbol('سرو').price_history(rows=3)
+@patch_session('HistoryPricePaging_sarv.json')
+async def test_price_history():
+    ph = await Symbol('سرو').price_history(rows=3)
     data = ph['data']
     assert len(data) == 3
     assert [*data.dtypes.items()] == [
@@ -142,10 +134,10 @@ def test_price_history():
 
 
 @patch('fipiran.symbols._fipiran', side_effect=NotImplementedError)
-def test_price_history_url(get_mock):
+async def test_price_history_url(get_mock):
     with raises(NotImplementedError):
         # l18 uses persian ی and ک
-        Symbol('دارا یکم').price_history()
+        await Symbol('دارا یکم').price_history()
     get_mock.assert_called_once_with(  # needs to be called with arabic ي and ك
         'Symbol/HistoryPricePaging?symbolpara=دارا يكم&rows=365&page=1', json_resp=True
     )

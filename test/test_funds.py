@@ -1,17 +1,9 @@
 from numpy import dtype
-from pandas import CategoricalDtype, Series, DataFrame
+from pandas import CategoricalDtype, Series
 from pandas.testing import assert_series_equal
 
 from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
-from . import disable_get, patch_get
-
-
-def setup_module():
-    disable_get.start()
-
-
-def teardown_module():
-    disable_get.stop()
+from . import patch_session
 
 
 fund = Fund(11215)
@@ -22,16 +14,16 @@ def test_repr():
     assert repr(Fund('11215')) == "Fund('11215')"
 
 
-@patch_get('getfundchartasset_atlas.json')
-def test_asset_allocation():
-    d = fund.asset_allocation()
+@patch_session('getfundchartasset_atlas.json')
+async def test_asset_allocation():
+    d = await fund.asset_allocation()
     del d['fiveBest']
     assert sum(d.values()) == 100
 
 
-@patch_get('getfundchart_atlas.json')
-def test_issue_cancel_history():
-    df = fund.issue_cancel_history()
+@patch_session('getfundchart_atlas.json')
+async def test_issue_cancel_history():
+    df = await fund.issue_cancel_history()
     assert_series_equal(
         df.dtypes, Series(['float64', 'float64'], ['issueNav', 'cancelNav'])
     )
@@ -39,9 +31,9 @@ def test_issue_cancel_history():
     assert df.index.dtype == '<M8[ns]'
 
 
-@patch_get('getfundnetassetchart_atlas.json')
-def test_nav_history():
-    df = fund.nav_history()
+@patch_session('getfundnetassetchart_atlas.json')
+async def test_nav_history():
+    df = await fund.nav_history()
     assert [*df.dtypes.items()] == [
         ('netAsset', dtype('int64')),
         ('unitsSubDAY', dtype('int64')),
@@ -51,16 +43,16 @@ def test_nav_history():
     assert df.index.dtype == '<M8[ns]'
 
 
-@patch_get('getfund_atlas.json')
-def test_info():
-    info = fund.info()
+@patch_session('getfund_atlas.json')
+async def test_info():
+    info = await fund.info()
     assert len(info) == 63
     assert type(info) is dict
 
 
-@patch_get('fundcompare.json')
-def test_funds():
-    df = funds()
+@patch_session('fundcompare.json')
+async def test_funds():
+    df = await funds()
     assert len(df) > 300
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
@@ -108,9 +100,9 @@ def test_funds():
     ]
 
 
-@patch_get('MFBazdehAVG.html')
-def test_average_returns():
-    df = average_returns()
+@patch_session('MFBazdehAVG.html')
+async def test_average_returns():
+    df = await average_returns()
     assert len(df) == 4
     assert [*df.dtypes.items()] == [
         ('نوع صندوق', dtype('O')),
@@ -125,9 +117,9 @@ def test_average_returns():
     ]
 
 
-@patch_get('treemap.json')
-def test_map_data():
-    df = map_data()
+@patch_session('treemap.json')
+async def test_map_data():
+    df = await map_data()
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
         ('name', 'string[python]'),
@@ -175,9 +167,9 @@ def test_map_data():
     assert len(df) > 286
 
 
-@patch_get('dependencygraph.json')
-def test_dependency_graph_data():
-    df = dependency_graph_data()
+@patch_session('dependencygraph.json')
+async def test_dependency_graph_data():
+    df = await dependency_graph_data()
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
         ('name', 'string[python]'),

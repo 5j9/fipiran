@@ -24,19 +24,19 @@ class Symbol:
         return isinstance(other, Symbol) and other.l18 == self.l18
 
     @property
-    def inscode(self):
+    async def inscode(self):
         if (inscode := getattr(self, '_inscode', None)) is not None:
             return inscode
-        text = _fipiran(f'Symbol?symbolpara={self._symbolpara}')
+        text = await _fipiran(f'Symbol?symbolpara={self._symbolpara}')
         start = text.find("'inscode': '") + 12
         end = text.find("'", start)
         self._inscode = inscode = int(text[start:end])
         return inscode
 
-    def price_data(self) -> dict:
+    async def price_data(self) -> dict:
         # note: some fields like Trailing P/E and Forward P/E are *currently*
         # not computed by fipiran and are always empty.
-        text = _fipiran(f'Symbol/_priceData?inscode={self.inscode}')
+        text = await _fipiran(f'Symbol/_priceData?inscode={await self.inscode}')
         bs = _soup(text)
         so = bs.select_one
         d = {}
@@ -76,12 +76,12 @@ class Symbol:
 
         return d
 
-    def best_limit_data(self) -> list[_DataFrame]:
-        text = _fipiran(f'Symbol/_BestLimitData?inscode={self.inscode}')
+    async def best_limit_data(self) -> list[_DataFrame]:
+        text = await _fipiran(f'Symbol/_BestLimitData?inscode={await self.inscode}')
         return _read_html(text)
 
-    def reference_data(self) -> dict:
-        text = _fipiran(f'Symbol/_RefrenceData?symbolpara={self._symbolpara}')
+    async def reference_data(self) -> dict:
+        text = await _fipiran(f'Symbol/_RefrenceData?symbolpara={self._symbolpara}')
         bs = _soup(text)
         h4s = [i.text.strip(': ') for i in bs.select('h4')]
         spans = [i.text for i in bs.select('span')]
@@ -91,18 +91,18 @@ class Symbol:
         d[k] = v
         return d
 
-    def statistic(self, days: _Literal[365, 180, 90, 30, 7]) -> _DataFrame:
-        return _read_html(_fipiran(f'Symbol/statistic{days}?inscode={self.inscode}'))[0]
+    async def statistic(self, days: _Literal[365, 180, 90, 30, 7]) -> _DataFrame:
+        return _read_html(await _fipiran(f'Symbol/statistic{days}?inscode={await self.inscode}'))[0]
 
-    def company_info(self):
-        text = _fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}')
+    async def company_info(self):
+        text = await _fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}')
         bs = _soup(text)
         keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
         values = [i.text.strip() for i in bs.select('.media-body span')]
         return dict(zip(keys, values))
 
-    def price_history(self, rows: int = 365, page: int = 1) -> dict:
-        j = _fipiran(
+    async def price_history(self, rows: int = 365, page: int = 1) -> dict:
+        j = await _fipiran(
             'Symbol/HistoryPricePaging?'
             f'symbolpara={self._symbolpara}&rows={rows}&page={page}',
             json_resp=True,
@@ -113,11 +113,11 @@ class Symbol:
         return j
 
 
-def search(term) -> list[Symbol]:
+async def search(term) -> list[Symbol]:
     """Note: the returned symbol objects will have `l30` attribute."""
     symbols = []
     append = symbols.append
-    for result in _fipiran('Home/AutoComplete', (('term', term),), True):
+    for result in await _fipiran('Home/AutoComplete', (('term', term),), True):
         symbol = Symbol(result['LVal18AFC'])
         symbol.l30 = result['LSoc30']
         append(symbol)

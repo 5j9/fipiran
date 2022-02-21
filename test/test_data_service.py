@@ -13,20 +13,12 @@ from fipiran.data_service import (
     financial_ratios,
     profit_loss,
 )
-from . import disable_get, patch_get, patch
+from . import patch_session, patch
 
 
-def setup_module():
-    disable_get.start()
-
-
-def teardown_module():
-    disable_get.stop()
-
-
-@patch_get('AutoCompleteFundAva.json')
-def test_auto_complete_fund():
-    assert auto_complete_fund('آوا') == [
+@patch_session('AutoCompleteFundAva.json')
+async def test_auto_complete_fund():
+    assert await auto_complete_fund('آوا') == [
         {'RegNo': 11477, 'Name': 'آوای سهام کیان'},
         {'RegNo': 11884, 'Name': 'بازارگردانی آوای زاگرس'},
         {'RegNo': 11729, 'Name': 'قابل معامله آوای معیار'},
@@ -34,41 +26,41 @@ def test_auto_complete_fund():
     ]
 
 
-@patch_get('AutoCompleteindexHamVazn.json')
-def test_auto_complete_index():
-    assert auto_complete_index('هم وزن') == [
+@patch_session('AutoCompleteindexHamVazn.json')
+async def test_auto_complete_index():
+    assert await auto_complete_index('هم وزن') == [
         {'LVal30': 'شاخص كل (هم وزن)', 'InstrumentID': 'IRX6XTPI0026'},
         {'LVal30': 'شاخص قيمت (هم وزن)', 'InstrumentID': 'IRXYXTPI0026'},
         {'LVal30': 'شاخص كل هم وزن فرابورس', 'InstrumentID': 'IRXZXOCI0026'},
     ]
 
 
-@patch_get('ExportIndexHamVazn.xls.html')
-def test_export_index():
-    df = export_index('شاخص كل (هم وزن)', 14000101, 14000110, 'IRX6XTPI0026')
+@patch_session('ExportIndexHamVazn.xls.html')
+async def test_export_index():
+    df = await export_index('شاخص كل (هم وزن)', 14000101, 14000110, 'IRX6XTPI0026')
     assert len(df) == 3
     assert df.iloc[-1].to_list() == ['شاخص', jdatetime(1400, 1, 7, 0, 0), 441834.0]
 
 
 @patch('fipiran.data_service.auto_complete_index', side_effect=NotImplementedError)
-def test_export_index_no_instrument_id(mock):
+async def test_export_index_no_instrument_id(mock):
     with raises(NotImplementedError):
-        export_index('هم وزن', 14000101, 15000101)
+        await export_index('هم وزن', 14000101, 15000101)
     mock.assert_called_once_with('هم وزن')
 
 
-@patch_get('AutoCompleteSymbolMadira.json')
-def test_auto_complete_symbol():
-    assert auto_complete_symbol('مادیرا') == [
+@patch_session('AutoCompleteSymbolMadira.json')
+async def test_auto_complete_symbol():
+    assert await auto_complete_symbol('مادیرا') == [
         {'LVal18AFC': 'ماديرا', 'InstrumentID': 'IRO3IOMZ0001'},
         {'LVal18AFC': 'ماديرا', 'InstrumentID': 'IRO7IOMZ0001'},
         {'LVal18AFC': 'ماديراح', 'InstrumentID': 'IRR3IOMZ0101'},
     ]
 
 
-@patch_get('ExportSymbolMadira.xls.html')
-def test_export_symbol():
-    df = export_symbol('ماديرا', 14000801, 15000101, 'IRO3IOMZ0001')
+@patch_session('ExportSymbolMadira.xls.html')
+async def test_export_symbol():
+    df = await export_symbol('ماديرا', 14000801, 15000101, 'IRO3IOMZ0001')
     # noinspection PyTypeChecker
     assert df.iloc[-1].to_list() == [
         'مادیرا',
@@ -87,15 +79,15 @@ def test_export_symbol():
 
 
 @patch('fipiran.data_service.auto_complete_symbol', side_effect=NotImplementedError)
-def test_export_symbol_no_instrument_id(mock):
+async def test_export_symbol_no_instrument_id(mock):
     with raises(NotImplementedError):
-        export_symbol('ماديرا', 14000801, 15000101)
+        await export_symbol('ماديرا', 14000801, 15000101)
     mock.assert_called_once_with('ماديرا')
 
 
-@patch_get('BS_Fmelli_1394.xls')
-def test_balance_sheet():
-    df = balance_sheet('فملی', 1394)
+@patch_session('BS_Fmelli_1394.xls')
+async def test_balance_sheet():
+    df = await balance_sheet('فملی', 1394)
     assert len(df) == 11
     assert [*df.dtypes.items()] == [
         ('Symbol', dtype('O')),
@@ -127,9 +119,9 @@ def test_balance_sheet():
     assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
 
 
-@patch_get('IS_Fmelli_1394.xls')
-def test_profit_loss():
-    df = profit_loss('فملی', 1394)
+@patch_session('IS_Fmelli_1394.xls')
+async def test_profit_loss():
+    df = await profit_loss('فملی', 1394)
     assert len(df) == 14
     assert [*df.dtypes.items()] == [
         ('Symbol', dtype('O')),
@@ -150,9 +142,9 @@ def test_profit_loss():
     assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
 
 
-@patch_get('financial_ratios_fmelli_1394.xls')
-def test_financial_ratios():
-    df = financial_ratios('فملی', 1394)
+@patch_session('financial_ratios_fmelli_1394.xls')
+async def test_financial_ratios():
+    df = await financial_ratios('فملی', 1394)
     assert len(df) == 4
     assert [*df.dtypes.items()] == [
         ('Symbol', dtype('O')),

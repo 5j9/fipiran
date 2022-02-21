@@ -10,6 +10,28 @@ Requires Python 3.10+.
 
 Usage
 -----
+
+For any async operation ``fipiran.SESSION`` needs to be set to an aiohttp.ClientSession instance:
+
+.. code-block:: python
+
+    import tsetmc
+    import aiohttp
+
+    async def main():
+        async with aiohttp.ClientSession() as tsetmc.SESSION:
+            ...
+
+``fipiran.Session()`` provides a shorter alternative for the above:
+
+.. code-block:: python
+
+    import fipiran
+
+    async def main():
+        async with fipiran.Session():
+            ...
+
 There are three modules:
 
 - data_service
@@ -20,8 +42,13 @@ Example 1:
 
 .. code-block:: python
 
-    >>> from fipiran.symbols import Symbol
-    >>> Symbol('فملی').company_info()
+    import fipiran
+    from fipiran.symbols import Symbol
+
+    async with fipiran.Session():
+        d = await Symbol('فملی').company_info()
+
+    # d:
     {'نام نماد': 'فملی',
      'نام شرکت': 'ملی صنایع مس ایران',
      'مدیر عامل': 'اردشیر سعدمحمدی',
@@ -35,10 +62,13 @@ Example 1:
 
 Example 2:
 
+Getting list of funds as a pandas DataFrame object:
+
 .. code-block:: python
 
     >>> from fipiran.funds import funds
-    >>> funds()  # returns list of funds as a pandas DataFrame object
+    >>> async with fipiran.Session():
+            f  = await funds()
          regNo                                  name  ...      isCompleted  fundWatch
     0    11726                        جسورانه فیروزه  ...         True       None
     1    11603              جسورانه فناوری بازنشستگی  ...         True       None
@@ -53,7 +83,7 @@ Example 2:
     312  11933       اختصاصی بازارگردانی تثبیت پاداش  ...        False       None
     [313 rows x 37 columns]
 
-Please explore the code-base for more info.
+There many other functions and methods. Please explore the code-base for more info.
 
 If you are interested in other information that are available on fipiran.com but this library has no API for, please `open an issue`_ for them on github.
 
