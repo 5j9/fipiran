@@ -1,3 +1,5 @@
+An async python library to fetch data from https://www.fipiran.com/ .
+
 Note: This is package is incomplete and still in initial development phase. The API may change without deprecation.
 
 Installation
