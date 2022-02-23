@@ -53,13 +53,10 @@ Example 1:
 
 .. code-block:: python
 
-    import fipiran
-    from fipiran.symbols import Symbol
-
-    async with fipiran.Session():
-        d = await Symbol('فملی').company_info()
-
-    # d:
+    >>> from fipiran.symbols import Symbol
+    >>> async with fipiran.Session():
+    >>>     d = await Symbol('فملی').company_info()
+    >>> d
     {'نام نماد': 'فملی',
      'نام شرکت': 'ملی صنایع مس ایران',
      'مدیر عامل': 'اردشیر سعدمحمدی',
@@ -73,13 +70,14 @@ Example 1:
 
 Example 2:
 
-Getting list of funds as a pandas DataFrame object:
+Getting list of funds as a pandas DataFrame object.
 
 .. code-block:: python
 
     >>> from fipiran.funds import funds
     >>> async with fipiran.Session():
             f  = await funds()
+    >>> f
          regNo                                  name  ...      isCompleted  fundWatch
     0    11726                        جسورانه فیروزه  ...         True       None
     1    11603              جسورانه فناوری بازنشستگی  ...         True       None
