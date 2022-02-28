@@ -51,14 +51,21 @@ There are three modules:
 - funds
 - symbols
 
+Use and asyncio-aware REPL, like ``python -m asyncio``, to run these code samples.
+
+Prepare the session:
+
+.. code-block:: python
+
+    >>> import fipiran
+    >>> fipiran.SESSION = fipiran.Session()
+
 Example 1:
 
 .. code-block:: python
 
     >>> from fipiran.symbols import Symbol
-    >>> async with fipiran.Session():
-    >>>     d = await Symbol('فملی').company_info()
-    >>> d
+    >>> await Symbol('فملی').company_info()
     {'نام نماد': 'فملی',
      'نام شرکت': 'ملی صنایع مس ایران',
      'مدیر عامل': 'اردشیر سعدمحمدی',
@@ -77,9 +84,7 @@ Getting list of funds as a pandas DataFrame object.
 .. code-block:: python
 
     >>> from fipiran.funds import funds
-    >>> async with fipiran.Session():
-            f  = await funds()
-    >>> f
+    >>> await funds()
          regNo                                  name  ...      isCompleted  fundWatch
     0    11726                        جسورانه فیروزه  ...         True       None
     1    11603              جسورانه فناوری بازنشستگی  ...         True       None
