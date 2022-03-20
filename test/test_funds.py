@@ -188,16 +188,14 @@ async def test_dependency_graph_data():
         ('issueNav', dtype('float64')),
         ('date', dtype('<M8[ns]')),
         ('netAsset', dtype('int64')),
-        ('managerId', dtype('int64')),
-        ('manager', 'string[python]'),
-        ('managerCode', 'string[python]'),
+        ('manager', dtype('O')),
         ('guarantorId', dtype('float64')),
         ('guarantor', 'string[python]'),
         ('guarantorCode', 'string[python]'),
         ('rankOf12Month', dtype('int64')),
         ('rankOf36Month', dtype('int64')),
         ('rankOf60Month', dtype('int64')),
-        ('rankLastUpdate', dtype('O')),
+        ('rankLastUpdate', dtype('<M8[ns]')),
         (
             'typeOfInvest',
             CategoricalDtype(
