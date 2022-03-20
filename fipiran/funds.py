@@ -69,6 +69,7 @@ async def map_data() -> _DataFrame:
             'initiationDate': 'datetime64',
             'date': 'datetime64',
             'manager': 'string',
+            'managerSeoRegisterNo': 'Int64',
             'auditor': 'string',
             'custodian': 'string',
             'guarantor': 'string',
