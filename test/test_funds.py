@@ -209,3 +209,11 @@ async def test_dependency_graph_data():
         ('alpha', dtype('float64')),
     ]
     assert len(df) > 286
+
+
+@patch_session('fundtopunits.json')
+async def test_top_units():
+    df = await fund.top_units()
+    assert [*df.dtypes.items()] == [
+        ('name', dtype('O')), ('percentage', dtype('float64'))]
+    assert df['percentage'].sum() == 100
