@@ -22,7 +22,7 @@ async def test_asset_allocation():
 
 @patch_session('getfundchart_atlas.json')
 async def test_issue_cancel_history():
-    df = await fund.issue_cancel_history()
+    df = await fund.issue_cancel_history(all_=False)
     assert [*df.dtypes.items()] == [
         ('issueNav', dtype('float64')),
         ('cancelNav', dtype('float64')),
@@ -34,7 +34,7 @@ async def test_issue_cancel_history():
 
 @patch_session('getfundnetassetchart_atlas.json')
 async def test_nav_history():
-    df = await fund.nav_history()
+    df = await fund.nav_history(all_=False)
     assert [*df.dtypes.items()] == [
         ('netAsset', dtype('int64')),
         ('unitsSubDAY', dtype('int64')),
@@ -220,7 +220,7 @@ async def test_top_units():
 
 @patch_session('alpha_beta.json')
 async def test_alpha_beta():
-    df = await fund.alpha_beta(False)
+    df = await fund.alpha_beta(all_=False)
     assert [*df.dtypes.items()] == [('beta', dtype('float64')), ('alpha', dtype('float64'))]
     assert df.index.name == 'date'
     assert df.index.dtype == dtype('<M8[ns]')

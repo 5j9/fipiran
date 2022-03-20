@@ -14,21 +14,21 @@ class Fund:
         """Return a dict where values are percentage of each kind of asset."""
         return await _api(f'chart/getfundchartasset?regno={self.reg_no}')
 
-    async def issue_cancel_history(self, all_=True) -> _DataFrame:
+    async def issue_cancel_history(self, /, *, all_=True) -> _DataFrame:
         j = await _api(f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}')
         df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
         return df
 
-    async def nav_history(self, all_=True) -> _DataFrame:
+    async def nav_history(self, /, *, all_=True) -> _DataFrame:
         j = await _api(f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}')
         df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
         return df
 
-    async def alpha_beta(self, all_=True) -> _DataFrame:
+    async def alpha_beta(self, /, *, all_=True) -> _DataFrame:
         j = await _api(f'chart/alphabeta?regno={self.reg_no}&showAll={str(all_).lower()}')
         df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
