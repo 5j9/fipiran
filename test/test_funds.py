@@ -217,3 +217,11 @@ async def test_top_units():
     assert [*df.dtypes.items()] == [
         ('name', dtype('O')), ('percentage', dtype('float64'))]
     assert df['percentage'].sum() == 100
+
+
+@patch_session('alpha_beta.json')
+async def test_alpha_beta():
+    df = await fund.alpha_beta(False)
+    assert [*df.dtypes.items()] == [('beta', dtype('float64')), ('alpha', dtype('float64'))]
+    assert df.index.name == 'date'
+    assert df.index.dtype == dtype('<M8[ns]')

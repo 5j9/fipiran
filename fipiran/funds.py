@@ -28,6 +28,13 @@ class Fund:
         df.set_index('date', inplace=True)
         return df
 
+    async def alpha_beta(self, all_=True) -> _DataFrame:
+        j = await _api(f'chart/alphabeta?regno={self.reg_no}&showAll={str(all_).lower()}')
+        df = _DataFrame(j, copy=False)
+        df['date'] = _to_datetime(df['date'])
+        df.set_index('date', inplace=True)
+        return df
+
     async def info(self) -> dict:
         return (await _api(f'fund/getfund?regno={self.reg_no}'))['item']
 
