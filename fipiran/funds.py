@@ -43,6 +43,7 @@ async def funds() -> _DataFrame:
             'regNo': 'int64',
             'name': 'string',
             'manager': 'string',
+            'managerSeoRegisterNo': 'Int64',
             'auditor': 'string',
             'custodian': 'string',
             'guarantor': 'string',
