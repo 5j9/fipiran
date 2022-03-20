@@ -18,7 +18,7 @@ def test_repr():
 async def test_asset_allocation():
     d = await fund.asset_allocation()
     del d['fiveBest']
-    assert sum(d.values()) == 100
+    assert sum(d.values()) > 99.99
 
 
 @patch_session('getfundchart_atlas.json')
@@ -39,14 +39,14 @@ async def test_nav_history():
         ('unitsSubDAY', dtype('int64')),
         ('unitsRedDAY', dtype('int64')),
     ]
-    assert len(df) == 366
+    assert len(df) >= 365
     assert df.index.dtype == '<M8[ns]'
 
 
 @patch_session('getfund_atlas.json')
 async def test_info():
     info = await fund.info()
-    assert len(info) == 63
+    assert len(info) >= 63
     assert type(info) is dict
 
 
