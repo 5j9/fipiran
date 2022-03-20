@@ -1,6 +1,5 @@
 from numpy import dtype
-from pandas import CategoricalDtype, Series
-from pandas.testing import assert_series_equal
+from pandas import CategoricalDtype
 
 from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
 from . import patch_session
