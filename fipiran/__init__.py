@@ -21,17 +21,14 @@ _API = 'https://fund.fipiran.ir/api/v1/'
 SESSION : _ClientSession | None = None
 
 
-class Session(_ClientSession):
+class Session:
 
-    def __init__(self, **kwargs):
+    def __new__(cls, *args, **kwargs) -> _ClientSession:
+        global SESSION
         if 'timeout' not in kwargs:
             kwargs['timeout'] = _ClientTimeout(
-                total=60, sock_connect=10, sock_read=10)
-        super().__init__(**kwargs)
-
-    async def __aenter__(self) -> _ClientSession:
-        global SESSION
-        SESSION = await super().__aenter__()
+                total=60., sock_connect=10., sock_read=10.)
+        SESSION = _ClientSession(**kwargs)
         return SESSION
 
 

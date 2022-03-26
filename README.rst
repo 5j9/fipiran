@@ -58,7 +58,8 @@ Prepare the session:
 .. code-block:: python
 
     >>> import fipiran
-    >>> fipiran.SESSION = fipiran.Session()
+    >>> # without a context-manager, we should call session.close() manually after we are finished
+    >>> session = fipiran.Session()
 
 Example 1:
 

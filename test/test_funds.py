@@ -27,7 +27,7 @@ async def test_issue_cancel_history():
         ('issueNav', dtype('float64')),
         ('cancelNav', dtype('float64')),
         ('statisticalNav', dtype('float64'))]
-    assert len(df) >= 365
+    assert len(df) >= 360
     assert df.index.name == 'date'
     assert df.index.dtype == '<M8[ns]'
 
@@ -40,7 +40,7 @@ async def test_nav_history():
         ('unitsSubDAY', dtype('int64')),
         ('unitsRedDAY', dtype('int64')),
     ]
-    assert len(df) >= 365
+    assert len(df) >= 360
     assert df.index.dtype == '<M8[ns]'
 
 
