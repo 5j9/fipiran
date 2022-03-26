@@ -2,7 +2,7 @@ from numpy import dtype
 from pandas import CategoricalDtype
 
 from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
-from . import patch_session
+from test.aiohttp_test_utils import file
 
 
 fund = Fund(11215)
@@ -13,14 +13,14 @@ def test_repr():
     assert repr(Fund('11215')) == "Fund('11215')"
 
 
-@patch_session('getfundchartasset_atlas.json')
+@file('getfundchartasset_atlas.json')
 async def test_asset_allocation():
     d = await fund.asset_allocation()
     del d['fiveBest']
     assert sum(d.values()) > 99.99
 
 
-@patch_session('getfundchart_atlas.json')
+@file('getfundchart_atlas.json')
 async def test_issue_cancel_history():
     df = await fund.issue_cancel_history(all_=False)
     assert [*df.dtypes.items()] == [
@@ -32,7 +32,7 @@ async def test_issue_cancel_history():
     assert df.index.dtype == '<M8[ns]'
 
 
-@patch_session('getfundnetassetchart_atlas.json')
+@file('getfundnetassetchart_atlas.json')
 async def test_nav_history():
     df = await fund.nav_history(all_=False)
     assert [*df.dtypes.items()] == [
@@ -44,14 +44,14 @@ async def test_nav_history():
     assert df.index.dtype == '<M8[ns]'
 
 
-@patch_session('getfund_atlas.json')
+@file('getfund_atlas.json')
 async def test_info():
     info = await fund.info()
     assert len(info) >= 63
     assert type(info) is dict
 
 
-@patch_session('fundcompare.json')
+@file('fundcompare.json')
 async def test_funds():
     df = await funds()
     assert len(df) > 300
@@ -102,7 +102,7 @@ async def test_funds():
     ]
 
 
-@patch_session('MFBazdehAVG.html')
+@file('MFBazdehAVG.html')
 async def test_average_returns():
     df = await average_returns()
     assert len(df) == 4
@@ -119,7 +119,7 @@ async def test_average_returns():
     ]
 
 
-@patch_session('treemap.json')
+@file('treemap.json')
 async def test_map_data():
     df = await map_data()
     assert [*df.dtypes.items()] == [
@@ -170,7 +170,7 @@ async def test_map_data():
     assert len(df) > 286
 
 
-@patch_session('dependencygraph.json')
+@file('dependencygraph.json')
 async def test_dependency_graph_data():
     df = await dependency_graph_data()
     assert [*df.dtypes.items()] == [
@@ -210,7 +210,7 @@ async def test_dependency_graph_data():
     assert len(df) > 286
 
 
-@patch_session('fundtopunits.json')
+@file('fundtopunits.json')
 async def test_top_units():
     df = await fund.top_units()
     assert [*df.dtypes.items()] == [
@@ -218,7 +218,7 @@ async def test_top_units():
     assert df['percentage'].sum() == 100
 
 
-@patch_session('alpha_beta.json')
+@file('alpha_beta.json')
 async def test_alpha_beta():
     df = await fund.alpha_beta(all_=False)
     assert [*df.dtypes.items()] == [('beta', dtype('float64')), ('alpha', dtype('float64'))]

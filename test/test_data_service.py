@@ -13,10 +13,10 @@ from fipiran.data_service import (
     financial_ratios,
     profit_loss,
 )
-from . import patch_session, patch
+from test.aiohttp_test_utils import file, patch
 
 
-@patch_session('AutoCompleteFundAva.json')
+@file('AutoCompleteFundAva.json')
 async def test_auto_complete_fund():
     assert await auto_complete_fund('آوا') == [
         {'RegNo': 11477, 'Name': 'آوای سهام کیان'},
@@ -26,7 +26,7 @@ async def test_auto_complete_fund():
     ]
 
 
-@patch_session('AutoCompleteindexHamVazn.json')
+@file('AutoCompleteindexHamVazn.json')
 async def test_auto_complete_index():
     assert await auto_complete_index('هم وزن') == [
         {'LVal30': 'شاخص كل (هم وزن)', 'InstrumentID': 'IRX6XTPI0026'},
@@ -35,7 +35,7 @@ async def test_auto_complete_index():
     ]
 
 
-@patch_session('ExportIndexHamVazn.xls.html')
+@file('ExportIndexHamVazn.xls.html')
 async def test_export_index():
     df = await export_index('شاخص كل (هم وزن)', 14000101, 14000110, 'IRX6XTPI0026')
     assert len(df) == 3
@@ -49,7 +49,7 @@ async def test_export_index_no_instrument_id(mock):
     mock.assert_called_once_with('هم وزن')
 
 
-@patch_session('AutoCompleteSymbolMadira.json')
+@file('AutoCompleteSymbolMadira.json')
 async def test_auto_complete_symbol():
     assert await auto_complete_symbol('مادیرا') == [
         {'LVal18AFC': 'ماديرا', 'InstrumentID': 'IRO3IOMZ0001'},
@@ -58,7 +58,7 @@ async def test_auto_complete_symbol():
     ]
 
 
-@patch_session('ExportSymbolMadira.xls.html')
+@file('ExportSymbolMadira.xls.html')
 async def test_export_symbol():
     df = await export_symbol('ماديرا', 14000801, 15000101, 'IRO3IOMZ0001')
     # noinspection PyTypeChecker
@@ -85,7 +85,7 @@ async def test_export_symbol_no_instrument_id(mock):
     mock.assert_called_once_with('ماديرا')
 
 
-@patch_session('BS_Fmelli_1394.xls')
+@file('BS_Fmelli_1394.xls')
 async def test_balance_sheet():
     df = await balance_sheet('فملی', 1394)
     assert len(df) == 11
@@ -119,7 +119,7 @@ async def test_balance_sheet():
     assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
 
 
-@patch_session('IS_Fmelli_1394.xls')
+@file('IS_Fmelli_1394.xls')
 async def test_profit_loss():
     df = await profit_loss('فملی', 1394)
     assert len(df) == 14
@@ -142,7 +142,7 @@ async def test_profit_loss():
     assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
 
 
-@patch_session('financial_ratios_fmelli_1394.xls')
+@file('financial_ratios_fmelli_1394.xls')
 async def test_financial_ratios():
     df = await financial_ratios('فملی', 1394)
     assert len(df) == 4

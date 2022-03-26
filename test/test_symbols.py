@@ -6,10 +6,10 @@ from pandas import DataFrame
 from pytest import raises
 
 from fipiran.symbols import Symbol, search
-from . import patch_session
+from test.aiohttp_test_utils import file
 
 
-@patch_session('autocomplete_arzesh.html')
+@file('autocomplete_arzesh.html')
 async def test_search():
     symbols = await search('ارزش')
     assert symbols == [
@@ -26,7 +26,7 @@ def test_symbol_from_name():
     assert f'{Symbol("فملی")!r}' == "Symbol('فملی')"
 
 
-@patch_session('SymbolFMelli.html')
+@file('SymbolFMelli.html')
 async def test_inscode_cache():
     s = Symbol("فملی")
     assert s._inscode is None
@@ -34,7 +34,7 @@ async def test_inscode_cache():
     assert s._inscode == 35425587644337450
 
 
-@patch_session('priceDataFMelli.html')
+@file('priceDataFMelli.html')
 async def test_symbol_price_data():
     s = Symbol('فملی', 35425587644337450)
     price_data = await s.price_data()
@@ -60,13 +60,13 @@ async def test_symbol_price_data():
     assert all(type(v) is int for v in price_data.values())
 
 
-@patch_session('BestLimitDataFMelli.html')
+@file('BestLimitDataFMelli.html')
 async def test_symbol_best_limit_data():
     d1, d2 = await Symbol('فملی', 35425587644337450).best_limit_data()
     assert type(d1) is type(d2) is DataFrame
 
 
-@patch_session('RefrenceDataFmelli.html')
+@file('RefrenceDataFmelli.html')
 async def test_symbol_refrence_data():
     assert await Symbol('فملی', 35425587644337450).reference_data() == {
         'نام نماد': 'فملی',
@@ -79,12 +79,12 @@ async def test_symbol_refrence_data():
     }
 
 
-@patch_session('statistic30Fmelli.html')
+@file('statistic30Fmelli.html')
 async def test_symbol_refrence_data():
     assert type(await Symbol('فملی', 35425587644337450).statistic(30)) is DataFrame
 
 
-@patch_session('CompanyInfoIndexSarv.html')
+@file('CompanyInfoIndexSarv.html')
 async def test_company_info():
     assert await Symbol('سرو', 64942549055019553).company_info() == {
         'نام نماد': 'سرو',
@@ -107,7 +107,7 @@ async def test_company_info():
     }
 
 
-@patch_session('HistoryPricePaging_sarv.json')
+@file('HistoryPricePaging_sarv.json')
 async def test_price_history():
     ph = await Symbol('سرو').price_history(rows=3)
     data = ph['data']
