@@ -1,4 +1,5 @@
 from . import _api, _fipiran, _DataFrame, _read_html, _to_datetime
+from pandas import NA as _NA
 
 
 class Fund:
@@ -64,6 +65,10 @@ async def funds() -> _DataFrame:
         },
         copy=False,
     )
+    assert df['websiteAddress'].map(len).max() == 1
+    df['websiteAddress'] = df['websiteAddress'].map(
+        lambda lst: lst[0] if lst else _NA
+    ).astype('string')
     return df
 
 

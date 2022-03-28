@@ -1,11 +1,12 @@
 from numpy import dtype
-from pandas import CategoricalDtype
+from pandas import CategoricalDtype, StringDtype
 
 from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
 from test.aiohttp_test_utils import file
 
 
 fund = Fund(11215)
+string = StringDtype()
 
 
 def test_repr():
@@ -57,7 +58,7 @@ async def test_funds():
     assert len(df) > 300
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
-        ('name', 'string'),
+        ('name', string),
         ('rankOf12Month', dtype('int64')),
         ('rankOf36Month', dtype('int64')),
         ('rankOf60Month', dtype('int64')),
@@ -89,12 +90,12 @@ async def test_funds():
         ('investedUnits', dtype('float64')),
         ('articlesOfAssociationLink', dtype('O')),
         ('prosoectusLink', dtype('O')),
-        ('websiteAddress', dtype('O')),
-        ('manager', 'string'),
+        ('websiteAddress', string),
+        ('manager', string),
         ('managerSeoRegisterNo', 'Int64'),
-        ('auditor', 'string'),
-        ('custodian', 'string'),
-        ('guarantor', 'string'),
+        ('auditor', string),
+        ('custodian', string),
+        ('guarantor', string),
         ('beta', dtype('float64')),
         ('alpha', dtype('float64')),
         ('isCompleted', dtype('bool')),
@@ -124,7 +125,7 @@ async def test_map_data():
     df = await map_data()
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
-        ('name', 'string[python]'),
+        ('name', string),
         ('rankOf12Month', dtype('int64')),
         ('rankOf36Month', dtype('int64')),
         ('rankOf60Month', dtype('int64')),
@@ -157,11 +158,11 @@ async def test_map_data():
         ('articlesOfAssociationLink', dtype('O')),
         ('prosoectusLink', dtype('O')),
         ('websiteAddress', dtype('O')),
-        ('manager', 'string[python]'),
+        ('manager', string),
         ('managerSeoRegisterNo', 'Int64'),
-        ('auditor', 'string[python]'),
-        ('custodian', 'string[python]'),
-        ('guarantor', 'string[python]'),
+        ('auditor', string),
+        ('custodian', string),
+        ('guarantor', string),
         ('beta', dtype('float64')),
         ('alpha', dtype('float64')),
         ('isCompleted', dtype('bool')),
@@ -175,7 +176,7 @@ async def test_dependency_graph_data():
     df = await dependency_graph_data()
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
-        ('name', 'string[python]'),
+        ('name', string),
         ('fundType', dtype('int64')),
         ('fundSize', dtype('int64')),
         ('dailyEfficiency', dtype('float64')),
@@ -191,8 +192,8 @@ async def test_dependency_graph_data():
         ('netAsset', dtype('int64')),
         ('manager', dtype('O')),
         ('guarantorId', dtype('float64')),
-        ('guarantor', 'string[python]'),
-        ('guarantorCode', 'string[python]'),
+        ('guarantor', string),
+        ('guarantorCode', string),
         ('rankOf12Month', dtype('int64')),
         ('rankOf36Month', dtype('int64')),
         ('rankOf60Month', dtype('int64')),
