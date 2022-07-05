@@ -1,4 +1,4 @@
-__version__ = '0.12.1.dev0'
+__version__ = '0.12.1'
 from json import loads
 
 from aiohttp import ClientSession as _ClientSession, \
