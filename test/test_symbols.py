@@ -16,10 +16,12 @@ async def test_search():
         Symbol('وآفر'),
         Symbol('وارزش'),
         Symbol('وآفر'),
+        Symbol('پاداش'),
         Symbol('ارزش'),
+        Symbol('انار'),
         Symbol('ومدير'),
     ]
-    assert symbols[3].l30 == 'صندوق س ارزش آفرين بيدار-سهام'
+    assert symbols[3].l30 == 'ص.س.درآمد ثابت ارزش پاداش'
 
 
 def test_symbol_from_name():
@@ -88,7 +90,7 @@ async def test_symbol_refrence_data():
 async def test_company_info():
     assert await Symbol('سرو', 64942549055019553).company_info() == {
         'نام نماد': 'سرو',
-        'نام شرکت': 'صندوق سرمایه گذاری سرو سودمند مدبران',
+        'نام شرکت': 'سرو سودمند مدبران',
         'مدیر عامل': 'رضا درخشان فر',
         'تلفن': '021-26231274',
         'فکس': '',

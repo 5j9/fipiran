@@ -19,10 +19,12 @@ from test.aiohttp_test_utils import file, patch
 @file('AutoCompleteFundAva.json')
 async def test_auto_complete_fund():
     assert await auto_complete_fund('آوا') == [
-        {'RegNo': 11477, 'Name': 'آوای سهام کیان'},
-        {'RegNo': 11884, 'Name': 'بازارگردانی آوای زاگرس'},
-        {'RegNo': 11729, 'Name': 'قابل معامله آوای معیار'},
-        {'RegNo': 11776, 'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس'},
+        {'Name': 'قابل معامله آوای تاراز زاگرس', 'RegNo': 11922},
+        {'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس', 'RegNo': 11776},
+        {'Name': 'صندوق سرمایه گذاری اختصاصی بازارگردانی آوای فراز', 'RegNo': 11941},
+        {'Name': 'قابل معامله آوای معیار', 'RegNo': 11729},
+        {'Name': 'صندوق سرمایه گذاری اختصاصی بازرگردانی آوای زاگرس', 'RegNo': 11884},
+        {'Name': 'آوای سهام کیان', 'RegNo': 11477}
     ]
 
 

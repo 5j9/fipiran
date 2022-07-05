@@ -32,17 +32,16 @@ class Session:
         return SESSION
 
 
-# this function should only be called from _get below
-async def _session_get(url, **kwargs) -> bytes:
+async def _read(url, **kwargs) -> bytes:
     return await (await SESSION.get(url, **kwargs)).read()
 
 
 async def _api(path) -> dict | list:
-    return loads(await _session_get(_API + path))
+    return loads(await _read(_API + path))
 
 
 async def _fipiran(path: str, params=None, json_resp=False) -> str | dict | list:
-    content = await _session_get(f'{_FIPIRAN}{path}', params=params)
+    content = await _read(f'{_FIPIRAN}{path}', params=params)
     if json_resp is True:
         return loads(content)
     return content.decode().translate(_YK)
