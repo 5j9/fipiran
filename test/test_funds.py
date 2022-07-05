@@ -197,7 +197,7 @@ async def test_dependency_graph_data():
         ('rankOf12Month', dtype('int64')),
         ('rankOf36Month', dtype('int64')),
         ('rankOf60Month', dtype('int64')),
-        ('rankLastUpdate', dtype('<M8[ns]')),
+        ('rankLastUpdate', dtype('O')),
         (
             'typeOfInvest',
             CategoricalDtype(

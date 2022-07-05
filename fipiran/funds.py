@@ -104,10 +104,9 @@ async def dependency_graph_data() -> _DataFrame:
             'date': 'datetime64',
             'guarantor': 'string',
             'guarantorCode': 'string',
-            # 'rankLastUpdate': 'datetime64',
+            # 'rankLastUpdate': 'datetime64',  may contain invalid dates
             'typeOfInvest': 'category',
             'initiationDate': 'datetime64',
-            'rankLastUpdate': 'datetime64',
         },
         copy=False,
     )
