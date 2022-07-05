@@ -51,7 +51,7 @@ There are three modules:
 - funds
 - symbols
 
-Use and asyncio-aware REPL, like ``python -m asyncio``, to run these code samples.
+Use an asyncio-aware REPL, like ``python -m asyncio``, to run the code samples below.
 
 Prepare the session:
 
