@@ -81,16 +81,18 @@ async def map_data() -> _DataFrame:
     j = await _api('fund/treemap')
     return _DataFrame(j['items'], copy=False).astype(
         {
-            'regNo': 'int64',
-            'name': 'string',
-            'typeOfInvest': 'category',
-            'initiationDate': 'datetime64',
-            'date': 'datetime64',
-            'manager': 'string',
-            'managerSeoRegisterNo': 'Int64',
             'auditor': 'string',
             'custodian': 'string',
+            'date': 'datetime64',
             'guarantor': 'string',
+            'guarantorSeoRegisterNo': 'Int64',
+            'initiationDate': 'datetime64',
+            'manager': 'string',
+            'managerSeoRegisterNo': 'Int64',
+            'name': 'string',
+            'regNo': 'int64',
+            'statisticalNav': 'int64',
+            'typeOfInvest': 'category',
         },
         copy=False,
     )
