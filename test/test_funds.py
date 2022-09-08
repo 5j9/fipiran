@@ -1,5 +1,5 @@
 from numpy import dtype
-from pandas import CategoricalDtype, StringDtype
+from pandas import CategoricalDtype, StringDtype, Int64Dtype
 
 from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
 from test.aiohttp_test_utils import file
@@ -104,20 +104,25 @@ async def test_funds():
     ]
 
 
-@file('MFBazdehAVG.html')
+@file('averagereturns.json')
 async def test_average_returns():
     df = await average_returns()
-    assert len(df) == 4
+    assert len(df) == 11
     assert [*df.dtypes.items()] == [
-        ('نوع صندوق', dtype('O')),
-        ('خالص ارزش دارایی صندوق(میلیارد ریال)', dtype('int64')),
-        ('%میانگین دارایی\u200cهای نقدی', dtype('float64')),
-        ('میانگین بازدهی هفته(%)', dtype('float64')),
-        ('میانگین بازدهی ماه(%)', dtype('float64')),
-        ('میانگین بازدهی 3 ماهه(%)', dtype('float64')),
-        ('میانگین بازدهی 6 ماهه(%)', dtype('float64')),
-        ('میانگین بازدهی سال(%)', dtype('float64')),
-        ('میانگین بازدهی از آغاز فعالیت(%)', dtype('float64')),
+        ('id', dtype('int64')),
+        ('fundTypeId', dtype('int64')),
+        ('netAsset', Int64Dtype()),
+        ('stock', dtype('float64')),
+        ('bond', dtype('float64')),
+        ('cash', dtype('float64')),
+        ('deposit', dtype('float64')),
+        ('dailyEfficiency', dtype('float64')),
+        ('weeklyEfficiency', dtype('float64')),
+        ('monthlyEfficiency', dtype('float64')),
+        ('quarterlyEfficiency', dtype('float64')),
+        ('sixMonthEfficiency', dtype('float64')),
+        ('annualEfficiency', dtype('float64')),
+        ('efficiency', dtype('float64'))
     ]
 
 

@@ -74,7 +74,10 @@ async def funds() -> _DataFrame:
 
 
 async def average_returns() -> _DataFrame:
-    return _read_html(await _fipiran('Fund/MFBazdehAVG'))[0]
+    """Return a Dataframe for https://fund.fipiran.ir/mf/efficiency."""
+    j = await _api('fund/averagereturns')
+    df = _DataFrame(j)
+    return df.astype({'netAsset': 'Int64'}, copy=False)
 
 
 async def map_data() -> _DataFrame:
