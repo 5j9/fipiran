@@ -183,9 +183,9 @@ async def test_dependency_graph_data():
     df = await dependency_graph_data()
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
-        ('name', string),
+        ('name', dtype('O')),
         ('fundType', dtype('int64')),
-        ('fundSize', dtype('int64')),
+        ('fundSize', Int64Dtype()),
         ('dailyEfficiency', dtype('float64')),
         ('weeklyEfficiency', dtype('float64')),
         ('monthlyEfficiency', dtype('float64')),
@@ -195,12 +195,13 @@ async def test_dependency_graph_data():
         ('efficiency', dtype('float64')),
         ('cancelNav', dtype('float64')),
         ('issueNav', dtype('float64')),
+        ('statisticalNav', dtype('float64')),
+        ('tempGuarantorName', dtype('O')),
+        ('tempManagerName', dtype('O')),
         ('date', dtype('<M8[ns]')),
-        ('netAsset', dtype('int64')),
+        ('netAsset', Int64Dtype()),
         ('manager', dtype('O')),
-        ('guarantorId', dtype('float64')),
-        ('guarantor', string),
-        ('guarantorCode', string),
+        ('guarantor', dtype('O')),
         ('rankOf12Month', dtype('int64')),
         ('rankOf36Month', dtype('int64')),
         ('rankOf60Month', dtype('int64')),
@@ -211,7 +212,7 @@ async def test_dependency_graph_data():
                 categories=['IssuanceAndCancellation', 'Negotiable'], ordered=False
             ),
         ),
-        ('initiationDate', dtype('<M8[ns]')),
+        ('initiationDate', dtype('O')),
         ('beta', dtype('float64')),
         ('alpha', dtype('float64')),
     ]

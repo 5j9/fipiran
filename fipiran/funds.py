@@ -105,14 +105,13 @@ async def dependency_graph_data() -> _DataFrame:
     j = await _api('fund/dependencygraph')
     return _DataFrame(j['items'], copy=False).astype(
         {
-            'regNo': 'int64',
-            'name': 'string',
+            # 'initiationDate': 'datetime64',  # may contain invalid dates
+            # 'rankLastUpdate': 'datetime64',  # may contain invalid dates
             'date': 'datetime64',
-            'guarantor': 'string',
-            'guarantorCode': 'string',
-            # 'rankLastUpdate': 'datetime64',  may contain invalid dates
+            'fundSize': 'Int64',
+            'netAsset': 'Int64',
+            'regNo': 'int64',  # without this, dtype('O') will be returned
             'typeOfInvest': 'category',
-            'initiationDate': 'datetime64',
         },
         copy=False,
     )
