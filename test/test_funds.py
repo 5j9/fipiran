@@ -93,6 +93,7 @@ async def test_funds():
         ('websiteAddress', string),
         ('manager', string),
         ('managerSeoRegisterNo', 'Int64'),
+        ('guarantorSeoRegisterNo', 'Int64'),
         ('auditor', string),
         ('custodian', string),
         ('guarantor', string),
