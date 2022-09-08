@@ -2,7 +2,7 @@ __version__ = '0.12.2.dev0'
 from json import loads
 
 from aiohttp import ClientSession as _ClientSession, \
-    ClientTimeout as _ClientTimeout, ClientResponse as _ClientResponse
+    ClientTimeout as _ClientTimeout
 
 # noinspection PyUnresolvedReferences
 from pandas import (
