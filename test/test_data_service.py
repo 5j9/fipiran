@@ -2,6 +2,7 @@ from numpy import dtype
 from jdatetime import datetime as jdatetime
 from pytest import raises
 from pandas import Timestamp
+from operator import itemgetter
 
 from fipiran.data_service import (
     auto_complete_symbol,
@@ -18,13 +19,15 @@ from test.aiohttp_test_utils import file, patch
 
 @file('AutoCompleteFundAva.json')
 async def test_auto_complete_fund():
-    assert await auto_complete_fund('آوا') == [
-        {'Name': 'قابل معامله آوای تاراز زاگرس', 'RegNo': 11922},
-        {'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس', 'RegNo': 11776},
-        {'Name': 'صندوق سرمایه گذاری اختصاصی بازارگردانی آوای فراز', 'RegNo': 11941},
+    result = await auto_complete_fund('آوا')
+    result.sort(key=itemgetter('RegNo'))
+    assert result == [
+        {'Name': 'آوای سهام کیان', 'RegNo': 11477},
         {'Name': 'قابل معامله آوای معیار', 'RegNo': 11729},
+        {'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس', 'RegNo': 11776},
         {'Name': 'صندوق سرمایه گذاری اختصاصی بازرگردانی آوای زاگرس', 'RegNo': 11884},
-        {'Name': 'آوای سهام کیان', 'RegNo': 11477}
+        {'Name': 'قابل معامله آوای تاراز زاگرس', 'RegNo': 11922},
+        {'Name': 'صندوق سرمایه گذاری اختصاصی بازارگردانی آوای فراز', 'RegNo': 11941},
     ]
 
 
