@@ -45,11 +45,12 @@ For any async operation ``fipiran.SESSION`` needs to be set to an ``aiohttp.Clie
 
     asyncio.run(main())
 
-There are three modules:
+There are four modules:
 
 - data_service
 - funds
 - symbols
+- codal
 
 Use an asyncio-aware REPL, like ``python -m asyncio``, to run the code samples below.
 
