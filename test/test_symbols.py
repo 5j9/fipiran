@@ -9,19 +9,11 @@ from fipiran.symbols import Symbol, search
 from test.aiohttp_test_utils import file
 
 
-@file('autocomplete_arzesh.html')
+@file('shcarbon.html')
 async def test_search():
-    symbols = await search('ارزش')
-    assert symbols == [
-        Symbol('وآفر'),
-        Symbol('وارزش'),
-        Symbol('وآفر'),
-        Symbol('پاداش'),
-        Symbol('ارزش'),
-        Symbol('انار'),
-        Symbol('ومدير'),
-    ]
-    assert symbols[3].l30 == 'ص.س.درآمد ثابت ارزش پاداش'
+    symbols = await search('کربن')
+    assert symbols == [Symbol('شكربن'), Symbol('شكربنح')]
+    assert symbols[0].l30 == 'كربن\u200c ايران\u200c'
 
 
 def test_symbol_from_name():
