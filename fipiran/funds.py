@@ -53,6 +53,7 @@ async def funds() -> _DataFrame:
     j = await _api('fund/fundcompare')
     df = _DataFrame(j['items'], copy=False).astype(
         {
+            'dividendIntervalPeriod': 'Int64',
             'regNo': 'int64',
             'name': 'string',
             'manager': 'string',
@@ -87,6 +88,7 @@ async def map_data() -> _DataFrame:
             'auditor': 'string',
             'custodian': 'string',
             'date': 'datetime64',
+            'dividendIntervalPeriod': 'Int64',
             'guarantor': 'string',
             'guarantorSeoRegisterNo': 'Int64',
             'initiationDate': 'datetime64',
