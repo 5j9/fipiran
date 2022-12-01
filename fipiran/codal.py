@@ -9,3 +9,8 @@ async def financial_ratios() -> _DataFrame:
 async def profit_growth() -> _DataFrame:
     text = await _fipiran('Codal/RoshdPos')
     return _read_html(text)[0]
+
+
+async def profit_decline() -> _DataFrame:
+    text = await _fipiran('Codal/RoshdNeg')
+    return _read_html(text)[0]

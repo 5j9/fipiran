@@ -1,5 +1,5 @@
 from numpy import dtype
-from fipiran.codal import financial_ratios, profit_growth
+from fipiran.codal import financial_ratios, profit_growth, profit_decline
 
 from test.aiohttp_test_utils import file
 
@@ -34,4 +34,17 @@ async def test_profit_growth():
         ('سود واقعی دوره', dtype('O')),
         ('سود واقعی دوره قبل', dtype('O')),
         ('% رشد', dtype('int64'))
+    ]
+
+
+@file('profit_decline.html')
+async def test_profit_decline():
+    df = await profit_decline()
+    assert [*df.dtypes.items()] == [
+        ('نماد', dtype('O')),
+        ('تاریخ انتشار', dtype('O')),
+        ('دوره', dtype('O')),
+        ('سود واقعی دوره', dtype('O')),
+        ('سود واقعی دوره قبل', dtype('O')),
+        ('% رشد', dtype('O'))
     ]
