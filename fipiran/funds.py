@@ -1,5 +1,28 @@
-from . import _api, _fipiran, _DataFrame, _read_html, _to_datetime
+from . import _api, _DataFrame, _to_datetime
 from pandas import NA as _NA
+
+
+_COMMON_DTYPES = {
+    'date': 'datetime64',
+    'guarantor': 'string',
+    # 'initiationDate': 'datetime64', fails on some funds
+    'manager': 'string',
+    'name': 'string',
+    'regNo': 'int64',
+    'statisticalNav': 'float64',
+    'typeOfInvest': 'category',
+}
+_FUND_DTYPES = _COMMON_DTYPES | {
+    'auditor': 'string',
+    'custodian': 'string',
+    'dividendIntervalPeriod': 'Int64',
+    'guarantorSeoRegisterNo': 'Int64',
+    'managerSeoRegisterNo': 'Int64',
+}
+_GRAPH_DTYPES = _COMMON_DTYPES | {
+    'fundSize': 'Int64',
+    'netAsset': 'Int64',
+}
 
 
 class Fund:
@@ -51,22 +74,7 @@ async def funds() -> _DataFrame:
     Also see fipiran.data_service.mutual_fund_list function.
     """
     j = await _api('fund/fundcompare')
-    df = _DataFrame(j['items'], copy=False).astype(
-        {
-            'dividendIntervalPeriod': 'Int64',
-            'regNo': 'int64',
-            'name': 'string',
-            'manager': 'string',
-            'managerSeoRegisterNo': 'Int64',
-            'guarantorSeoRegisterNo': 'Int64',
-            'auditor': 'string',
-            'custodian': 'string',
-            'guarantor': 'string',
-            'date': 'datetime64',
-            'typeOfInvest': 'category',
-        },
-        copy=False,
-    )
+    df = _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
     assert df['websiteAddress'].map(len).max() == 1
     df['websiteAddress'] = df['websiteAddress'].map(
         lambda lst: lst[0] if lst else _NA
@@ -77,43 +85,15 @@ async def funds() -> _DataFrame:
 async def average_returns() -> _DataFrame:
     """Return a Dataframe for https://fund.fipiran.ir/mf/efficiency."""
     j = await _api('fund/averagereturns')
-    df = _DataFrame(j)
+    df = _DataFrame(j, copy=False)
     return df.astype({'netAsset': 'Int64'}, copy=False)
 
 
 async def map_data() -> _DataFrame:
     j = await _api('fund/treemap')
-    return _DataFrame(j['items'], copy=False).astype(
-        {
-            'auditor': 'string',
-            'custodian': 'string',
-            'date': 'datetime64',
-            'dividendIntervalPeriod': 'Int64',
-            'guarantor': 'string',
-            'guarantorSeoRegisterNo': 'Int64',
-            'initiationDate': 'datetime64',
-            'manager': 'string',
-            'managerSeoRegisterNo': 'Int64',
-            'name': 'string',
-            'regNo': 'int64',
-            'statisticalNav': 'int64',
-            'typeOfInvest': 'category',
-        },
-        copy=False,
-    )
+    return _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
 
 
 async def dependency_graph_data() -> _DataFrame:
     j = await _api('fund/dependencygraph')
-    return _DataFrame(j['items'], copy=False).astype(
-        {
-            # 'initiationDate': 'datetime64',  # may contain invalid dates
-            # 'rankLastUpdate': 'datetime64',  # may contain invalid dates
-            'date': 'datetime64',
-            'fundSize': 'Int64',
-            'netAsset': 'Int64',
-            'regNo': 'int64',  # without this, dtype('O') will be returned
-            'typeOfInvest': 'category',
-        },
-        copy=False,
-    )
+    return _DataFrame(j['items'], copy=False).astype(_GRAPH_DTYPES, copy=False)
