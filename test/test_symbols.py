@@ -6,7 +6,7 @@ from pandas import DataFrame
 from pytest import raises
 
 from fipiran.symbols import Symbol, search
-from test.aiohttp_test_utils import file
+from aiohttp_test_utils import file
 
 
 @file('shcarbon.html')

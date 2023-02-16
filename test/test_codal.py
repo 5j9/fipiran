@@ -1,6 +1,6 @@
 from numpy import dtype
 from fipiran.codal import financial_ratios, profit_growth, profit_decline
-from test.aiohttp_test_utils import file
+from aiohttp_test_utils import file
 
 
 @file('financial_ratios.html')

@@ -1,8 +1,6 @@
-import fipiran
+from aiohttp_test_utils import session_fixture_factory, event_loop
 
-# noinspection PyUnresolvedReferences
-from test.aiohttp_test_utils import event_loop
-from test.aiohttp_test_utils import session_fixture_factory
+import fipiran
 
 
 session = session_fixture_factory(fipiran)

@@ -2,7 +2,7 @@ from numpy import dtype
 from pandas import CategoricalDtype, StringDtype, Int64Dtype
 
 from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
-from test.aiohttp_test_utils import file
+from aiohttp_test_utils import file
 
 
 fund = Fund(11215)

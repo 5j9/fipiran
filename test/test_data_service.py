@@ -14,7 +14,7 @@ from fipiran.data_service import (
     financial_ratios,
     profit_loss,
 )
-from test.aiohttp_test_utils import file, patch
+from aiohttp_test_utils import file, patch
 
 
 @file('AutoCompleteFundAva.json')
