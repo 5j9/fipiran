@@ -27,7 +27,7 @@ class Session:
         global SESSION
         if 'timeout' not in kwargs:
             kwargs['timeout'] = _ClientTimeout(
-                total=60., sock_connect=10., sock_read=10.)
+                total=60., sock_connect=30., sock_read=30.)
         SESSION = _ClientSession(**kwargs)
         return SESSION
 
