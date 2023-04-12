@@ -3,7 +3,6 @@ from pandas import NA as _NA
 
 
 _COMMON_DTYPES = {
-    'date': 'datetime64',
     'guarantor': 'string',
     # 'initiationDate': 'datetime64', fails on some funds
     'manager': 'string',
@@ -75,6 +74,7 @@ async def funds() -> _DataFrame:
     """
     j = await _api('fund/fundcompare')
     df = _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
+    df['date'] = _to_datetime(df['date'], format='ISO8601')
     assert df['websiteAddress'].map(len).max() == 1
     df['websiteAddress'] = df['websiteAddress'].map(
         lambda lst: lst[0] if lst else _NA
@@ -91,9 +91,13 @@ async def average_returns() -> _DataFrame:
 
 async def map_data() -> _DataFrame:
     j = await _api('fund/treemap')
-    return _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
+    df = _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
+    df['date'] = _to_datetime(df['date'], format='ISO8601')
+    return df
 
 
 async def dependency_graph_data() -> _DataFrame:
     j = await _api('fund/dependencygraph')
-    return _DataFrame(j['items'], copy=False).astype(_GRAPH_DTYPES, copy=False)
+    df = _DataFrame(j['items'], copy=False).astype(_GRAPH_DTYPES, copy=False)
+    df['date'] = _to_datetime(df['date'], format='ISO8601')
+    return df
