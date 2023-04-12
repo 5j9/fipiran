@@ -52,7 +52,7 @@ class Fund:
         return df
 
     async def alpha_beta(self, /, *, all_=True) -> _DataFrame:
-        j = await _api(f'chart/alphabeta?regno={self.reg_no}&showAll={str(all_).lower()}')
+        j = await _api(f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}')
         df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
