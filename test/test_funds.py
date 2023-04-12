@@ -205,7 +205,7 @@ async def test_dependency_graph_data():
     df = await dependency_graph_data()
     assert [*df.dtypes.items()] == [
         ('regNo', dtype('int64')),
-        ('name', 'string'),
+        ('name', 'string[python]'),
         ('fundType', dtype('int64')),
         ('fundSize', Int64Dtype()),
         ('dailyEfficiency', dtype('float64')),
@@ -222,11 +222,13 @@ async def test_dependency_graph_data():
         ('tempManagerName', dtype('O')),
         ('date', dtype('<M8[ns]')),
         ('netAsset', Int64Dtype()),
-        ('manager', 'string'),
-        ('guarantor', 'string'),
-        ('rankOf12Month', dtype('int64')),
-        ('rankOf36Month', dtype('int64')),
-        ('rankOf60Month', dtype('int64')),
+        ('manager', 'string[python]'),
+        ('guarantor', 'string[python]'),
+        ('rankOf12Month', dtype('float64')),
+        ('rankOf24Month', dtype('float64')),
+        ('rankOf36Month', dtype('float64')),
+        ('rankOf48Month', dtype('O')),
+        ('rankOf60Month', dtype('float64')),
         ('rankLastUpdate', dtype('O')),
         (
             'typeOfInvest',
@@ -237,6 +239,7 @@ async def test_dependency_graph_data():
         ('initiationDate', dtype('O')),
         ('beta', dtype('float64')),
         ('alpha', dtype('float64')),
+        ('dividendIntervalPeriod', dtype('float64')),
     ]
     assert len(df) > 286
 
