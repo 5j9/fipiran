@@ -1,7 +1,6 @@
 from typing import TypedDict as _TypedDict
 
-from . import _fipiran, _DataFrame, _read_html, _to_datetime, _jdatetime
-
+from . import _DataFrame, _fipiran, _jdatetime, _read_html, _to_datetime
 
 _jstrptime = _jdatetime.strptime
 

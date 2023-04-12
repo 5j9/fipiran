@@ -1,6 +1,6 @@
-from . import _api, _DataFrame, _to_datetime
 from pandas import NA as _NA
 
+from . import _api, _DataFrame, _to_datetime
 
 _COMMON_DTYPES = {
     'guarantor': 'string',

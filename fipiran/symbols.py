@@ -3,8 +3,7 @@ from typing import Literal as _Literal
 
 from bs4 import BeautifulSoup as _BeautifulSoup
 
-from . import _fipiran, _DataFrame, _read_html, _to_datetime, _jdatetime
-
+from . import _DataFrame, _fipiran, _jdatetime, _read_html, _to_datetime
 
 _KY = ''.maketrans('کی', 'كي')
 

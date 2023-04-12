@@ -44,3 +44,8 @@ include-package-data = false
 
 [tool.setuptools.dynamic.version]
 attr = "fipiran.__version__"
+
+[tool.isort]
+profile = "black"
+line_length = 79
+combine_as_imports = true

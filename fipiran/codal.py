@@ -1,7 +1,7 @@
-from re import compile as _rc
 from functools import partial as _partial
-from . import _DataFrame, _fipiran, _read_html
+from re import compile as _rc
 
+from . import _DataFrame, _fipiran, _read_html
 
 _parenthesis_to_negative = _partial(_rc(r'\((\d+)\)').sub, r'-\1')
 

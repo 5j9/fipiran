@@ -1,20 +1,21 @@
-from numpy import dtype
-from jdatetime import datetime as jdatetime
-from pytest import raises
-from pandas import Timestamp
 from operator import itemgetter
 
+from aiohttp_test_utils import file, patch
+from jdatetime import datetime as jdatetime
+from numpy import dtype
+from pandas import Timestamp
+from pytest import raises
+
 from fipiran.data_service import (
-    auto_complete_symbol,
-    balance_sheet,
-    export_symbol,
     auto_complete_fund,
     auto_complete_index,
+    auto_complete_symbol,
+    balance_sheet,
     export_index,
+    export_symbol,
     financial_ratios,
     profit_loss,
 )
-from aiohttp_test_utils import file, patch
 
 
 @file('AutoCompleteFundAva.json')

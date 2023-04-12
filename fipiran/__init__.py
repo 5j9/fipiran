@@ -1,8 +1,13 @@
 __version__ = '0.14.1.dev0'
 from json import loads
 
-from aiohttp import ClientSession as _ClientSession, \
-    ClientTimeout as _ClientTimeout
+from aiohttp import (
+    ClientSession as _ClientSession,
+    ClientTimeout as _ClientTimeout,
+)
+
+# noinspection PyUnresolvedReferences
+from jdatetime import datetime as _jdatetime
 
 # noinspection PyUnresolvedReferences
 from pandas import (
@@ -10,10 +15,6 @@ from pandas import (
     read_html as _read_html,
     to_datetime as _to_datetime,
 )
-
-# noinspection PyUnresolvedReferences
-from jdatetime import datetime as _jdatetime
-
 
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')

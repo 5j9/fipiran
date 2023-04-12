@@ -1,9 +1,14 @@
-from numpy import dtype
-from pandas import CategoricalDtype, StringDtype, Int64Dtype
-
-from fipiran.funds import Fund, dependency_graph_data, funds, average_returns, map_data
 from aiohttp_test_utils import file
+from numpy import dtype
+from pandas import CategoricalDtype, Int64Dtype, StringDtype
 
+from fipiran.funds import (
+    Fund,
+    average_returns,
+    dependency_graph_data,
+    funds,
+    map_data,
+)
 
 fund = Fund(11215)
 string = StringDtype()
