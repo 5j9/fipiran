@@ -252,14 +252,6 @@ async def test_dependency_graph_data():
     assert len(df) > 286
 
 
-@file('fundtopunits.json')
-async def test_top_units():
-    df = await fund.top_units()
-    assert [*df.dtypes.items()] == [
-        ('name', dtype('O')), ('percentage', dtype('float64'))]
-    assert df['percentage'].sum() == 100
-
-
 @file('alpha_beta.json')
 async def test_alpha_beta():
     df = await fund.alpha_beta(all_=False)

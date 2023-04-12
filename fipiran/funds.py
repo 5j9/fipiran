@@ -64,11 +64,6 @@ class Fund:
     async def info(self) -> dict:
         return (await _api(f'fund/getfund?regno={self.reg_no}'))['item']
 
-    async def top_units(self) -> _DataFrame:
-        j = await _api(f'chart/fundtopunits?regno={self.reg_no}')
-        df = _DataFrame(j, copy=False)
-        return df
-
 
 async def funds() -> _DataFrame:
     """Return the data available at https://fund.fipiran.ir/mf/list.
