@@ -14,12 +14,20 @@ def test_repr():
     assert repr(Fund('11215')) == "Fund('11215')"
 
 
-@file('getfundchartasset_atlas.json')
-async def test_asset_allocation():
-    d = await fund.asset_allocation()
-    del d['fiveBest']
-    assert sum(d.values()) > 99.99
-
+@file('portfoliochart_atlas.json')
+async def test_asset_allocation_history():
+    df = await fund.asset_allocation_history()
+    assert [*df.dtypes.items()] == [
+        ('date', dtype('<M8[ns]')),
+        ('fiveBest', dtype('float64')),
+        ('stock', dtype('float64')),
+        ('bond', dtype('float64')),
+        ('other', dtype('float64')),
+        ('cash', dtype('float64')),
+        ('deposit', dtype('float64')),
+        ('fundUnit', dtype('O')),
+        ('commodity', dtype('O'))
+    ]
 
 @file('getfundchart_atlas.json')
 async def test_issue_cancel_history():

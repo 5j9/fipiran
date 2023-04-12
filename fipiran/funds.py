@@ -33,9 +33,12 @@ class Fund:
     def __repr__(self):
         return f'{type(self).__name__}({self.reg_no!r})'
 
-    async def asset_allocation(self) -> dict:
+    async def asset_allocation_history(self) -> _DataFrame:
         """Return a dict where values are percentage of each kind of asset."""
-        return await _api(f'chart/getfundchartasset?regno={self.reg_no}')
+        j = await _api(f'chart/portfoliochart?regno={self.reg_no}')
+        df = _DataFrame(j)
+        df['date'] = _to_datetime(df['date'], format='ISO8601')
+        return df
 
     async def issue_cancel_history(self, /, *, all_=True) -> _DataFrame:
         j = await _api(f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}')
