@@ -1,5 +1,6 @@
 __version__ = '0.15.1.dev0'
 from json import loads
+from warnings import warn as _warn
 
 from aiohttp import (
     ClientSession as _ClientSession,
@@ -34,7 +35,10 @@ class Session:
 
 
 async def _read(url, **kwargs) -> bytes:
-    return await (await SESSION.get(url, **kwargs)).read()
+    r = await SESSION.get(url, **kwargs)
+    if r.history:
+        _warn(f'r.history is not empty (possible redirection): {r.history}')
+    return await r.read()
 
 
 async def _api(path) -> dict | list:
