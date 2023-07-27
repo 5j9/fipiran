@@ -17,6 +17,9 @@ _FUND_DTYPES = _COMMON_DTYPES | {
     'dividendIntervalPeriod': 'Int64',
     'guarantorSeoRegisterNo': 'Int64',
     'managerSeoRegisterNo': 'Int64',
+    'fundSize': 'Int64',
+    'netAsset': 'Int64',
+    'investedUnits': 'Int64',
 }
 _GRAPH_DTYPES = _COMMON_DTYPES | {
     'fundSize': 'Int64',
@@ -41,21 +44,27 @@ class Fund:
         return df
 
     async def issue_cancel_history(self, /, *, all_=True) -> _DataFrame:
-        j = await _api(f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}')
+        j = await _api(
+            f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}'
+        )
         df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
         return df
 
     async def nav_history(self, /, *, all_=True) -> _DataFrame:
-        j = await _api(f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}')
+        j = await _api(
+            f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}'
+        )
         df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
         return df
 
     async def alpha_beta(self, /, *, all_=True) -> _DataFrame:
-        j = await _api(f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}')
+        j = await _api(
+            f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}'
+        )
         df = _DataFrame(j, copy=False)
         df['date'] = _to_datetime(df['date'])
         df.set_index('date', inplace=True)
@@ -63,6 +72,15 @@ class Fund:
 
     async def info(self) -> dict:
         return (await _api(f'fund/getfund?regno={self.reg_no}'))['item']
+
+
+def _fix_website_address(df: _DataFrame):
+    # assert df['websiteAddress'].map(len).max() == 1
+    df['websiteAddress'] = (
+        df['websiteAddress']
+        .map(lambda lst: lst[0] if lst else _NA)
+        .astype('string')
+    )
 
 
 async def funds() -> _DataFrame:
@@ -73,10 +91,7 @@ async def funds() -> _DataFrame:
     j = await _api('fund/fundcompare')
     df = _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
     df['date'] = _to_datetime(df['date'], format='ISO8601')
-    assert df['websiteAddress'].map(len).max() == 1
-    df['websiteAddress'] = df['websiteAddress'].map(
-        lambda lst: lst[0] if lst else _NA
-    ).astype('string')
+    _fix_website_address(df)
     return df
 
 
@@ -91,6 +106,7 @@ async def map_data() -> _DataFrame:
     j = await _api('fund/treemap')
     df = _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
     df['date'] = _to_datetime(df['date'], format='ISO8601')
+    _fix_website_address(df)
     return df
 
 
