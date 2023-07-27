@@ -1,5 +1,6 @@
 __version__ = '0.15.1.dev0'
-from json import loads
+from json import JSONDecodeError as _JSONDecodeError, loads
+from logging import error as _error
 from warnings import warn as _warn
 
 from aiohttp import (
@@ -20,16 +21,16 @@ from pandas import (
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'
-SESSION : _ClientSession | None = None
+SESSION: _ClientSession | None = None
 
 
 class Session:
-
     def __new__(cls, *args, **kwargs) -> _ClientSession:
         global SESSION
         if 'timeout' not in kwargs:
             kwargs['timeout'] = _ClientTimeout(
-                total=60., sock_connect=30., sock_read=30.)
+                total=60.0, sock_connect=30.0, sock_read=30.0
+            )
         SESSION = _ClientSession(**kwargs)
         return SESSION
 
@@ -42,10 +43,17 @@ async def _read(url, **kwargs) -> bytes:
 
 
 async def _api(path) -> dict | list:
-    return loads(await _read(_API + path))
+    r = await _read(_API + path)
+    try:
+        return loads(r)
+    except _JSONDecodeError:
+        _error(f'{r = }')
+        raise
 
 
-async def _fipiran(path: str, params=None, json_resp=False) -> str | dict | list:
+async def _fipiran(
+    path: str, params=None, json_resp=False
+) -> str | dict | list:
     content = await _read(f'{_FIPIRAN}{path}', params=params)
     if json_resp is True:
         return loads(content)
