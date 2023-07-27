@@ -75,7 +75,10 @@ async def test_symbol_refrence_data():
 
 @file('statistic30Fmelli.html')
 async def test_symbol_refrence_data():
-    assert type(await Symbol('فملی', 35425587644337450).statistic(30)) is DataFrame
+    assert (
+        type(await Symbol('فملی', 35425587644337450).statistic(30))
+        is DataFrame
+    )
 
 
 @file('CompanyInfoIndexSarv.html')
@@ -133,5 +136,6 @@ async def test_price_history_url(get_mock):
         # l18 uses persian ی and ک
         await Symbol('دارا یکم').price_history()
     get_mock.assert_called_once_with(  # needs to be called with arabic ي and ك
-        'Symbol/HistoryPricePaging?symbolpara=دارا يكم&rows=365&page=1', json_resp=True
+        'Symbol/HistoryPricePaging?symbolpara=دارا يكم&rows=365&page=1',
+        json_resp=True,
     )

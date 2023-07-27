@@ -26,9 +26,15 @@ async def test_auto_complete_fund():
         {'Name': 'آوای سهام کیان', 'RegNo': 11477},
         {'Name': 'قابل معامله آوای معیار', 'RegNo': 11729},
         {'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس', 'RegNo': 11776},
-        {'Name': 'صندوق سرمایه گذاری اختصاصی بازرگردانی آوای زاگرس', 'RegNo': 11884},
+        {
+            'Name': 'صندوق سرمایه گذاری اختصاصی بازرگردانی آوای زاگرس',
+            'RegNo': 11884,
+        },
         {'Name': 'قابل معامله آوای تاراز زاگرس', 'RegNo': 11922},
-        {'Name': 'صندوق سرمایه گذاری اختصاصی بازارگردانی آوای فراز', 'RegNo': 11941},
+        {
+            'Name': 'صندوق سرمایه گذاری اختصاصی بازارگردانی آوای فراز',
+            'RegNo': 11941,
+        },
     ]
 
 
@@ -43,12 +49,20 @@ async def test_auto_complete_index():
 
 @file('ExportIndexHamVazn.xls.html')
 async def test_export_index():
-    df = await export_index('شاخص كل (هم وزن)', 14000101, 14000110, 'IRX6XTPI0026')
+    df = await export_index(
+        'شاخص كل (هم وزن)', 14000101, 14000110, 'IRX6XTPI0026'
+    )
     assert len(df) == 3
-    assert df.iloc[-1].to_list() == ['شاخص', jdatetime(1400, 1, 7, 0, 0), 441834.0]
+    assert df.iloc[-1].to_list() == [
+        'شاخص',
+        jdatetime(1400, 1, 7, 0, 0),
+        441834.0,
+    ]
 
 
-@patch('fipiran.data_service.auto_complete_index', side_effect=NotImplementedError)
+@patch(
+    'fipiran.data_service.auto_complete_index', side_effect=NotImplementedError
+)
 async def test_export_index_no_instrument_id(mock):
     with raises(NotImplementedError):
         await export_index('هم وزن', 14000101, 15000101)
@@ -84,7 +98,10 @@ async def test_export_symbol():
     ]
 
 
-@patch('fipiran.data_service.auto_complete_symbol', side_effect=NotImplementedError)
+@patch(
+    'fipiran.data_service.auto_complete_symbol',
+    side_effect=NotImplementedError,
+)
 async def test_export_symbol_no_instrument_id(mock):
     with raises(NotImplementedError):
         await export_symbol('ماديرا', 14000801, 15000101)

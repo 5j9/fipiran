@@ -20,7 +20,7 @@ async def test_financial_ratios():
         ('نسبت بدهی', dtype('float64')),
         ('ROA', dtype('float64')),
         ('ROE', dtype('float64')),
-        ('سودواقعی هر سهم', dtype('int64'))
+        ('سودواقعی هر سهم', dtype('int64')),
     ]
 
 
@@ -33,7 +33,7 @@ async def test_profit_growth():
         ('دوره', dtype('O')),
         ('سود واقعی دوره', dtype('int64')),
         ('سود واقعی دوره قبل', dtype('int64')),
-        ('% رشد', dtype('int64'))
+        ('% رشد', dtype('int64')),
     ]
 
 
@@ -46,5 +46,5 @@ async def test_profit_decline():
         ('دوره', dtype('O')),
         ('سود واقعی دوره', dtype('int64')),
         ('سود واقعی دوره قبل', dtype('int64')),
-        ('% رشد', dtype('int64'))
+        ('% رشد', dtype('int64')),
     ]
