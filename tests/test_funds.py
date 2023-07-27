@@ -1,6 +1,6 @@
 from aiohttp_test_utils import file
 from numpy import dtype
-from pandas import CategoricalDtype, DataFrame, Int64Dtype, StringDtype
+from pandas import DataFrame, Int64Dtype, StringDtype
 
 from fipiran.funds import _KNOWN_DTYPES  # noqa
 from fipiran.funds import (
@@ -147,10 +147,6 @@ async def test_dependency_graph_data():
 
 @file('alpha_beta.json')
 async def test_alpha_beta():
-    import aiohttp_test_utils
-
-    if aiohttp_test_utils.OFFLINE_MODE is False:
-        return  # even in browsers sometimes fails with: 417 Expectation Failed
     df = await fund.alpha_beta(all_=False)
     assert [*df.dtypes.items()] == [
         ('beta', dtype('float64')),
