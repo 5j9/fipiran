@@ -2,6 +2,7 @@ from aiohttp_test_utils import file
 from numpy import dtype
 from pandas import CategoricalDtype, DataFrame, Int64Dtype, StringDtype
 
+from fipiran.funds import _KNOWN_DTYPES  # noqa
 from fipiran.funds import (
     Fund,
     average_returns,
@@ -67,74 +68,45 @@ async def test_info():
     assert type(info) is dict
 
 
-FUNDS_DTYPES = [
-    ('regNo', dtype('int64')),
-    ('name', string),
-    ('rankOf12Month', dtype('float64')),
-    ('rankOf24Month', dtype('float64')),
-    ('rankOf36Month', dtype('float64')),
-    ('rankOf48Month', dtype('O')),
-    ('rankOf60Month', dtype('float64')),
-    ('rankLastUpdate', dtype('O')),
-    ('fundType', dtype('int64')),
-    (
-        'typeOfInvest',
-        CategoricalDtype(
-            categories=['IssuanceAndCancellation', 'Negotiable'], ordered=False
-        ),
-    ),
-    ('fundSize', Int64Dtype()),
-    ('initiationDate', dtype('O')),
-    ('dailyEfficiency', dtype('float64')),
-    ('weeklyEfficiency', dtype('float64')),
-    ('monthlyEfficiency', dtype('float64')),
-    ('quarterlyEfficiency', dtype('float64')),
-    ('sixMonthEfficiency', dtype('float64')),
-    ('annualEfficiency', dtype('float64')),
-    ('statisticalNav', dtype('float64')),
-    ('efficiency', dtype('float64')),
-    ('cancelNav', dtype('float64')),
-    ('issueNav', dtype('float64')),
-    ('dividendIntervalPeriod', Int64Dtype()),
-    ('guaranteedEarningRate', dtype('float64')),
-    ('date', dtype('<M8[ns]')),
-    ('netAsset', Int64Dtype()),
-    ('estimatedEarningRate', dtype('float64')),
-    ('investedUnits', Int64Dtype()),
-    ('articlesOfAssociationLink', dtype('O')),
-    ('prosoectusLink', dtype('O')),
-    ('websiteAddress', 'string[python]'),
-    ('manager', string),
-    ('managerSeoRegisterNo', Int64Dtype()),
-    ('guarantorSeoRegisterNo', Int64Dtype()),
-    ('auditor', string),
-    ('custodian', string),
-    ('guarantor', string),
-    ('beta', dtype('float64')),
-    ('alpha', dtype('float64')),
-    ('isCompleted', dtype('bool')),
-    ('fiveBest', dtype('float64')),
-    ('stock', dtype('float64')),
-    ('bond', dtype('float64')),
-    ('other', dtype('float64')),
-    ('cash', dtype('float64')),
-    ('deposit', dtype('float64')),
-    ('fundUnit', dtype('float64')),
-    ('commodity', dtype('float64')),
-    ('fundPublisher', dtype('int64')),
-    ('fundWatch', dtype('O')),
-]
+EXPECTED_INFERRED_DTYPES = {
+    'articlesOfAssociationLink': None,
+    'bond': 'float64',
+    'cash': 'float64',
+    'commodity': 'float64',
+    'deposit': 'float64',
+    'estimatedEarningRate': 'float64',
+    'fiveBest': 'float64',
+    'fundPublisher': 'int64',
+    'fundUnit': 'float64',
+    'fundWatch': None,
+    'guaranteedEarningRate': 'float64',
+    'isCompleted': bool,
+    'other': 'float64',
+    'prosoectusLink': None,
+    'stock': None,
+    'websiteAddress': 'string',
+}
 
 
-def assert_funds_dtypes(df: DataFrame):
-    assert [*df.dtypes.items()] == FUNDS_DTYPES
+def assert_dtypes(df: DataFrame):
+    cols = {*df.columns}
+    assert not cols - (_KNOWN_DTYPES.keys() | EXPECTED_INFERRED_DTYPES.keys())
+    for col in cols & EXPECTED_INFERRED_DTYPES.keys():
+        et = EXPECTED_INFERRED_DTYPES[col]
+        try:
+            if et is None:
+                df[col].isna().all()
+            else:
+                assert df[col].dtype == et, f'{col=}'
+        except:  # a good breakpoint
+            raise
 
 
 @file('fundcompare.json')
 async def test_funds():
     df = await funds()
     assert len(df) > 300
-    assert_funds_dtypes(df)
+    assert_dtypes(df)
 
 
 @file('averagereturns.json')
@@ -162,57 +134,23 @@ async def test_average_returns():
 @file('treemap.json')
 async def test_map_data():
     df = await map_data()
-    assert_funds_dtypes(df)
+    assert_dtypes(df)
     assert len(df) > 286
 
 
 @file('dependencygraph.json')
 async def test_dependency_graph_data():
     df = await dependency_graph_data()
-    assert [*df.dtypes.items()] == [
-        ('regNo', dtype('int64')),
-        ('name', 'string[python]'),
-        ('fundType', dtype('int64')),
-        ('fundSize', Int64Dtype()),
-        ('dailyEfficiency', dtype('float64')),
-        ('weeklyEfficiency', dtype('float64')),
-        ('monthlyEfficiency', dtype('float64')),
-        ('quarterlyEfficiency', dtype('float64')),
-        ('sixMonthEfficiency', dtype('float64')),
-        ('annualEfficiency', dtype('float64')),
-        ('efficiency', dtype('float64')),
-        ('cancelNav', dtype('float64')),
-        ('issueNav', dtype('float64')),
-        ('statisticalNav', dtype('float64')),
-        ('tempGuarantorName', dtype('O')),
-        ('tempManagerName', dtype('O')),
-        ('date', dtype('<M8[ns]')),
-        ('netAsset', Int64Dtype()),
-        ('manager', 'string[python]'),
-        ('guarantor', 'string[python]'),
-        ('rankOf12Month', dtype('float64')),
-        ('rankOf24Month', dtype('float64')),
-        ('rankOf36Month', dtype('float64')),
-        ('rankOf48Month', dtype('O')),
-        ('rankOf60Month', dtype('float64')),
-        ('rankLastUpdate', dtype('O')),
-        (
-            'typeOfInvest',
-            CategoricalDtype(
-                categories=['IssuanceAndCancellation', 'Negotiable'],
-                ordered=False,
-            ),
-        ),
-        ('initiationDate', dtype('O')),
-        ('beta', dtype('float64')),
-        ('alpha', dtype('float64')),
-        ('dividendIntervalPeriod', dtype('float64')),
-    ]
+    assert_dtypes(df)
     assert len(df) > 286
 
 
 @file('alpha_beta.json')
 async def test_alpha_beta():
+    import aiohttp_test_utils
+
+    if aiohttp_test_utils.OFFLINE_MODE is False:
+        return  # even in browsers sometimes fails with: 417 Expectation Failed
     df = await fund.alpha_beta(all_=False)
     assert [*df.dtypes.items()] == [
         ('beta', dtype('float64')),

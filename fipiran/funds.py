@@ -1,29 +1,49 @@
 from pandas import NA as _NA
 
-from . import _api, _DataFrame, _to_datetime
+from fipiran import _api, _DataFrame, _to_datetime
 
-_COMMON_DTYPES = {
-    'guarantor': 'string',
+_KNOWN_DTYPES = {
     # 'initiationDate': 'datetime64', fails on some funds
-    'manager': 'string',
-    'name': 'string',
-    'regNo': 'int64',
-    'statisticalNav': 'float64',
-    'typeOfInvest': 'category',
-}
-_FUND_DTYPES = _COMMON_DTYPES | {
+    'alpha': 'float64',
+    'annualEfficiency': 'float64',
     'auditor': 'string',
+    'beta': 'float64',
+    'cancelNav': 'float64',
     'custodian': 'string',
+    'dailyEfficiency': 'float64',
+    # date cannot be set using astype, see:
+    # https://github.com/pandas-dev/pandas/issues/53127
+    'date': 'O',
     'dividendIntervalPeriod': 'Int64',
+    'efficiency': 'float64',
+    'fundSize': 'Int64',
+    'fundType': 'int64',
+    'guarantor': 'string',
     'guarantorSeoRegisterNo': 'Int64',
-    'managerSeoRegisterNo': 'Int64',
-    'fundSize': 'Int64',
-    'netAsset': 'Int64',
+    'initiationDate': 'O',
+    'insCode': 'string',
     'investedUnits': 'Int64',
-}
-_GRAPH_DTYPES = _COMMON_DTYPES | {
-    'fundSize': 'Int64',
+    'issueNav': 'float64',
+    'manager': 'string',
+    'managerSeoRegisterNo': 'Int64',
+    'monthlyEfficiency': 'float64',
+    'name': 'string',
     'netAsset': 'Int64',
+    'quarterlyEfficiency': 'float64',
+    'rankLastUpdate': 'O',
+    'rankOf12Month': 'float64',
+    'rankOf24Month': 'float64',
+    'rankOf36Month': 'float64',
+    'rankOf48Month': 'float64',
+    'rankOf60Month': 'float64',
+    'regNo': 'int64',
+    'sixMonthEfficiency': 'float64',
+    'smallSymbolName': 'string',
+    'statisticalNav': 'float64',
+    'tempGuarantorName': 'string',
+    'tempManagerName': 'string',
+    'typeOfInvest': 'category',
+    'weeklyEfficiency': 'float64',
 }
 
 
@@ -83,13 +103,21 @@ def _fix_website_address(df: _DataFrame):
     )
 
 
+def _apply_types(df: _DataFrame) -> _DataFrame:
+    col_names = df.columns
+    return df.astype(
+        {cn: _KNOWN_DTYPES[cn] for cn in col_names if cn in _KNOWN_DTYPES},
+        copy=False,
+    )
+
+
 async def funds() -> _DataFrame:
     """Return the data available at https://fund.fipiran.ir/mf/list.
 
     Also see fipiran.data_service.mutual_fund_list function.
     """
     j = await _api('fund/fundcompare')
-    df = _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
+    df = _apply_types(_DataFrame(j['items'], copy=False))
     df['date'] = _to_datetime(df['date'], format='ISO8601')
     _fix_website_address(df)
     return df
@@ -104,7 +132,7 @@ async def average_returns() -> _DataFrame:
 
 async def map_data() -> _DataFrame:
     j = await _api('fund/treemap')
-    df = _DataFrame(j['items'], copy=False).astype(_FUND_DTYPES, copy=False)
+    df = _apply_types(_DataFrame(j['items'], copy=False))
     df['date'] = _to_datetime(df['date'], format='ISO8601')
     _fix_website_address(df)
     return df
@@ -112,6 +140,6 @@ async def map_data() -> _DataFrame:
 
 async def dependency_graph_data() -> _DataFrame:
     j = await _api('fund/dependencygraph')
-    df = _DataFrame(j['items'], copy=False).astype(_GRAPH_DTYPES, copy=False)
+    df = _apply_types(_DataFrame(j['items'], copy=False))
     df['date'] = _to_datetime(df['date'], format='ISO8601')
     return df
