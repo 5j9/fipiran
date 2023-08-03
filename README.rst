@@ -16,7 +16,6 @@ Usage
 .. code-block:: python
 
     import asyncio
-    import fipiran
     from fipiran.symbols import Symbol
 
     async def main():
