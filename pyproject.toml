@@ -17,7 +17,7 @@ dependencies = [
     "beautifulsoup4",
     "lxml",
     "jdatetime",
-    "aiohutils>=0.7.0",
+    "aiohutils>=0.7.1",
 ]
 dynamic = ["version"]
 
