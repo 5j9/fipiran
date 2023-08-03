@@ -19,7 +19,7 @@ _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'
 
 
-session_manger = SessionManager(
+session_manager = SessionManager(
     kwargs={
         'headers': {
             'Referer': 'https://fund.fipiran.ir',
@@ -30,7 +30,7 @@ session_manger = SessionManager(
 
 
 async def _read(url, **kwargs) -> bytes:
-    r = await session_manger.get(url, **kwargs)
+    r = await session_manager.get(url, **kwargs)
     return await r.read()
 
 
