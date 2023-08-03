@@ -1,12 +1,8 @@
 __version__ = '0.17.1.dev0'
 from json import JSONDecodeError as _JSONDecodeError, loads
 from logging import error as _error
-from warnings import warn as _warn
 
-from aiohttp import (
-    ClientSession as _ClientSession,
-    ClientTimeout as _ClientTimeout,
-)
+from aiohutils.session import SessionManager
 
 # noinspection PyUnresolvedReferences
 from jdatetime import datetime as _jdatetime
@@ -21,24 +17,20 @@ from pandas import (
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'
-SESSION: _ClientSession | None = None
 
 
-class Session:
-    def __new__(cls, *args, **kwargs) -> _ClientSession:
-        global SESSION
-        if 'timeout' not in kwargs:
-            kwargs['timeout'] = _ClientTimeout(
-                total=60.0, sock_connect=30.0, sock_read=30.0
-            )
-        SESSION = _ClientSession(**kwargs)
-        return SESSION
+session_manger = SessionManager(
+    kwargs={
+        'headers': {
+            'Referer': 'https://fund.fipiran.ir',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0',
+        }
+    }
+)
 
 
 async def _read(url, **kwargs) -> bytes:
-    r = await SESSION.get(url, **kwargs)
-    if r.history:
-        _warn(f'r.history is not empty (possible redirection): {r.history}')
+    r = await session_manger.get(url, **kwargs)
     return await r.read()
 
 

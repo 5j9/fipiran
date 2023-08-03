@@ -17,6 +17,7 @@ dependencies = [
     "beautifulsoup4",
     "lxml",
     "jdatetime",
+    "aiohutils>=0.6.1",
 ]
 dynamic = ["version"]
 
@@ -33,9 +34,6 @@ content-type = "text/x-rst"
 
 [project.urls]
 Homepage = "https://github.com/5j9/fipiran"
-
-[project.optional-dependencies]
-test = ["aiohttp_test_utils>=0.4.0"]
 
 [tool.setuptools]
 packages = ["fipiran"]

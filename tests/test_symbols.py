@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from aiohttp_test_utils import file
+from aiohutils.tests import file
 from jdatetime import datetime as jdatetime
 from numpy import dtype
 from pandas import DataFrame

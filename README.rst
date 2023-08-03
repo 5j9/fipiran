@@ -13,25 +13,6 @@ Requires Python 3.10+.
 Usage
 -----
 
-For any async operation ``fipiran.SESSION`` needs to be set to an ``aiohttp.ClientSession`` instance:
-
-.. code-block:: python
-
-    import asyncio
-    import aiohttp
-    import fipiran
-    from fipiran.symbols import Symbol
-
-    async def main():
-        async with aiohttp.ClientSession() as fipiran.SESSION:
-            company_info = await Symbol('فملی').company_info()
-        print(company_info)
-
-    asyncio.run(main())
-
-
-``fipiran.Session()`` provides a shorter alternative for the above:
-
 .. code-block:: python
 
     import asyncio
@@ -39,8 +20,7 @@ For any async operation ``fipiran.SESSION`` needs to be set to an ``aiohttp.Clie
     from fipiran.symbols import Symbol
 
     async def main():
-        async with fipiran.Session():
-            company_info = await Symbol('فملی').company_info()
+        company_info = await Symbol('فملی').company_info()
         print(company_info)
 
     asyncio.run(main())
@@ -53,14 +33,6 @@ There are four modules:
 - codal
 
 Use an asyncio-aware REPL, like ``python -m asyncio``, to run the code samples below.
-
-Prepare the session:
-
-.. code-block:: python
-
-    >>> import fipiran
-    >>> # without a context-manager, we should call session.close() manually after we are finished
-    >>> session = fipiran.Session()
 
 Example 1:
 

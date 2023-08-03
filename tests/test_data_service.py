@@ -1,6 +1,6 @@
 from operator import itemgetter
 
-from aiohttp_test_utils import file, patch
+from aiohutils.tests import file, patch
 from jdatetime import datetime as jdatetime
 from numpy import dtype
 from pandas import Timestamp
