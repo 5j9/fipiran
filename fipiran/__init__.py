@@ -1,4 +1,4 @@
-__version__ = '0.17.1.dev0'
+__version__ = '0.18.0'
 from json import JSONDecodeError as _JSONDecodeError, loads
 from logging import error as _error
 
