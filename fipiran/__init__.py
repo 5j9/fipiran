@@ -1,5 +1,5 @@
 __version__ = '0.19.2.dev0'
-from json import JSONDecodeError as _JSONDecodeError, loads
+from json import JSONDecodeError as _JSONDecodeError, loads as _jl
 from logging import error as _error
 
 import pandas as _pd
@@ -27,7 +27,7 @@ async def _read(url, **kwargs) -> bytes:
 async def _api(path) -> dict | list:
     r = await _read(_API + path)
     try:
-        return loads(r)
+        return _jl(r)
     except _JSONDecodeError:
         _error(f'{r = }')
         raise
@@ -38,5 +38,5 @@ async def _fipiran(
 ) -> str | dict | list:
     content = await _read(f'{_FIPIRAN}{path}', params=params)
     if json_resp is True:
-        return loads(content)
+        return _jl(content)
     return content.decode().translate(_YK)
