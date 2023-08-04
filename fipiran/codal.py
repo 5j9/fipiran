@@ -1,21 +1,23 @@
 from functools import partial as _partial
 from re import compile as _rc
 
-from . import _DataFrame, _fipiran, _read_html
+from pandas import DataFrame as _Df, read_html as _rh
+
+from . import _fipiran
 
 _parenthesis_to_negative = _partial(_rc(r'\((\d+)\)').sub, r'-\1')
 
 
-async def financial_ratios() -> _DataFrame:
+async def financial_ratios() -> _Df:
     text = await _fipiran('Codal/Ratio')
-    return _read_html(text)[0]
+    return _rh(text)[0]
 
 
-async def profit_growth() -> _DataFrame:
+async def profit_growth() -> _Df:
     text = await _fipiran('Codal/RoshdPos')
-    return _read_html(_parenthesis_to_negative(text))[0]
+    return _rh(_parenthesis_to_negative(text))[0]
 
 
-async def profit_decline() -> _DataFrame:
+async def profit_decline() -> _Df:
     text = await _fipiran('Codal/RoshdNeg')
-    return _read_html(_parenthesis_to_negative(text))[0]
+    return _rh(_parenthesis_to_negative(text))[0]

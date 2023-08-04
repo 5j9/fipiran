@@ -2,8 +2,10 @@ from functools import partial as _partial
 from typing import Literal as _Literal
 
 from bs4 import BeautifulSoup as _BeautifulSoup
+from jdatetime import datetime as _jdt
+from pandas import DataFrame as _Df, read_html as _rh, to_datetime as _tdt
 
-from . import _DataFrame, _fipiran, _jdatetime, _read_html, _to_datetime
+from . import _fipiran
 
 _KY = ''.maketrans('کی', 'كي')
 
@@ -35,7 +37,9 @@ class Symbol:
     async def price_data(self) -> dict:
         # note: some fields like Trailing P/E and Forward P/E are *currently*
         # not computed by fipiran and are always empty.
-        text = await _fipiran(f'Symbol/_priceData?inscode={await self.inscode}')
+        text = await _fipiran(
+            f'Symbol/_priceData?inscode={await self.inscode}'
+        )
         bs = _soup(text)
         so = bs.select_one
         d = {}
@@ -67,7 +71,7 @@ class Symbol:
         ):
             d[k] = num(so(f'#{k}').text)
 
-        d['Deven'] = _jdatetime.strptime(so('#Deven').text, '%Y/%m/%d-%H:%M:%S')
+        d['Deven'] = _jdt.strptime(so('#Deven').text, '%Y/%m/%d-%H:%M:%S')
 
         tmin, tmax = bs.find(string='قیمت مجاز').next.text.split(' - ')
         d['tmin'] = num(tmin)
@@ -75,12 +79,16 @@ class Symbol:
 
         return d
 
-    async def best_limit_data(self) -> list[_DataFrame]:
-        text = await _fipiran(f'Symbol/_BestLimitData?inscode={await self.inscode}')
-        return _read_html(text)
+    async def best_limit_data(self) -> list[_Df]:
+        text = await _fipiran(
+            f'Symbol/_BestLimitData?inscode={await self.inscode}'
+        )
+        return _rh(text)
 
     async def reference_data(self) -> dict:
-        text = await _fipiran(f'Symbol/_RefrenceData?symbolpara={self._symbolpara}')
+        text = await _fipiran(
+            f'Symbol/_RefrenceData?symbolpara={self._symbolpara}'
+        )
         bs = _soup(text)
         h4s = [i.text.strip(': ') for i in bs.select('h4')]
         spans = [i.text for i in bs.select('span')]
@@ -90,11 +98,17 @@ class Symbol:
         d[k] = v
         return d
 
-    async def statistic(self, days: _Literal[365, 180, 90, 30, 7]) -> _DataFrame:
-        return _read_html(await _fipiran(f'Symbol/statistic{days}?inscode={await self.inscode}'))[0]
+    async def statistic(self, days: _Literal[365, 180, 90, 30, 7]) -> _Df:
+        return _rh(
+            await _fipiran(
+                f'Symbol/statistic{days}?inscode={await self.inscode}'
+            )
+        )[0]
 
     async def company_info(self):
-        text = await _fipiran(f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}')
+        text = await _fipiran(
+            f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}'
+        )
         bs = _soup(text)
         keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
         values = [i.text.strip() for i in bs.select('.media-body span')]
@@ -106,8 +120,8 @@ class Symbol:
             f'symbolpara={self._symbolpara}&rows={rows}&page={page}',
             json_resp=True,
         )
-        df = j['data'] = _DataFrame(j['data'], copy=False)
-        df['gDate'] = _to_datetime(df['gDate'])
+        df = j['data'] = _Df(j['data'], copy=False)
+        df['gDate'] = _tdt(df['gDate'])
         df.set_index('gDate', inplace=True)
         return j
 

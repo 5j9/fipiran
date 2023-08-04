@@ -1,8 +1,11 @@
 from typing import TypedDict as _TypedDict
 
-from . import _DataFrame, _fipiran, _jdatetime, _read_html, _to_datetime
+from jdatetime import datetime as _jdt
+from pandas import DataFrame as _Df, read_html as _rh, to_datetime as _tdt
 
-_jstrptime = _jdatetime.strptime
+from . import _fipiran
+
+_jstrptime = _jdt.strptime
 
 
 async def auto_complete_fund(
@@ -13,13 +16,20 @@ async def auto_complete_fund(
 
 async def auto_complete_index(
     id_: str,
-) -> list[_TypedDict('IndexAutoComplete', {'LVal30': str, 'InstrumentID': str})]:
-    return await _fipiran('DataService/AutoCompleteindex', (('id', id_),), True)
+) -> list[
+    _TypedDict('IndexAutoComplete', {'LVal30': str, 'InstrumentID': str})
+]:
+    return await _fipiran(
+        'DataService/AutoCompleteindex', (('id', id_),), True
+    )
 
 
 async def export_index(
-    lval30: str, start_date: str | int, end_date: str | int, instrument_id: str = None
-) -> _DataFrame:
+    lval30: str,
+    start_date: str | int,
+    end_date: str | int,
+    instrument_id: str = None,
+) -> _Df:
     """Return history of requested index.
 
     Use the `auto_complete_index` function to retrieve lval30 and instrument_id
@@ -42,15 +52,21 @@ async def export_index(
             ('indexEnd', end_date),
         ),
     )
-    df = _read_html(xls)[0]
-    df['dateissue'] = df['dateissue'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
+    df = _rh(xls)[0]
+    df['dateissue'] = (
+        df['dateissue'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
+    )
     return df
 
 
 async def auto_complete_symbol(
     id_: str,
-) -> list[_TypedDict('SymbolAutoComplete', {'LVal18AFC': str, 'InstrumentID': str})]:
-    return await _fipiran('DataService/AutoCompletesymbol', (('id', id_),), True)
+) -> list[
+    _TypedDict('SymbolAutoComplete', {'LVal18AFC': str, 'InstrumentID': str})
+]:
+    return await _fipiran(
+        'DataService/AutoCompletesymbol', (('id', id_),), True
+    )
 
 
 async def export_symbol(
@@ -58,7 +74,7 @@ async def export_symbol(
     start_date: str | int,
     end_date: str | int,
     instrument_id: str = None,
-) -> _DataFrame:
+) -> _Df:
     """Return history of requested index.
 
     Use the `auto_complete_symbol` function to retrieve `lval18afc` and
@@ -82,16 +98,16 @@ async def export_symbol(
             ('symbolEnd', end_date),
         ),
     )
-    df = _read_html(xls)[0]
+    df = _rh(xls)[0]
     df['PDate'] = df['PDate'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
-    df['GDate'] = _to_datetime(df['GDate'], format='%Y%m%d')
+    df['GDate'] = _tdt(df['GDate'], format='%Y%m%d')
     return df
 
 
 async def balance_sheet(
     l18: str,
     year: str | int,
-) -> _DataFrame:
+) -> _Df:
     """Return balance sheet for the requested symbol name as DataFrame.
 
     https://www.fipiran.ir/DataService/BSIndex
@@ -103,7 +119,7 @@ async def balance_sheet(
             ('year', year),
         ),
     )
-    df = _read_html(xls)[0]
+    df = _rh(xls)[0]
     jdate_cols = ['PublishDate', 'FinanceYear']
     df[jdate_cols] = (
         df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
@@ -114,7 +130,7 @@ async def balance_sheet(
 async def profit_loss(
     l18: str,
     year: str | int,
-) -> _DataFrame:
+) -> _Df:
     """Return profit and loss statements for the requested symbol and year.
 
     https://www.fipiran.ir/DataService/ISIndex
@@ -126,7 +142,7 @@ async def profit_loss(
             ('year', year),
         ),
     )
-    df = _read_html(xls)[0]
+    df = _rh(xls)[0]
     jdate_cols = ['publishDate', 'FinanceYear']
     df[jdate_cols] = (
         df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
@@ -137,7 +153,7 @@ async def profit_loss(
 async def financial_ratios(
     l18: str,
     year: str | int,
-) -> _DataFrame:
+) -> _Df:
     """Return financial ratios for the requested symbol and year.
 
     https://www.fipiran.ir/DataService/RatioIndex
@@ -149,7 +165,7 @@ async def financial_ratios(
             ('year', year),
         ),
     )
-    df = _read_html(xls)[0]
+    df = _rh(xls)[0]
     jdate_cols = ['PublishDate', 'FinancialYear']
     df[jdate_cols] = (
         df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')

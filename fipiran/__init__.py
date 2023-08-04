@@ -2,18 +2,10 @@ __version__ = '0.19.2.dev0'
 from json import JSONDecodeError as _JSONDecodeError, loads
 from logging import error as _error
 
+import pandas as _pd
 from aiohutils.session import SessionManager
 
-# noinspection PyUnresolvedReferences
-from jdatetime import datetime as _jdatetime
-
-# noinspection PyUnresolvedReferences
-from pandas import (
-    DataFrame as _DataFrame,
-    read_html as _read_html,
-    to_datetime as _to_datetime,
-)
-
+_pd.options.mode.copy_on_write = True
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'

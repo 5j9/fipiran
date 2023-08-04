@@ -1,6 +1,6 @@
-from pandas import NA as _NA
+from pandas import NA as _NA, DataFrame as _Df, to_datetime as _tdt
 
-from fipiran import _api, _DataFrame, _to_datetime
+from fipiran import _api
 
 _KNOWN_DTYPES = {
     # 'initiationDate': 'datetime64', fails on some funds
@@ -56,37 +56,37 @@ class Fund:
     def __repr__(self):
         return f'{type(self).__name__}({self.reg_no!r})'
 
-    async def asset_allocation_history(self) -> _DataFrame:
+    async def asset_allocation_history(self) -> _Df:
         """Return a dict where values are percentage of each kind of asset."""
         j = await _api(f'chart/portfoliochart?regno={self.reg_no}')
-        df = _DataFrame(j)
-        df['date'] = _to_datetime(df['date'], format='ISO8601')
+        df = _Df(j)
+        df['date'] = _tdt(df['date'], format='ISO8601')
         return df
 
-    async def issue_cancel_history(self, /, *, all_=True) -> _DataFrame:
+    async def issue_cancel_history(self, /, *, all_=True) -> _Df:
         j = await _api(
             f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
-        df = _DataFrame(j, copy=False)
-        df['date'] = _to_datetime(df['date'])
+        df = _Df(j, copy=False)
+        df['date'] = _tdt(df['date'])
         df.set_index('date', inplace=True)
         return df
 
-    async def nav_history(self, /, *, all_=True) -> _DataFrame:
+    async def nav_history(self, /, *, all_=True) -> _Df:
         j = await _api(
             f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
-        df = _DataFrame(j, copy=False)
-        df['date'] = _to_datetime(df['date'])
+        df = _Df(j, copy=False)
+        df['date'] = _tdt(df['date'])
         df.set_index('date', inplace=True)
         return df
 
-    async def alpha_beta(self, /, *, all_=True) -> _DataFrame:
+    async def alpha_beta(self, /, *, all_=True) -> _Df:
         j = await _api(
             f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
-        df = _DataFrame(j, copy=False)
-        df['date'] = _to_datetime(df['date'])
+        df = _Df(j, copy=False)
+        df['date'] = _tdt(df['date'])
         df.set_index('date', inplace=True)
         return df
 
@@ -94,7 +94,7 @@ class Fund:
         return (await _api(f'fund/getfund?regno={self.reg_no}'))['item']
 
 
-def _fix_website_address(df: _DataFrame):
+def _fix_website_address(df: _Df):
     # assert df['websiteAddress'].map(len).max() == 1
     df['websiteAddress'] = (
         df['websiteAddress']
@@ -103,7 +103,7 @@ def _fix_website_address(df: _DataFrame):
     )
 
 
-def _apply_types(df: _DataFrame) -> _DataFrame:
+def _apply_types(df: _Df) -> _Df:
     col_names = df.columns
     return df.astype(
         {cn: _KNOWN_DTYPES[cn] for cn in col_names if cn in _KNOWN_DTYPES},
@@ -111,35 +111,35 @@ def _apply_types(df: _DataFrame) -> _DataFrame:
     )
 
 
-async def funds() -> _DataFrame:
+async def funds() -> _Df:
     """Return the data available at https://fund.fipiran.ir/mf/list.
 
     Also see fipiran.data_service.mutual_fund_list function.
     """
     j = await _api('fund/fundcompare')
-    df = _apply_types(_DataFrame(j['items'], copy=False))
-    df['date'] = _to_datetime(df['date'], format='ISO8601')
+    df = _apply_types(_Df(j['items'], copy=False))
+    df['date'] = _tdt(df['date'], format='ISO8601')
     _fix_website_address(df)
     return df
 
 
-async def average_returns() -> _DataFrame:
+async def average_returns() -> _Df:
     """Return a Dataframe for https://fund.fipiran.ir/mf/efficiency."""
     j = await _api('fund/averagereturns')
-    df = _DataFrame(j, copy=False)
+    df = _Df(j, copy=False)
     return df.astype({'netAsset': 'Int64'}, copy=False)
 
 
-async def map_data() -> _DataFrame:
+async def map_data() -> _Df:
     j = await _api('fund/treemap')
-    df = _apply_types(_DataFrame(j['items'], copy=False))
-    df['date'] = _to_datetime(df['date'], format='ISO8601')
+    df = _apply_types(_Df(j['items'], copy=False))
+    df['date'] = _tdt(df['date'], format='ISO8601')
     _fix_website_address(df)
     return df
 
 
-async def dependency_graph_data() -> _DataFrame:
+async def dependency_graph_data() -> _Df:
     j = await _api('fund/dependencygraph')
-    df = _apply_types(_DataFrame(j['items'], copy=False))
-    df['date'] = _to_datetime(df['date'], format='ISO8601')
+    df = _apply_types(_Df(j['items'], copy=False))
+    df['date'] = _tdt(df['date'], format='ISO8601')
     return df
