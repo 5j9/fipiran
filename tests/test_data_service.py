@@ -17,6 +17,8 @@ from fipiran.data_service import (
     profit_loss,
 )
 
+string = 'string'
+
 
 @file('AutoCompleteFundAva.json')
 async def test_auto_complete_fund():
@@ -113,7 +115,7 @@ async def test_balance_sheet():
     df = await balance_sheet('فملی', 1394)
     assert len(df) == 11
     assert [*df.dtypes.items()] == [
-        ('Symbol', dtype('O')),
+        ('Symbol', string),
         ('PublishDate', dtype('O')),
         ('FinanceYear', dtype('O')),
         ('Year', dtype('int64')),
@@ -147,7 +149,7 @@ async def test_profit_loss():
     df = await profit_loss('فملی', 1394)
     assert len(df) == 14
     assert [*df.dtypes.items()] == [
-        ('Symbol', dtype('O')),
+        ('Symbol', string),
         ('publishDate', dtype('O')),
         ('FinanceYear', dtype('O')),
         ('Year', dtype('int64')),
@@ -170,7 +172,7 @@ async def test_financial_ratios():
     df = await financial_ratios('فملی', 1394)
     assert len(df) == 4
     assert [*df.dtypes.items()] == [
-        ('Symbol', dtype('O')),
+        ('Symbol', string),
         ('PublishDate', dtype('O')),
         ('FinancialYear', dtype('O')),
         ('Year', dtype('int64')),

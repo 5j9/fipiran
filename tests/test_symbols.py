@@ -110,7 +110,7 @@ async def test_price_history():
     data = ph['data']
     assert len(data) == 3
     assert [*data.dtypes.items()] == [
-        ('DEven', dtype('O')),
+        ('DEven', 'string'),
         ('ZTotTran', dtype('float64')),
         ('QTotTran5J', dtype('float64')),
         ('QTotCap', dtype('float64')),

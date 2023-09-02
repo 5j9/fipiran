@@ -3,16 +3,18 @@ from numpy import dtype
 
 from fipiran.codal import financial_ratios, profit_decline, profit_growth
 
+string = 'string'
+
 
 @file('financial_ratios.html')
 async def test_financial_ratios():
     df = await financial_ratios()
     assert [*df.dtypes.items()] == [
-        ('نماد', dtype('O')),
-        ('تاریخ انتشار', dtype('O')),
+        ('نماد', string),
+        ('تاریخ انتشار', string),
         ('سال', dtype('int64')),
         ('دوره', dtype('int64')),
-        ('سال مالی', dtype('O')),
+        ('سال مالی', string),
         ('سرمایه', dtype('float64')),
         ('نسبت جاری', dtype('float64')),
         ('حاشیه سود ناخالص', dtype('float64')),
@@ -28,9 +30,9 @@ async def test_financial_ratios():
 async def test_profit_growth():
     df = await profit_growth()
     assert [*df.dtypes.items()] == [
-        ('نماد', dtype('O')),
-        ('تاریخ انتشار', dtype('O')),
-        ('دوره', dtype('O')),
+        ('نماد', string),
+        ('تاریخ انتشار', string),
+        ('دوره', string),
         ('سود واقعی دوره', dtype('int64')),
         ('سود واقعی دوره قبل', dtype('int64')),
         ('% رشد', dtype('int64')),
@@ -41,9 +43,9 @@ async def test_profit_growth():
 async def test_profit_decline():
     df = await profit_decline()
     assert [*df.dtypes.items()] == [
-        ('نماد', dtype('O')),
-        ('تاریخ انتشار', dtype('O')),
-        ('دوره', dtype('O')),
+        ('نماد', string),
+        ('تاریخ انتشار', string),
+        ('دوره', string),
         ('سود واقعی دوره', dtype('int64')),
         ('سود واقعی دوره قبل', dtype('int64')),
         ('% رشد', dtype('int64')),

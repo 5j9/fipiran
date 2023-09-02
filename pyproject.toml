@@ -13,15 +13,16 @@ classifiers = [
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-    "pandas >= 2.0.0",
+    "aiohutils >= 0.10.0",
     "beautifulsoup4",
-    "lxml",
     "jdatetime",
-    "aiohutils >= 0.9.2",
+    "lxml",
+    "pandas >= 2.1.0",
+    "pyarrow",
 ]
 [project.optional-dependencies]
 test = [
-    "aiohutils[test] >= 0.9.2",
+    "aiohutils[test] >= 0.10.0",
 ]
 
 [[authors]]
