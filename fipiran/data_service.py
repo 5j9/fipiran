@@ -1,7 +1,8 @@
 from typing import TypedDict as _TypedDict
 
+from aiohutils.pd import html_to_df as _hd
 from jdatetime import datetime as _jdt
-from pandas import DataFrame as _Df, read_html as _rh, to_datetime as _tdt
+from pandas import DataFrame as _Df, to_datetime as _tdt
 
 from . import _fipiran
 
@@ -52,7 +53,7 @@ async def export_index(
             ('indexEnd', end_date),
         ),
     )
-    df = _rh(xls)[0]
+    df = _hd(xls)
     df['dateissue'] = (
         df['dateissue'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
     )
@@ -98,7 +99,7 @@ async def export_symbol(
             ('symbolEnd', end_date),
         ),
     )
-    df = _rh(xls)[0]
+    df = _hd(xls)
     df['PDate'] = df['PDate'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
     df['GDate'] = _tdt(df['GDate'], format='%Y%m%d')
     return df
@@ -119,11 +120,9 @@ async def balance_sheet(
             ('year', year),
         ),
     )
-    df = _rh(xls)[0]
+    df = _hd(xls)
     jdate_cols = ['PublishDate', 'FinanceYear']
-    df[jdate_cols] = (
-        df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
-    )
+    df[jdate_cols] = df[jdate_cols].map(str).map(_jstrptime, format='%Y/%m/%d')
     return df
 
 
@@ -142,11 +141,9 @@ async def profit_loss(
             ('year', year),
         ),
     )
-    df = _rh(xls)[0]
+    df = _hd(xls)
     jdate_cols = ['publishDate', 'FinanceYear']
-    df[jdate_cols] = (
-        df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
-    )
+    df[jdate_cols] = df[jdate_cols].map(str).map(_jstrptime, format='%Y/%m/%d')
     return df
 
 
@@ -165,9 +162,7 @@ async def financial_ratios(
             ('year', year),
         ),
     )
-    df = _rh(xls)[0]
+    df = _hd(xls)
     jdate_cols = ['PublishDate', 'FinancialYear']
-    df[jdate_cols] = (
-        df[jdate_cols].applymap(str).applymap(_jstrptime, format='%Y/%m/%d')
-    )
+    df[jdate_cols] = df[jdate_cols].map(str).map(_jstrptime, format='%Y/%m/%d')
     return df

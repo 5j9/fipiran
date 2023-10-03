@@ -1,4 +1,5 @@
 from functools import partial as _partial
+from io import StringIO as _StringIO
 from typing import Literal as _Literal
 
 from bs4 import BeautifulSoup as _BeautifulSoup
@@ -83,7 +84,7 @@ class Symbol:
         text = await _fipiran(
             f'Symbol/_BestLimitData?inscode={await self.inscode}'
         )
-        return _rh(text)
+        return _rh(_StringIO(text))
 
     async def reference_data(self) -> dict:
         text = await _fipiran(
@@ -100,8 +101,10 @@ class Symbol:
 
     async def statistic(self, days: _Literal[365, 180, 90, 30, 7]) -> _Df:
         return _rh(
-            await _fipiran(
-                f'Symbol/statistic{days}?inscode={await self.inscode}'
+            _StringIO(
+                await _fipiran(
+                    f'Symbol/statistic{days}?inscode={await self.inscode}'
+                )
             )
         )[0]
 
