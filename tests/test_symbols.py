@@ -22,7 +22,7 @@ def test_symbol_from_name():
 
 @file('SymbolFMelli.html')
 async def test_inscode_cache():
-    s = Symbol("فملی")
+    s = Symbol('فملی')
     assert s._inscode is None
     assert await s.inscode == 35425587644337450
     assert s._inscode == 35425587644337450
