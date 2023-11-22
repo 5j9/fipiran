@@ -73,10 +73,11 @@ async def test_export_index_no_instrument_id(mock):
 
 @file('AutoCompleteSymbolMadira.json')
 async def test_auto_complete_symbol():
-    assert await auto_complete_symbol('مادیرا') == [
-        {'LVal18AFC': 'ماديرا', 'InstrumentID': 'IRO3IOMZ0001'},
-        {'LVal18AFC': 'ماديرا', 'InstrumentID': 'IRO7IOMZ0001'},
-        {'LVal18AFC': 'ماديراح', 'InstrumentID': 'IRR3IOMZ0101'},
+    assert await auto_complete_symbol('كفر') == [
+        {'InstrumentID': 'IRO1NASI0001', 'LVal18AFC': 'كفرا'},
+        {'InstrumentID': 'IRO7KFRP0001', 'LVal18AFC': 'كفرآور'},
+        {'InstrumentID': 'IRR1NASI0101', 'LVal18AFC': 'كفراح'},
+        {'InstrumentID': 'IRR7KFRP0101', 'LVal18AFC': 'كفرآورح'},
     ]
 
 
