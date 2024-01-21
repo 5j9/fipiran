@@ -2,8 +2,8 @@ from aiohutils.tests import file
 from numpy import dtype
 from pandas import DataFrame, Int64Dtype, StringDtype
 
-from fipiran.funds import _KNOWN_DTYPES  # noqa
 from fipiran.funds import (
+    _KNOWN_DTYPES,  # noqa
     Fund,
     average_returns,
     dependency_graph_data,
