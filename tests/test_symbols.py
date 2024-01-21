@@ -74,7 +74,7 @@ async def test_symbol_refrence_data():
 
 
 @file('statistic30Fmelli.html')
-async def test_symbol_refrence_data():
+async def test_symbol_statistics():
     assert (
         type(await Symbol('فملی', 35425587644337450).statistic(30))
         is DataFrame
