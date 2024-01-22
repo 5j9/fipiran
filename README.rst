@@ -4,7 +4,7 @@ Note: This is package is incomplete and still in initial development phase. The 
 
 Installation
 ------------
-Requires Python 3.10+.
+Requires Python 3.12+.
 
 .. code-block:: bash
 

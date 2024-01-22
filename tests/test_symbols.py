@@ -16,7 +16,7 @@ async def test_search():
     assert symbols[0].l30 == 'كربن\u200c ايران\u200c'
 
 
-def test_symbol_from_name():
+def test_symbol_from_name(aiolib):
     assert f'{Symbol("فملی")!r}' == "Symbol('فملی')"
 
 
@@ -51,7 +51,7 @@ async def test_symbol_price_data():
     assert type(price_data.pop('Deven')) is jdatetime
     for key in ('changepdr', 'changepc'):
         assert type(price_data.pop(key)) in (int, float)
-    assert all(type(v) is int for v in price_data.values())
+    assert all(type(v) is int for v in price_data.values())  # noqa: E721
 
 
 @file('BestLimitDataFMelli.html')

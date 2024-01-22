@@ -1,3 +1,3 @@
-from aiohutils.tests import init_tests, pytestmark  # noqa: F401
+from aiohutils.tests import init_tests
 
 init_tests()

@@ -15,7 +15,7 @@ fund = Fund(11215)
 string = StringDtype()
 
 
-def test_repr():
+def test_repr(aiolib):
     assert repr(fund) == 'Fund(11215)'
     assert repr(Fund('11215')) == "Fund('11215')"
 
@@ -65,7 +65,7 @@ async def test_nav_history():
 async def test_info():
     info = await fund.info()
     assert len(info) >= 63
-    assert type(info) is dict
+    assert type(info) is dict  # noqa: E721
 
 
 EXPECTED_INFERRED_DTYPES = {
