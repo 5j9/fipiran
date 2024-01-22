@@ -16,7 +16,7 @@ async def test_search():
     assert symbols[0].l30 == 'كربن\u200c ايران\u200c'
 
 
-def test_symbol_from_name(aiolib):
+def test_symbol_from_name():
     assert f'{Symbol("فملی")!r}' == "Symbol('فملی')"
 
 

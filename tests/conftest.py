@@ -1,1 +1,1 @@
-from aiohutils.tests import session  # noqa: F401
+from aiohutils.tests import pytest_collection_modifyitems, session  # noqa: F401

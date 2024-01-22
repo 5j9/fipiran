@@ -15,7 +15,7 @@ fund = Fund(11215)
 string = StringDtype()
 
 
-def test_repr(aiolib):
+def test_repr():
     assert repr(fund) == 'Fund(11215)'
     assert repr(Fund('11215')) == "Fund('11215')"
 
