@@ -22,7 +22,7 @@ dependencies = [
 ]
 [project.optional-dependencies]
 test = [
-    "aiohutils[test] >= 0.11.0",
+    "aiohutils[test] >= 0.12.0",
 ]
 
 [[authors]]
