@@ -17,8 +17,7 @@ dependencies = [
     "beautifulsoup4",
     "jdatetime",
     "lxml",
-    "pandas >= 2.1.0",
-    "pyarrow",
+    "pandas[pyarrow] >= 2.2.1",
 ]
 [project.optional-dependencies]
 test = [
