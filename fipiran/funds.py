@@ -1,3 +1,5 @@
+from warnings import warn as _warn
+
 from pandas import NA as _NA, DataFrame as _Df, to_datetime as _tdt
 
 from fipiran import _api
@@ -63,7 +65,7 @@ class Fund:
         df['date'] = _tdt(df['date'], format='ISO8601')
         return df
 
-    async def issue_cancel_history(self, /, *, all_=True) -> _Df:
+    async def navps_history(self, /, *, all_=True) -> _Df:
         j = await _api(
             f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
@@ -71,6 +73,13 @@ class Fund:
         df['date'] = _tdt(df['date'])
         df.set_index('date', inplace=True)
         return df
+
+    async def issue_cancel_history(self, /, *, all_=True) -> _Df:
+        _warn(
+            '`issue_cancel_history` is deprecated, use `navps_history` instead',
+            DeprecationWarning,
+        )
+        return await self.navps_history(all_=all_)
 
     async def nav_history(self, /, *, all_=True) -> _Df:
         j = await _api(

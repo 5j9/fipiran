@@ -37,13 +37,14 @@ async def test_asset_allocation_history():
 
 
 @file('getfundchart_atlas.json')
-async def test_issue_cancel_history():
-    df = await fund.issue_cancel_history(all_=False)
+async def test_navps():
+    df = await fund.navps_history(all_=False)
     assert [*df.dtypes.items()] == [
         ('issueNav', dtype('float64')),
         ('cancelNav', dtype('float64')),
         ('statisticalNav', dtype('float64')),
     ]
+    assert (df['cancelNav'] <= df['issueNav']).all()
     assert len(df) >= 360
     assert df.index.name == 'date'
     assert df.index.dtype == '<M8[ns]'
