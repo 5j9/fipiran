@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=66.1.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ['flit_core >=3.2,<4']
+build-backend = 'flit_core.buildapi'
 
 [project]
 name = "fipiran"
@@ -39,13 +39,8 @@ content-type = "text/x-rst"
 [project.urls]
 Homepage = "https://github.com/5j9/fipiran"
 
-[tool.setuptools]
-packages = ["fipiran"]
-zip-safe = true
-include-package-data = false
-
-[tool.setuptools.dynamic.version]
-attr = "fipiran.__version__"
+[tool.flit.sdist]
+exclude = ['tests/']
 
 [tool.ruff]
 line-length = 79
