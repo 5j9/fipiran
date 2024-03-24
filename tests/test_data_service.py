@@ -1,9 +1,8 @@
+from datetime import datetime
 from operator import itemgetter
 
 from aiohutils.tests import file, patch
-from jdatetime import datetime as jdatetime
-from numpy import dtype
-from pandas import Timestamp
+from polars import Datetime, Float64, Int64, String
 from pytest import raises
 
 from fipiran.data_service import (
@@ -16,8 +15,6 @@ from fipiran.data_service import (
     financial_ratios,
     profit_loss,
 )
-
-string = 'string'
 
 
 @file('AutoCompleteFundAva.json')
@@ -55,11 +52,11 @@ async def test_export_index():
         'شاخص كل (هم وزن)', 14000101, 14000110, 'IRX6XTPI0026'
     )
     assert len(df) == 3
-    assert df.iloc[-1].to_list() == [
+    assert df.row(-1) == (
         'شاخص',
-        jdatetime(1400, 1, 7, 0, 0),
+        datetime(2021, 3, 27, 0, 0),
         441834.0,
-    ]
+    )
 
 
 @patch(
@@ -85,10 +82,10 @@ async def test_auto_complete_symbol():
 async def test_export_symbol():
     df = await export_symbol('ماديرا', 14000801, 15000101, 'IRO3IOMZ0001')
     # noinspection PyTypeChecker
-    assert df.iloc[-1].to_list() == [
+    assert df.row(-1) == (
         'مادیرا',
-        jdatetime(1400, 8, 1, 0, 0),
-        Timestamp('2021-10-23 00:00:00'),
+        14000801,
+        datetime(2021, 10, 23, 0, 0),
         373.0,
         4505128.0,
         32545145672.0,
@@ -98,7 +95,7 @@ async def test_export_symbol():
         7230.0,
         7224.0,
         7604.0,
-    ]
+    )
 
 
 @patch(
@@ -115,84 +112,84 @@ async def test_export_symbol_no_instrument_id(mock):
 async def test_balance_sheet():
     df = await balance_sheet('فملی', 1394)
     assert len(df) == 11
-    assert [*df.dtypes.items()] == [
-        ('Symbol', string),
-        ('PublishDate', dtype('O')),
-        ('FinanceYear', dtype('O')),
-        ('Year', dtype('int64')),
-        ('period', dtype('int64')),
-        ('IsAudit', dtype('float64')),
-        ('cash', dtype('int64')),
-        ('NetReceivables', dtype('int64')),
-        ('OtherReceivables', dtype('int64')),
-        ('ShortTermInvestments', dtype('int64')),
-        ('Inventory', dtype('int64')),
-        ('PrePayment', dtype('int64')),
-        ('TotalCurrentAssets', dtype('int64')),
-        ('LongTermInvestments', dtype('int64')),
-        ('PropertyPlantAndEquipment', dtype('int64')),
-        ('IntangibleAssets', dtype('int64')),
-        ('TotalAssets', dtype('int64')),
-        ('AccountsPayable', dtype('int64')),
-        ('OtherPayable', dtype('int64')),
-        ('PreRecive', dtype('int64')),
-        ('TotalCurrentLiabilities', dtype('int64')),
-        ('TotalLiabilities', dtype('int64')),
-        ('capital', dtype('int64')),
-        ('RetainedEarnings', dtype('int64')),
-        ('TotalStockholderEquity', dtype('int64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('Symbol', String),
+        ('PublishDate', Datetime(time_unit='us', time_zone=None)),
+        ('FinanceYear', Datetime(time_unit='us', time_zone=None)),
+        ('Year', Int64),
+        ('period', Int64),
+        ('IsAudit', Float64),
+        ('cash', Int64),
+        ('NetReceivables', Int64),
+        ('OtherReceivables', Int64),
+        ('ShortTermInvestments', Int64),
+        ('Inventory', Int64),
+        ('PrePayment', Int64),
+        ('TotalCurrentAssets', Int64),
+        ('LongTermInvestments', Int64),
+        ('PropertyPlantAndEquipment', Int64),
+        ('IntangibleAssets', Int64),
+        ('TotalAssets', Int64),
+        ('AccountsPayable', Int64),
+        ('OtherPayable', Int64),
+        ('PreRecive', Int64),
+        ('TotalCurrentLiabilities', Int64),
+        ('TotalLiabilities', Int64),
+        ('capital', Int64),
+        ('RetainedEarnings', Int64),
+        ('TotalStockholderEquity', Int64),
     ]
-    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+    assert type(df[0, 1]) is type(df[0, 2]) is datetime
 
 
 @file('IS_Fmelli_1394.xls')
 async def test_profit_loss():
     df = await profit_loss('فملی', 1394)
     assert len(df) == 14
-    assert [*df.dtypes.items()] == [
-        ('Symbol', string),
-        ('publishDate', dtype('O')),
-        ('FinanceYear', dtype('O')),
-        ('Year', dtype('int64')),
-        ('priod', dtype('int64')),
-        ('IsAudit', dtype('float64')),
-        ('TotalRevenue', dtype('int64')),
-        ('GrossProfit', dtype('int64')),
-        ('OperatingIncomeOrLoss', dtype('int64')),
-        ('InterestExpense', dtype('int64')),
-        ('IncomeBeforeTax', dtype('int64')),
-        ('NetIncome', dtype('int64')),
-        ('Capital', dtype('int64')),
-        ('Eps', dtype('int64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('Symbol', String),
+        ('publishDate', Datetime(time_unit='us', time_zone=None)),
+        ('FinanceYear', Datetime(time_unit='us', time_zone=None)),
+        ('Year', Int64),
+        ('priod', Int64),
+        ('IsAudit', Float64),
+        ('TotalRevenue', Int64),
+        ('GrossProfit', Int64),
+        ('OperatingIncomeOrLoss', Int64),
+        ('InterestExpense', Int64),
+        ('IncomeBeforeTax', Int64),
+        ('NetIncome', Int64),
+        ('Capital', Int64),
+        ('Eps', Int64),
     ]
-    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+    assert type(df[0, 1]) is type(df[0, 2]) is datetime
 
 
 @file('financial_ratios_fmelli_1394.xls')
 async def test_financial_ratios():
     df = await financial_ratios('فملی', 1394)
     assert len(df) == 4
-    assert [*df.dtypes.items()] == [
-        ('Symbol', string),
-        ('PublishDate', dtype('O')),
-        ('FinancialYear', dtype('O')),
-        ('Year', dtype('int64')),
-        ('Priod', dtype('int64')),
-        ('CurrentRatio', dtype('float64')),
-        ('CashRatio', dtype('float64')),
-        ('QuickRatio', dtype('float64')),
-        ('DebtRatio', dtype('float64')),
-        ('DebtEquityRatio', dtype('float64')),
-        ('ROA', dtype('float64')),
-        ('ROE', dtype('float64')),
-        ('AssetTurnoverRatio', dtype('float64')),
-        ('ReceivablesTurnoverRatio', dtype('float64')),
-        ('DaySalesInReceivablesTurnoverRatio', dtype('float64')),
-        ('InventoryTurnoverRatio', dtype('float64')),
-        ('DaySalesInInventoryTurnoverRatio', dtype('float64')),
-        ('PayableTurnoverRatio', dtype('float64')),
-        ('DaySalesInPayableTurnoverRatio', dtype('float64')),
-        ('ProfitMargin', dtype('float64')),
-        ('GrossProfitRatio', dtype('float64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('Symbol', String),
+        ('PublishDate', Datetime(time_unit='us', time_zone=None)),
+        ('FinancialYear', Datetime(time_unit='us', time_zone=None)),
+        ('Year', Int64),
+        ('Priod', Int64),
+        ('CurrentRatio', Float64),
+        ('CashRatio', Float64),
+        ('QuickRatio', Float64),
+        ('DebtRatio', Float64),
+        ('DebtEquityRatio', Float64),
+        ('ROA', Float64),
+        ('ROE', Float64),
+        ('AssetTurnoverRatio', Float64),
+        ('ReceivablesTurnoverRatio', Float64),
+        ('DaySalesInReceivablesTurnoverRatio', Float64),
+        ('InventoryTurnoverRatio', Float64),
+        ('DaySalesInInventoryTurnoverRatio', Float64),
+        ('PayableTurnoverRatio', Float64),
+        ('DaySalesInPayableTurnoverRatio', Float64),
+        ('ProfitMargin', Float64),
+        ('GrossProfitRatio', Float64),
     ]
-    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+    assert type(df[0, 1]) is type(df[0, 2]) is datetime

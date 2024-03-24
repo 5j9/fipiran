@@ -1,51 +1,51 @@
 from warnings import warn as _warn
 
-from pandas import NA as _NA, DataFrame as _Df, to_datetime as _tdt
+from polars import (
+    Categorical as _Categorical,
+    DataFrame as _Df,
+    Float64 as _Float64,
+    Int64 as _Int64,
+)
 
 from fipiran import _api
 
 _KNOWN_DTYPES = {
     # 'initiationDate': 'datetime64', fails on some funds
-    'alpha': 'float64',
-    'annualEfficiency': 'float64',
-    'auditor': 'string',
-    'beta': 'float64',
-    'cancelNav': 'float64',
-    'custodian': 'string',
-    'dailyEfficiency': 'float64',
-    # date cannot be set using astype, see:
-    # https://github.com/pandas-dev/pandas/issues/53127
-    'date': 'O',
-    'dividendIntervalPeriod': 'Int64',
-    'efficiency': 'float64',
-    'fundSize': 'Int64',
-    'fundType': 'int64',
-    'guarantor': 'string',
-    'guarantorSeoRegisterNo': 'Int64',
-    'initiationDate': 'O',
-    'insCode': 'string',
-    'investedUnits': 'Int64',
-    'issueNav': 'float64',
-    'manager': 'string',
-    'managerSeoRegisterNo': 'Int64',
-    'monthlyEfficiency': 'float64',
-    'name': 'string',
-    'netAsset': 'Int64',
-    'quarterlyEfficiency': 'float64',
-    'rankLastUpdate': 'O',
-    'rankOf12Month': 'float64',
-    'rankOf24Month': 'float64',
-    'rankOf36Month': 'float64',
-    'rankOf48Month': 'float64',
-    'rankOf60Month': 'float64',
-    'regNo': 'int64',
-    'sixMonthEfficiency': 'float64',
-    'smallSymbolName': 'string',
-    'statisticalNav': 'float64',
-    'tempGuarantorName': 'string',
-    'tempManagerName': 'string',
-    'typeOfInvest': 'category',
-    'weeklyEfficiency': 'float64',
+    'alpha': _Float64,
+    'annualEfficiency': _Float64,
+    'beta': _Float64,
+    'cancelNav': _Float64,
+    'dailyEfficiency': _Float64,
+    'dividendIntervalPeriod': _Int64,
+    'efficiency': _Float64,
+    'fundSize': _Int64,
+    'fundType': _Int64,
+    # 'guarantor': _String,
+    'guarantorSeoRegisterNo': _Int64,
+    # 'initiationDate': _Object,
+    # 'insCode': _String,
+    'investedUnits': _Int64,
+    'issueNav': _Float64,
+    # 'manager': _String,
+    'managerSeoRegisterNo': _Int64,
+    'monthlyEfficiency': _Float64,
+    # 'name': _String,
+    'netAsset': _Int64,
+    'quarterlyEfficiency': _Float64,
+    # 'rankLastUpdate': _Object,
+    'rankOf12Month': _Float64,
+    'rankOf24Month': _Float64,
+    'rankOf36Month': _Float64,
+    'rankOf48Month': _Float64,
+    'rankOf60Month': _Float64,
+    'regNo': _Int64,
+    'sixMonthEfficiency': _Float64,
+    # 'smallSymbolName': _String,
+    'statisticalNav': _Float64,
+    # 'tempGuarantorName': _String,
+    # 'tempManagerName': _String,
+    'typeOfInvest': _Categorical,
+    'weeklyEfficiency': _Float64,
 }
 
 
@@ -62,17 +62,14 @@ class Fund:
         """Return a dict where values are percentage of each kind of asset."""
         j = await _api(f'chart/portfoliochart?regno={self.reg_no}')
         df = _Df(j)
-        df['date'] = _tdt(df['date'], format='ISO8601')
-        return df
+        return df.with_columns(df['date'].str.to_datetime())
 
     async def navps_history(self, /, *, all_=True) -> _Df:
         j = await _api(
             f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
-        df = _Df(j, copy=False)
-        df['date'] = _tdt(df['date'])
-        df.set_index('date', inplace=True)
-        return df
+        df = _Df(j)
+        return df.with_columns(df['date'].str.to_datetime())
 
     async def issue_cancel_history(self, /, *, all_=True) -> _Df:
         _warn(
@@ -85,19 +82,15 @@ class Fund:
         j = await _api(
             f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
-        df = _Df(j, copy=False)
-        df['date'] = _tdt(df['date'])
-        df.set_index('date', inplace=True)
-        return df
+        df = _Df(j)
+        return df.with_columns(df['date'].str.to_datetime())
 
     async def alpha_beta(self, /, *, all_=True) -> _Df:
         j = await _api(
             f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
-        df = _Df(j, copy=False)
-        df['date'] = _tdt(df['date'])
-        df.set_index('date', inplace=True)
-        return df
+        df = _Df(j)
+        return df.with_columns(df['date'].str.to_datetime())
 
     async def info(self) -> dict:
         return (await _api(f'fund/getfund?regno={self.reg_no}'))['item']
@@ -105,18 +98,13 @@ class Fund:
 
 def _fix_website_address(df: _Df):
     # assert df['websiteAddress'].map(len).max() == 1
-    df['websiteAddress'] = (
-        df['websiteAddress']
-        .map(lambda lst: lst[0] if lst else _NA)
-        .astype('string')
-    )
+    df['websiteAddress'] = df['websiteAddress'].explode()
 
 
 def _apply_types(df: _Df) -> _Df:
     col_names = df.columns
-    return df.astype(
-        {cn: _KNOWN_DTYPES[cn] for cn in col_names if cn in _KNOWN_DTYPES},
-        copy=False,
+    return df.cast(
+        {cn: _KNOWN_DTYPES[cn] for cn in col_names if cn in _KNOWN_DTYPES}
     )
 
 
@@ -126,29 +114,27 @@ async def funds() -> _Df:
     Also see fipiran.data_service.mutual_fund_list function.
     """
     j = await _api('fund/fundcompare')
-    df = _apply_types(_Df(j['items'], copy=False))
-    df['date'] = _tdt(df['date'], format='ISO8601')
-    _fix_website_address(df)
-    return df
+    df = _apply_types(_Df(j['items'], infer_schema_length=None))
+    return df.with_columns(
+        df['date'].str.to_datetime(), df['websiteAddress'].explode()
+    )
 
 
 async def average_returns() -> _Df:
     """Return a Dataframe for https://fund.fipiran.ir/mf/efficiency."""
     j = await _api('fund/averagereturns')
-    df = _Df(j, copy=False)
-    return df.astype({'netAsset': 'Int64'}, copy=False)
+    df = _Df(j)
+    return df.cast({'netAsset': _Int64})
 
 
 async def map_data() -> _Df:
     j = await _api('fund/treemap')
-    df = _apply_types(_Df(j['items'], copy=False))
-    df['date'] = _tdt(df['date'], format='ISO8601')
-    _fix_website_address(df)
-    return df
+    df = _apply_types(_Df(j['items'], infer_schema_length=None))
+    df = df.with_columns(df['date'].str.to_datetime())
+    return df.with_columns(df['websiteAddress'].explode())
 
 
 async def dependency_graph_data() -> _Df:
     j = await _api('fund/dependencygraph')
-    df = _apply_types(_Df(j['items'], copy=False))
-    df['date'] = _tdt(df['date'], format='ISO8601')
-    return df
+    df = _apply_types(_Df(j['items']))
+    return df.with_columns(df['date'].str.to_datetime())

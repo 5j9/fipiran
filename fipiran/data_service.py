@@ -1,8 +1,9 @@
+from functools import partial as _partial
 from typing import TypedDict as _TypedDict
 
-from aiohutils.pd import html_to_df as _hd
+from aiohutils.pd import from_html as _from_html
 from jdatetime import datetime as _jdt
-from pandas import DataFrame as _Df, to_datetime as _tdt
+from polars import DataFrame as _Df, String as _String
 
 from . import _fipiran
 
@@ -53,11 +54,12 @@ async def export_index(
             ('indexEnd', end_date),
         ),
     )
-    df = _hd(xls)
-    df['dateissue'] = (
-        df['dateissue'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
+    df = _from_html(xls)
+    return df.with_columns(
+        df['dateissue']
+        .cast(_String)
+        .map_elements(_partial(_jstrptime, format='%Y%m%d'))
     )
-    return df
 
 
 async def auto_complete_symbol(
@@ -99,10 +101,19 @@ async def export_symbol(
             ('symbolEnd', end_date),
         ),
     )
-    df = _hd(xls)
-    df['PDate'] = df['PDate'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
-    df['GDate'] = _tdt(df['GDate'], format='%Y%m%d')
-    return df
+    df = _from_html(xls)
+    return df.with_columns(
+        df['GDate'].cast(_String).str.to_datetime('%Y%m%d'),
+    )
+
+
+def _publish_date_finance_year(
+    df: _Df, pub='PublishDate', fin='FinanceYear'
+) -> _Df:
+    return df.with_columns(
+        df[pub].map_elements(_partial(_jstrptime, format='%Y/%m/%d')),
+        df[fin].map_elements(_partial(_jstrptime, format='%Y/%m/%d')),
+    )
 
 
 async def balance_sheet(
@@ -120,10 +131,8 @@ async def balance_sheet(
             ('year', year),
         ),
     )
-    df = _hd(xls)
-    jdate_cols = ['PublishDate', 'FinanceYear']
-    df[jdate_cols] = df[jdate_cols].map(str).map(_jstrptime, format='%Y/%m/%d')
-    return df
+    df = _from_html(xls)
+    return _publish_date_finance_year(df)
 
 
 async def profit_loss(
@@ -141,10 +150,8 @@ async def profit_loss(
             ('year', year),
         ),
     )
-    df = _hd(xls)
-    jdate_cols = ['publishDate', 'FinanceYear']
-    df[jdate_cols] = df[jdate_cols].map(str).map(_jstrptime, format='%Y/%m/%d')
-    return df
+    df = _from_html(xls)
+    return _publish_date_finance_year(df, pub='publishDate')
 
 
 async def financial_ratios(
@@ -162,7 +169,5 @@ async def financial_ratios(
             ('year', year),
         ),
     )
-    df = _hd(xls)
-    jdate_cols = ['PublishDate', 'FinancialYear']
-    df[jdate_cols] = df[jdate_cols].map(str).map(_jstrptime, format='%Y/%m/%d')
-    return df
+    df = _from_html(xls)
+    return _publish_date_finance_year(df, fin='FinancialYear')

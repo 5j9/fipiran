@@ -1,52 +1,50 @@
 from aiohutils.tests import file
-from numpy import dtype
+from polars import Float64, Int64, String
 
 from fipiran.codal import financial_ratios, profit_decline, profit_growth
-
-string = 'string'
 
 
 @file('financial_ratios.html')
 async def test_financial_ratios():
     df = await financial_ratios()
-    assert [*df.dtypes.items()] == [
-        ('نماد', string),
-        ('تاریخ انتشار', string),
-        ('سال', dtype('int64')),
-        ('دوره', dtype('int64')),
-        ('سال مالی', string),
-        ('سرمایه', dtype('float64')),
-        ('نسبت جاری', dtype('float64')),
-        ('حاشیه سود ناخالص', dtype('float64')),
-        ('گردش دارایی', dtype('float64')),
-        ('نسبت بدهی', dtype('float64')),
-        ('ROA', dtype('float64')),
-        ('ROE', dtype('float64')),
-        ('سودواقعی هر سهم', dtype('int64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('نماد', String),
+        ('تاریخ انتشار', String),
+        ('سال', Int64),
+        ('دوره', Int64),
+        ('سال مالی', String),
+        ('سرمایه', Float64),
+        ('نسبت جاری', Float64),
+        ('حاشیه سود ناخالص', Float64),
+        ('گردش دارایی', Float64),
+        ('نسبت بدهی', Float64),
+        ('ROA', Float64),
+        ('ROE', Float64),
+        ('سودواقعی هر سهم', Int64),
     ]
 
 
 @file('profit_growth.html')
 async def test_profit_growth():
     df = await profit_growth()
-    assert [*df.dtypes.items()] == [
-        ('نماد', string),
-        ('تاریخ انتشار', string),
-        ('دوره', string),
-        ('سود واقعی دوره', dtype('int64')),
-        ('سود واقعی دوره قبل', dtype('int64')),
-        ('% رشد', dtype('int64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('نماد', String),
+        ('تاریخ انتشار', String),
+        ('دوره', String),
+        ('سود واقعی دوره', Int64),
+        ('سود واقعی دوره قبل', Int64),
+        ('% رشد', Int64),
     ]
 
 
 @file('profit_decline.html')
 async def test_profit_decline():
     df = await profit_decline()
-    assert [*df.dtypes.items()] == [
-        ('نماد', string),
-        ('تاریخ انتشار', string),
-        ('دوره', string),
-        ('سود واقعی دوره', dtype('int64')),
-        ('سود واقعی دوره قبل', dtype('int64')),
-        ('% رشد', dtype('int64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('نماد', String),
+        ('تاریخ انتشار', String),
+        ('دوره', String),
+        ('سود واقعی دوره', Int64),
+        ('سود واقعی دوره قبل', Int64),
+        ('% رشد', Int64),
     ]

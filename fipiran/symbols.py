@@ -1,10 +1,10 @@
 from functools import partial as _partial
-from io import StringIO as _StringIO
 from typing import Literal as _Literal
 
+from aiohutils.pd import from_html as _from_html
 from bs4 import BeautifulSoup as _BeautifulSoup
 from jdatetime import datetime as _jdt
-from pandas import DataFrame as _Df, read_html as _rh, to_datetime as _tdt
+from polars import DataFrame as _Df
 
 from . import _fipiran
 
@@ -84,7 +84,7 @@ class Symbol:
         text = await _fipiran(
             f'Symbol/_BestLimitData?inscode={await self.inscode}'
         )
-        return _rh(_StringIO(text))
+        return _from_html(text, None)
 
     async def reference_data(self) -> dict:
         text = await _fipiran(
@@ -100,11 +100,9 @@ class Symbol:
         return d
 
     async def statistic(self, days: _Literal[365, 180, 90, 30, 7]) -> _Df:
-        return _rh(
-            _StringIO(
-                await _fipiran(
-                    f'Symbol/statistic{days}?inscode={await self.inscode}'
-                )
+        return _from_html(
+            await _fipiran(
+                f'Symbol/statistic{days}?inscode={await self.inscode}'
             )
         )[0]
 
@@ -123,9 +121,10 @@ class Symbol:
             f'symbolpara={self._symbolpara}&rows={rows}&page={page}',
             json_resp=True,
         )
-        df = j['data'] = _Df(j['data'], copy=False)
-        df['gDate'] = _tdt(df['gDate'])
-        df.set_index('gDate', inplace=True)
+        df = _Df(j['data'])
+        j['data'] = df.with_columns(
+            df['gDate'].str.to_datetime(format='%Y%m%d')
+        )
         return j
 
 

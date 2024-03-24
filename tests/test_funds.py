@@ -1,6 +1,14 @@
 from aiohutils.tests import file
-from numpy import dtype
-from pandas import DataFrame, Int64Dtype, StringDtype
+from polars import (
+    Boolean,
+    DataFrame,
+    Datetime,
+    Float64,
+    Int64,
+    Null,
+    String,
+    Struct,
+)
 
 from fipiran.funds import (
     _KNOWN_DTYPES,  # noqa
@@ -12,7 +20,6 @@ from fipiran.funds import (
 )
 
 fund = Fund(11215)
-string = StringDtype()
 
 
 def test_repr():
@@ -23,43 +30,42 @@ def test_repr():
 @file('portfoliochart_atlas.json')
 async def test_asset_allocation_history():
     df = await fund.asset_allocation_history()
-    assert [*df.dtypes.items()] == [
-        ('date', dtype('<M8[ns]')),
-        ('fiveBest', dtype('float64')),
-        ('stock', dtype('float64')),
-        ('bond', dtype('float64')),
-        ('other', dtype('float64')),
-        ('cash', dtype('float64')),
-        ('deposit', dtype('float64')),
-        ('fundUnit', dtype('O')),
-        ('commodity', dtype('O')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('date', Datetime(time_unit='us', time_zone=None)),
+        ('fiveBest', Float64),
+        ('stock', Float64),
+        ('bond', Float64),
+        ('other', Float64),
+        ('cash', Float64),
+        ('deposit', Float64),
+        ('fundUnit', Null),
+        ('commodity', Null),
     ]
 
 
 @file('getfundchart_atlas.json')
 async def test_navps():
     df = await fund.navps_history(all_=False)
-    assert [*df.dtypes.items()] == [
-        ('issueNav', dtype('float64')),
-        ('cancelNav', dtype('float64')),
-        ('statisticalNav', dtype('float64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('date', Datetime(time_unit='us', time_zone=None)),
+        ('issueNav', Float64),
+        ('cancelNav', Float64),
+        ('statisticalNav', Float64),
     ]
     assert (df['cancelNav'] <= df['issueNav']).all()
     assert len(df) >= 360
-    assert df.index.name == 'date'
-    assert df.index.dtype == '<M8[ns]'
 
 
 @file('getfundnetassetchart_atlas.json')
 async def test_nav_history():
     df = await fund.nav_history(all_=False)
-    assert [*df.dtypes.items()] == [
-        ('netAsset', dtype('int64')),
-        ('unitsSubDAY', dtype('int64')),
-        ('unitsRedDAY', dtype('int64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('date', Datetime(time_unit='us', time_zone=None)),
+        ('netAsset', Int64),
+        ('unitsSubDAY', Int64),
+        ('unitsRedDAY', Int64),
     ]
     assert len(df) >= 360
-    assert df.index.dtype == '<M8[ns]'
 
 
 @file('getfund_atlas.json')
@@ -70,22 +76,32 @@ async def test_info():
 
 
 EXPECTED_INFERRED_DTYPES = {
-    'articlesOfAssociationLink': None,
-    'bond': 'float64',
-    'cash': 'float64',
-    'commodity': 'float64',
-    'deposit': 'float64',
-    'estimatedEarningRate': 'float64',
-    'fiveBest': 'float64',
-    'fundPublisher': 'int64',
-    'fundUnit': 'float64',
-    'fundWatch': None,
-    'guaranteedEarningRate': 'float64',
-    'isCompleted': bool,
-    'other': 'float64',
-    'prosoectusLink': None,
-    'stock': None,
-    'websiteAddress': 'string',
+    'articlesOfAssociationLink': Null,
+    'auditor': String,
+    'bond': Float64,
+    'cash': Float64,
+    'commodity': Float64,
+    'custodian': String,
+    'date': Datetime(time_unit='us', time_zone=None),
+    'deposit': Float64,
+    'estimatedEarningRate': Float64,
+    'fiveBest': Float64,
+    'fundPublisher': Int64,
+    'fundUnit': Float64,
+    'fundWatch': Null,
+    'guaranteedEarningRate': Int64,
+    'guarantor': (Struct, String),
+    'initiationDate': String,
+    'isCompleted': Boolean,
+    'manager': (Struct, String),
+    'name': String,
+    'other': Float64,
+    'prosoectusLink': Null,
+    'rankLastUpdate': String,
+    'stock': Float64,
+    'tempGuarantorName': String,
+    'tempManagerName': String,
+    'websiteAddress': String,
 }
 
 
@@ -95,11 +111,11 @@ def assert_dtypes(df: DataFrame):
     for col in cols & EXPECTED_INFERRED_DTYPES.keys():
         et = EXPECTED_INFERRED_DTYPES[col]
         try:
-            if et is None:
-                df[col].isna().all()
+            if type(et) is tuple:
+                assert df[col].dtype in et, f'{col=}'
             else:
                 assert df[col].dtype == et, f'{col=}'
-        except:  # a good breakpoint
+        except Exception:  # a good breakpoint
             raise
 
 
@@ -114,21 +130,21 @@ async def test_funds():
 async def test_average_returns():
     df = await average_returns()
     assert len(df) == 11
-    assert [*df.dtypes.items()] == [
-        ('id', dtype('int64')),
-        ('fundTypeId', dtype('int64')),
-        ('netAsset', Int64Dtype()),
-        ('stock', dtype('float64')),
-        ('bond', dtype('float64')),
-        ('cash', dtype('float64')),
-        ('deposit', dtype('float64')),
-        ('dailyEfficiency', dtype('float64')),
-        ('weeklyEfficiency', dtype('float64')),
-        ('monthlyEfficiency', dtype('float64')),
-        ('quarterlyEfficiency', dtype('float64')),
-        ('sixMonthEfficiency', dtype('float64')),
-        ('annualEfficiency', dtype('float64')),
-        ('efficiency', dtype('float64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('id', Int64),
+        ('fundTypeId', Int64),
+        ('netAsset', Int64),
+        ('stock', Float64),
+        ('bond', Float64),
+        ('cash', Float64),
+        ('deposit', Float64),
+        ('dailyEfficiency', Float64),
+        ('weeklyEfficiency', Float64),
+        ('monthlyEfficiency', Float64),
+        ('quarterlyEfficiency', Float64),
+        ('sixMonthEfficiency', Float64),
+        ('annualEfficiency', Float64),
+        ('efficiency', Float64),
     ]
 
 
@@ -149,9 +165,8 @@ async def test_dependency_graph_data():
 @file('alpha_beta.json')
 async def test_alpha_beta():
     df = await fund.alpha_beta(all_=False)
-    assert [*df.dtypes.items()] == [
-        ('beta', dtype('float64')),
-        ('alpha', dtype('float64')),
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('date', Datetime(time_unit='us', time_zone=None)),
+        ('beta', Float64),
+        ('alpha', Float64),
     ]
-    assert df.index.name == 'date'
-    assert df.index.dtype == dtype('<M8[ns]')

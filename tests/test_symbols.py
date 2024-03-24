@@ -2,8 +2,7 @@ from unittest.mock import patch
 
 from aiohutils.tests import file
 from jdatetime import datetime as jdatetime
-from numpy import dtype
-from pandas import DataFrame
+from polars import DataFrame, Datetime, Float64, String
 from pytest import raises
 
 from fipiran.symbols import Symbol, search
@@ -107,25 +106,25 @@ async def test_company_info():
 @file('HistoryPricePaging_sarv.json')
 async def test_price_history():
     ph = await Symbol('سرو').price_history(rows=3)
-    data = ph['data']
-    assert len(data) == 3
-    assert [*data.dtypes.items()] == [
-        ('DEven', 'string'),
-        ('ZTotTran', dtype('float64')),
-        ('QTotTran5J', dtype('float64')),
-        ('QTotCap', dtype('float64')),
-        ('PClosing', dtype('float64')),
-        ('PcCh', dtype('float64')),
-        ('PcChPercent', dtype('float64')),
-        ('PDrCotVal', dtype('float64')),
-        ('LTPCh', dtype('float64')),
-        ('LTPChPercent', dtype('float64')),
-        ('PriceYesterday', dtype('float64')),
-        ('PriceMin', dtype('float64')),
-        ('PriceMax', dtype('float64')),
-        ('PriceFirst', dtype('float64')),
+    df = ph['data']
+    assert len(df) == 3
+    assert [*zip(df.columns, df.dtypes)] == [
+        ('gDate', Datetime(time_unit='us', time_zone=None)),
+        ('DEven', String),
+        ('ZTotTran', Float64),
+        ('QTotTran5J', Float64),
+        ('QTotCap', Float64),
+        ('PClosing', Float64),
+        ('PcCh', Float64),
+        ('PcChPercent', Float64),
+        ('PDrCotVal', Float64),
+        ('LTPCh', Float64),
+        ('LTPChPercent', Float64),
+        ('PriceYesterday', Float64),
+        ('PriceMin', Float64),
+        ('PriceMax', Float64),
+        ('PriceFirst', Float64),
     ]
-    assert data.index.dtype == dtype('<M8[ns]')
     assert ph['records'] > 500
     assert ph['total'] > 198
 

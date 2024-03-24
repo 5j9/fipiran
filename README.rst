@@ -52,7 +52,7 @@ Example 1:
 
 Example 2:
 
-Getting list of funds as a pandas DataFrame object.
+Getting list of funds as a polars DataFrame object.
 
 .. code-block:: python
 
