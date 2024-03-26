@@ -1,7 +1,10 @@
 __version__ = '0.22.1.dev0'
+
+from functools import partial
 from json import JSONDecodeError as _JSONDecodeError, loads as _jl
 from logging import error as _error
 
+from aiohttp import TCPConnector
 from aiohutils.session import SessionManager
 from pandas import options as _o
 
@@ -17,7 +20,8 @@ session_manager = SessionManager(
     headers={
         'Referer': 'https://fund.fipiran.ir',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0',
-    }
+    },
+    connector=partial(TCPConnector, force_close=True),
 )
 
 
