@@ -12,16 +12,13 @@ _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
 _API = 'https://fund.fipiran.ir/api/v1/'
 
-
-session_manager = SessionManager(
+async def _read(url, **kwargs) -> bytes:
+    session_manager = SessionManager(
     headers={
         'Referer': 'https://fund.fipiran.ir',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0',
     }
-)
-
-
-async def _read(url, **kwargs) -> bytes:
+    )
     r = await session_manager.get(url, **kwargs)
     return await r.read()
 
