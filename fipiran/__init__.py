@@ -1,4 +1,4 @@
-__version__ = '0.22.1'
+__version__ = '0.22.2.dev0'
 
 from functools import partial
 from json import JSONDecodeError as _JSONDecodeError, loads as _jl
