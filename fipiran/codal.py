@@ -1,7 +1,7 @@
 from functools import partial as _partial
 from re import compile as _rc
 
-from aiohutils.pd import from_html as _from_html
+from aiohutils.df import from_html as _from_html
 from polars import DataFrame as _Df
 
 from . import _fipiran

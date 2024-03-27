@@ -1,7 +1,7 @@
 from functools import partial as _partial
 from typing import TypedDict as _TypedDict
 
-from aiohutils.pd import from_html as _from_html
+from aiohutils.df import from_html as _from_html
 from jdatetime import datetime as _jdt
 from polars import DataFrame as _Df, String as _String
 
