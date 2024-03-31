@@ -33,9 +33,9 @@ async def test_auto_complete_fund():
 @file('AutoCompleteindexHamVazn.json')
 async def test_auto_complete_index():
     assert await auto_complete_index('هم وزن') == [
-        {'LVal30': 'شاخص كل (هم وزن)', 'InstrumentID': 'IRX6XTPI0026'},
-        {'LVal30': 'شاخص قيمت (هم وزن)', 'InstrumentID': 'IRXYXTPI0026'},
-        {'LVal30': 'شاخص كل هم وزن فرابورس', 'InstrumentID': 'IRXZXOCI0026'},
+        {'InstrumentID': 'IRX6XTPI0026', 'LVal30': 'شاخص کل (هم وزن)'},
+        {'InstrumentID': 'IRXYXTPI0026', 'LVal30': 'شاخص قیمت (هم وزن)'},
+        {'InstrumentID': 'IRXZXOCI0026', 'LVal30': 'شاخص کل هم وزن فرابورس'},
     ]
 
 
@@ -64,10 +64,10 @@ async def test_export_index_no_instrument_id(mock):
 @file('AutoCompleteSymbolMadira.json')
 async def test_auto_complete_symbol():
     assert await auto_complete_symbol('كفر') == [
-        {'InstrumentID': 'IRO1NASI0001', 'LVal18AFC': 'كفرا'},
-        {'InstrumentID': 'IRO7KFRP0001', 'LVal18AFC': 'كفرآور'},
-        {'InstrumentID': 'IRR1NASI0101', 'LVal18AFC': 'كفراح'},
-        {'InstrumentID': 'IRR7KFRP0101', 'LVal18AFC': 'كفرآورح'},
+        {'InstrumentID': 'IRO1NASI0001', 'LVal18AFC': 'کفرا'},
+        {'InstrumentID': 'IRO7KFRP0001', 'LVal18AFC': 'کفرآور'},
+        {'InstrumentID': 'IRR1NASI0101', 'LVal18AFC': 'کفراح'},
+        {'InstrumentID': 'IRR7KFRP0101', 'LVal18AFC': 'کفرآورح'},
     ]
 
 
