@@ -1,10 +1,8 @@
 __version__ = '0.22.3.dev0'
 
-from functools import partial
 from json import JSONDecodeError as _JSONDecodeError, loads as _jl
 from logging import error as _error
 
-from aiohttp import TCPConnector
 from aiohutils.session import SessionManager
 from pandas import options as _o
 

@@ -1,5 +1,3 @@
-from operator import itemgetter
-
 from aiohutils.tests import file, patch
 from jdatetime import datetime as jdatetime
 from numpy import dtype
