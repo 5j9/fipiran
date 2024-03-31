@@ -41,7 +41,11 @@ async def _api(path) -> dict | list:
 async def _fipiran(
     path: str, params=None, json_resp=False
 ) -> str | dict | list:
-    content = await _read(f'{_FIPIRAN}{path}', params=params)
+    text = (
+        (await _read(f'{_FIPIRAN}{path}', params=params))
+        .decode()
+        .translate(_YK)
+    )
     if json_resp is True:
-        return _jl(content)
-    return content.decode().translate(_YK)
+        return _jl(text)
+    return text

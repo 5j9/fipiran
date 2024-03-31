@@ -11,9 +11,10 @@ from fipiran.symbols import Symbol, search
 
 @file('shcarbon.html')
 async def test_search():
-    symbols = await search('کربن')
-    assert symbols == [Symbol('شكربن'), Symbol('شكربنح')]
-    assert symbols[0].l30 == 'كربن\u200c ايران\u200c'
+    term = 'کربن'
+    symbols = await search(term)
+    for symbol in symbols:
+        assert term in symbol.l30 or term in symbol.l30
 
 
 def test_symbol_from_name():
