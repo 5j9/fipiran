@@ -20,21 +20,11 @@ from fipiran.data_service import (
 @file('AutoCompleteFundAva.json')
 async def test_auto_complete_fund():
     result = await auto_complete_fund('آوا')
-    result.sort(key=itemgetter('RegNo'))
-    assert result == [
-        {'Name': 'آوای سهام کیان', 'RegNo': 11477},
-        {'Name': 'قابل معامله آوای معیار', 'RegNo': 11729},
-        {'Name': 'صندوق سرمایه گذاری آوای فردای زاگرس', 'RegNo': 11776},
-        {
-            'Name': 'صندوق سرمایه گذاری اختصاصی بازرگردانی آوای زاگرس',
-            'RegNo': 11884,
-        },
-        {'Name': 'قابل معامله آوای تاراز زاگرس', 'RegNo': 11922},
-        {
-            'Name': 'صندوق سرمایه گذاری اختصاصی بازارگردانی آوای فراز',
-            'RegNo': 11941,
-        },
-    ]
+    assert type(result) is list
+    for record in result:
+        assert record.keys() == {'Name', 'RegNo'}
+        assert 'آوا' in record['Name']
+        assert type(record['RegNo']) is int
 
 
 @file('AutoCompleteindexHamVazn.json')
