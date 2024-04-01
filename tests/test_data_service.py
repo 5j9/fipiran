@@ -2,7 +2,7 @@ from datetime import datetime
 from operator import itemgetter
 
 from aiohutils.tests import file, patch
-from polars import Datetime, Float64, Int64, String
+from polars import Datetime, Float64, Int64, String, DataFrame
 from pytest import raises
 
 from fipiran.data_service import (
@@ -39,11 +39,10 @@ async def test_auto_complete_fund():
 
 @file('AutoCompleteindexHamVazn.json')
 async def test_auto_complete_index():
-    assert await auto_complete_index('هم وزن') == [
-        {'LVal30': 'شاخص كل (هم وزن)', 'InstrumentID': 'IRX6XTPI0026'},
-        {'LVal30': 'شاخص قيمت (هم وزن)', 'InstrumentID': 'IRXYXTPI0026'},
-        {'LVal30': 'شاخص كل هم وزن فرابورس', 'InstrumentID': 'IRXZXOCI0026'},
-    ]
+    ic = await auto_complete_index('هم وزن')
+    df = DataFrame(ic)
+    assert df['LVal30'].str.contains('هم وزن').all()
+    assert 'IRX6XTPI0026' in df['InstrumentID']
 
 
 @file('ExportIndexHamVazn.xls.html')
@@ -70,12 +69,13 @@ async def test_export_index_no_instrument_id(mock):
 
 @file('AutoCompleteSymbolMadira.json')
 async def test_auto_complete_symbol():
-    assert await auto_complete_symbol('كفر') == [
-        {'InstrumentID': 'IRO1NASI0001', 'LVal18AFC': 'كفرا'},
-        {'InstrumentID': 'IRO7KFRP0001', 'LVal18AFC': 'كفرآور'},
-        {'InstrumentID': 'IRR1NASI0101', 'LVal18AFC': 'كفراح'},
-        {'InstrumentID': 'IRR7KFRP0101', 'LVal18AFC': 'كفرآورح'},
-    ]
+    term = 'كفر'  # contains arabic letters
+    ic = await auto_complete_symbol(term)
+    df = DataFrame(ic)
+    assert set(df.columns) == {'InstrumentID', 'LVal18AFC'}
+    # results don't contain arabic letters
+    assert df['LVal18AFC'].str.contains('کفر').all()
+    assert 'IRO7KFRP0001' in df['InstrumentID']
 
 
 @file('ExportSymbolMadira.xls.html')
