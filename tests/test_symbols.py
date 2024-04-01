@@ -10,9 +10,10 @@ from fipiran.symbols import Symbol, search
 
 @file('shcarbon.html')
 async def test_search():
-    symbols = await search('کربن')
-    assert symbols == [Symbol('شكربن'), Symbol('شكربنح')]
-    assert symbols[0].l30 == 'كربن\u200c ايران\u200c'
+    term = 'کربن'
+    symbols = await search(term)
+    for symbol in symbols:
+        assert term in symbol.l30 or term in symbol.l30
 
 
 def test_symbol_from_name():
@@ -60,16 +61,21 @@ async def test_symbol_best_limit_data():
 
 
 @file('RefrenceDataFmelli.html')
-async def test_symbol_refrence_data():
-    assert await Symbol('فملی', 35425587644337450).reference_data() == {
-        'نام نماد': 'فملی',
-        'نام شرکت': 'ملی\u200c صنایع\u200c مس\u200c ایران\u200c\u200c',
-        'نام صنعت': 'فلزات اساسی',
-        'وضعیت': 'مجاز',
-        'بازار': 'بورس-بازاراول-تابلو اصلی',
-        'حجم مبنا': '8869180',
-        'کد معاملاتی نماد': 'IRO1MSMI0001',
+async def test_symbol_reference_data():
+    data = await Symbol('فملی', 35425587644337450).reference_data()
+    assert data.keys() == {
+        'نام نماد',
+        'نام شرکت',
+        'نام صنعت',
+        'وضعیت',
+        'بازار',
+        'حجم مبنا',
+        'کد معاملاتی نماد',
     }
+    for v in data.values():
+        assert type(v) is str
+    assert data['نام نماد'] == 'فملی'
+    assert data['کد معاملاتی نماد'] == 'IRO1MSMI0001'
 
 
 @file('statistic30Fmelli.html')

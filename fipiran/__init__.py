@@ -1,10 +1,8 @@
-__version__ = '0.22.3.dev0'
+__version__ = '0.22.4.dev0'
 
-from functools import partial
 from json import JSONDecodeError as _JSONDecodeError, loads as _jl
 from logging import error as _error
 
-from aiohttp import TCPConnector
 from aiohutils.session import SessionManager
 
 _FIPIRAN = 'https://www.fipiran.ir/'
@@ -17,7 +15,6 @@ session_manager = SessionManager(
         'Referer': 'https://fund.fipiran.ir',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0',
     },
-    connector=partial(TCPConnector, force_close=True),
 )
 
 
@@ -38,7 +35,11 @@ async def _api(path) -> dict | list:
 async def _fipiran(
     path: str, params=None, json_resp=False
 ) -> str | dict | list:
-    content = await _read(f'{_FIPIRAN}{path}', params=params)
+    text = (
+        (await _read(f'{_FIPIRAN}{path}', params=params))
+        .decode()
+        .translate(_YK)
+    )
     if json_resp is True:
-        return _jl(content)
-    return content.decode().translate(_YK)
+        return _jl(text)
+    return text
