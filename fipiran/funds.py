@@ -38,7 +38,7 @@ _KNOWN_DTYPES = {
     'rankOf36Month': 'float64',
     'rankOf48Month': 'float64',
     'rankOf60Month': 'float64',
-    'regNo': 'int64',
+    'regNo': 'string',
     'sixMonthEfficiency': 'float64',
     'smallSymbolName': 'string',
     'statisticalNav': 'float64',
