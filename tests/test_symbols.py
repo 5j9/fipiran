@@ -89,7 +89,8 @@ async def test_symbol_statistics():
 
 @file('CompanyInfoIndexSarv.html')
 async def test_company_info():
-    assert await Symbol('سرو', 64942549055019553).company_info() == {
+    info = await Symbol('سرو', 64942549055019553).company_info()
+    assert info == {
         'نام نماد': 'سرو',
         'نام شرکت': 'سرو سودمند مدبران',
         'مدیر عامل': 'رضا درخشان فر',

@@ -1,9 +1,8 @@
-from functools import partial as _partial
 from io import StringIO as _StringIO
 from typing import Literal as _Literal
 
-from bs4 import BeautifulSoup as _BeautifulSoup
 from jdatetime import datetime as _jdt
+from lxml.html import HtmlElement as _HtmlElement, fromstring as _parse_html
 from pandas import DataFrame as _Df, read_html as _rh, to_datetime as _tdt
 
 from . import _fipiran
@@ -41,8 +40,7 @@ class Symbol:
         text = await _fipiran(
             f'Symbol/_priceData?inscode={await self.inscode}'
         )
-        bs = _soup(text)
-        so = bs.select_one
+        tree: _HtmlElement = _parse_html(text)
         d = {}
 
         def int_or_float(s: str) -> int | float:
@@ -70,11 +68,19 @@ class Symbol:
             'QTotTran5J',
             'QTotCap',
         ):
-            d[k] = num(so(f'#{k}').text)
+            d[k] = num(tree.xpath(f"//*[@id='{k}']/text()")[0])
 
-        d['Deven'] = _jdt.strptime(so('#Deven').text, '%Y/%m/%d-%H:%M:%S')
+        d['Deven'] = _jdt.strptime(
+            tree.xpath("//td[@id='Deven']/text()")[0], '%Y/%m/%d-%H:%M:%S'
+        )
 
-        tmin, tmax = bs.find(string='قیمت مجاز').next.text.split(' - ')
+        tmin, tmax = (
+            tree.xpath(
+                "//td[text()='قیمت مجاز']/following-sibling::td[1]/text()"
+            )[0]
+            .strip()
+            .split(' - ')
+        )
         d['tmin'] = num(tmin)
         d['tmax'] = num(tmax)
 
@@ -90,12 +96,12 @@ class Symbol:
         text = await _fipiran(
             f'Symbol/_RefrenceData?symbolpara={self._symbolpara}'
         )
-        bs = _soup(text)
-        h4s = [i.text.strip(': ') for i in bs.select('h4')]
-        spans = [i.text for i in bs.select('span')]
-        d = dict(zip(h4s, spans))
-        # e.g. 'کد معاملاتی نماد', 'IRO1MSMI0001'
-        k, v = bs.select_one('span')['title'].split(' :')
+        tree = _parse_html(text)
+        h4s = [i.strip(': ') for i in tree.xpath('.//h4/text()')]
+        spans = tree.xpath('.//span')
+        d = dict(zip(h4s, [i.text for i in spans]))
+        # Add ISIN e.g. 'کد معاملاتی نماد', 'IRO1MSMI0001'
+        k, v = spans[0].get('title').split(' :')
         d[k] = v
         return d
 
@@ -112,10 +118,13 @@ class Symbol:
         text = await _fipiran(
             f'Symbol/CompanyInfoIndex?symbolpara={self._symbolpara}'
         )
-        bs = _soup(text)
-        keys = [i.text.strip(': ') for i in bs.select('.media-body > h4')]
-        values = [i.text.strip() for i in bs.select('.media-body span')]
-        return dict(zip(keys, values))
+        tree = _parse_html(text)
+        d = {}
+        for body in tree.xpath("//*[contains(@class, 'media-body')]"):
+            key = body.xpath('normalize-space(h4)').strip(': ')
+            value = body.xpath('normalize-space(.//span)')
+            d[key] = value
+        return d
 
     async def price_history(self, rows: int = 365, page: int = 1) -> dict:
         j = await _fipiran(
@@ -138,6 +147,3 @@ async def search(term) -> list[Symbol]:
         symbol.l30 = result['LSoc30']
         append(symbol)
     return symbols
-
-
-_soup = _partial(_BeautifulSoup, features='lxml')
