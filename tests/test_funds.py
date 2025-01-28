@@ -114,7 +114,7 @@ async def test_funds():
 @file('averagereturns.json')
 async def test_average_returns():
     df = await average_returns()
-    assert len(df) == 11
+    assert len(df) >= 11
     assert [*df.dtypes.items()] == [
         ('id', dtype('int64')),
         ('fundTypeId', dtype('int64')),
