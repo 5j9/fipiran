@@ -132,6 +132,11 @@ async def funds() -> _Df:
     return df
 
 
+async def fund_types() -> _Df:
+    j = await _api('fund/fundtype')
+    return _Df(j['items'], copy=False)
+
+
 async def average_returns() -> _Df:
     """Return a Dataframe for https://fund.fipiran.ir/mf/efficiency."""
     j = await _api('fund/averagereturns')

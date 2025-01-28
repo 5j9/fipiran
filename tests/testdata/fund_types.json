@@ -1,0 +1,99 @@
+{
+    "status": 200,
+    "message": "",
+    "pageNumber": 1,
+    "pageSize": 18,
+    "totalCount": 18,
+    "items": [
+        {
+            "fundType": 0,
+            "name": "نامشخص",
+            "isActive": false
+        },
+        {
+            "fundType": 4,
+            "name": "در اوراق بهادار با درآمد ثابت",
+            "isActive": true
+        },
+        {
+            "fundType": 5,
+            "name": "در اوراق بهادار مبتنی بر سپرده کالایی",
+            "isActive": true
+        },
+        {
+            "fundType": 6,
+            "name": "در سهام",
+            "isActive": true
+        },
+        {
+            "fundType": 7,
+            "name": "مختلط",
+            "isActive": true
+        },
+        {
+            "fundType": 11,
+            "name": "اختصاصی بازارگردانی",
+            "isActive": true
+        },
+        {
+            "fundType": 12,
+            "name": "جسورانه",
+            "isActive": true
+        },
+        {
+            "fundType": 13,
+            "name": "پروژه‌ای",
+            "isActive": true
+        },
+        {
+            "fundType": 14,
+            "name": "زمین و ساختمان",
+            "isActive": true
+        },
+        {
+            "fundType": 16,
+            "name": "خصوصی",
+            "isActive": true
+        },
+        {
+            "fundType": 17,
+            "name": "صندوق در صندوق",
+            "isActive": true
+        },
+        {
+            "fundType": 18,
+            "name": "املاک و مستغلات",
+            "isActive": true
+        },
+        {
+            "fundType": 19,
+            "name": "لغو مجوز تاسیس و فعالیت",
+            "isActive": false
+        },
+        {
+            "fundType": 21,
+            "name": "در سهام-بخشی",
+            "isActive": true
+        },
+        {
+            "fundType": 22,
+            "name": "در سهام-سهامی اهرمی",
+            "isActive": true
+        },
+        {
+            "fundType": 23,
+            "name": "در سهام-شاخصی",
+            "isActive": true
+        },
+        {
+            "fundType": 24,
+            "name": "با تضمین اصل مبلغ سرمایه گذاری",
+            "isActive": true
+        },
+        {
+            "fundType": 25,
+            "name": "بازنشستگی تکمیلی",
+            "isActive": true
+        }
+    ]
+}

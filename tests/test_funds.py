@@ -7,6 +7,7 @@ from fipiran.funds import (
     Fund,
     average_returns,
     dependency_graph_data,
+    fund_types,
     funds,
     map_data,
 )
@@ -155,3 +156,13 @@ async def test_alpha_beta():
     ]
     assert df.index.name == 'date'
     assert df.index.dtype == dtype('<M8[ns]')
+
+
+@file('fund_types.json')
+async def test_fund_types():
+    df = await fund_types()
+    assert [*df.dtypes.items()] == [
+        ('fundType', dtype('int64')),
+        ('name', string),
+        ('isActive', bool),
+    ]
