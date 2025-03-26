@@ -13,14 +13,14 @@ classifiers = [
 requires-python = ">=3.12"
 dynamic = ["version"]
 dependencies = [
-    "aiohutils >= 0.16.0",
+    "aiohutils >= 0.21.0",
     "jdatetime",
     "lxml",
     "pandas[pyarrow] >= 2.2.1",
 ]
 [project.optional-dependencies]
 test = [
-    "aiohutils[tests] >= 0.16.1",
+    "aiohutils[tests] >= 0.21.0",
 ]
 
 [[authors]]
@@ -56,6 +56,10 @@ lint.ignore = [
 
 [tool.pytest.ini_options]
 addopts = '--quiet --tb=short'
+asyncio_mode = 'auto'
+asyncio_default_fixture_loop_scope = 'session'
+asyncio_default_test_loop_scope = 'session'
+
 
 [tool.pyright]
 typeCheckingMode = 'standard'
