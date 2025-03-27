@@ -81,7 +81,7 @@ EXPECTED_INFERRED_DTYPES = {
     'fundPublisher': 'int64',
     'fundUnit': 'float64',
     'fundWatch': None,
-    'guaranteedEarningRate': 'float64',
+    'guaranteedEarningRate': None,
     'isCompleted': bool,
     'other': 'float64',
     'prosoectusLink': None,
