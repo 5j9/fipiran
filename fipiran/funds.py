@@ -106,10 +106,8 @@ class Fund:
 
 def _fix_website_address(df: _Df):
     # assert df['websiteAddress'].map(len).max() == 1
-    df['websiteAddress'] = (
-        df['websiteAddress']
-        .map(lambda lst: lst[0] if lst else _NA)
-        .astype(_str)
+    df['websiteAddress'] = df['websiteAddress'].map(
+        lambda lst: lst[0] if lst else _NA
     )
 
 
