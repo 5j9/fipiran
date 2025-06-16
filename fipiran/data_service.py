@@ -29,7 +29,7 @@ async def export_index(
     lval30: str,
     start_date: str | int,
     end_date: str | int,
-    instrument_id: str = None,
+    instrument_id: str | None = None,
 ) -> _Df:
     """Return history of requested index.
 
@@ -74,7 +74,7 @@ async def export_symbol(
     lval18afc: str,
     start_date: str | int,
     end_date: str | int,
-    instrument_id: str = None,
+    instrument_id: str | None = None,
 ) -> _Df:
     """Return history of requested index.
 

@@ -11,7 +11,7 @@ _KY = ''.maketrans('کی', 'كي')
 
 
 class Symbol:
-    __slots__ = '_inscode', 'l18', 'l30', '_symbolpara'
+    __slots__ = '_inscode', '_symbolpara', 'l18', 'l30'
 
     def __init__(self, l18: str, inscode: int | str | None = None):
         self.l18 = l18

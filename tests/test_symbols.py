@@ -52,7 +52,7 @@ async def test_symbol_price_data():
     assert type(price_data.pop('Deven')) is jdatetime
     for key in ('changepdr', 'changepc'):
         assert type(price_data.pop(key)) in (int, float)
-    assert all(type(v) is int for v in price_data.values())  # noqa: E721
+    assert all(type(v) is int for v in price_data.values())
 
 
 @file('BestLimitDataFMelli.html')

@@ -130,7 +130,7 @@ async def test_balance_sheet():
         ('RetainedEarnings', dtype('int64')),
         ('TotalStockholderEquity', dtype('int64')),
     ]
-    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime
 
 
 @file('IS_Fmelli_1394.xls')
@@ -153,7 +153,7 @@ async def test_profit_loss():
         ('Capital', dtype('int64')),
         ('Eps', dtype('int64')),
     ]
-    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime
 
 
 @file('financial_ratios_fmelli_1394.xls')
@@ -183,4 +183,4 @@ async def test_financial_ratios():
         ('ProfitMargin', dtype('float64')),
         ('GrossProfitRatio', dtype('float64')),
     ]
-    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime  # noqa
+    assert type(df.iat[0, 1]) is type(df.iat[0, 2]) is jdatetime

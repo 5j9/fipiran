@@ -3,7 +3,7 @@ from numpy import dtype
 from pandas import DataFrame, Int64Dtype, StringDtype
 
 from fipiran.funds import (
-    _KNOWN_DTYPES,  # noqa
+    _KNOWN_DTYPES,
     Fund,
     average_returns,
     dependency_graph_data,
@@ -67,7 +67,7 @@ async def test_nav_history():
 async def test_info():
     info = await fund.info()
     assert len(info) >= 63
-    assert type(info) is dict  # noqa: E721
+    assert type(info) is dict
 
 
 EXPECTED_INFERRED_DTYPES = {
