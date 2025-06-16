@@ -2,12 +2,13 @@ __version__ = '0.23.1.dev0'
 
 from json import JSONDecodeError as _JSONDecodeError, loads as _jl
 from logging import error as _error
+from typing import Any as _Any
 
 from aiohutils.session import SessionManager
 from pandas import options as _o
 
 _o.mode.copy_on_write = True
-_o.future.infer_string = True
+_o.future.infer_string = True  # type: ignore
 
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
@@ -36,9 +37,7 @@ async def _api(path) -> dict | list:
         raise
 
 
-async def _fipiran(
-    path: str, params=None, json_resp=False
-) -> str | dict | list:
+async def _fipiran(path: str, params=None, json_resp=False) -> _Any:
     text = (
         (await _read(f'{_FIPIRAN}{path}', params=params))
         .decode()
