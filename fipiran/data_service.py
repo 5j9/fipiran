@@ -64,7 +64,7 @@ async def export_index(
     )
     df = _hd(xls)
     df['dateissue'] = (
-        df['dateissue'].astype(str).map(_partial(_jstrptime, '%Y%m%d'))
+        df['dateissue'].astype(str).map(_partial(_jstrptime, format='%Y%m%d'))
     )
     return df
 
@@ -112,7 +112,9 @@ async def export_symbol(
         ),
     )
     df = _hd(xls)
-    df['PDate'] = df['PDate'].map(str).map(_partial(_jstrptime, '%Y%m%d'))
+    df['PDate'] = (
+        df['PDate'].map(str).map(_partial(_jstrptime, format='%Y%m%d'))
+    )
     df['GDate'] = _tdt(df['GDate'], format='%Y%m%d')
     return df
 
