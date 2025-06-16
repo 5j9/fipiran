@@ -18,10 +18,6 @@ dependencies = [
     "lxml",
     "pandas[pyarrow] >= 2.2.1",
 ]
-[project.optional-dependencies]
-test = [
-    "aiohutils[tests] >= 0.21.0",
-]
 
 [[authors]]
 name = "5j9"
@@ -78,3 +74,8 @@ reportUnnecessaryComparison = 'warning'
 reportUnnecessaryContains = 'warning'
 reportUnnecessaryIsInstance = 'warning'
 reportUnnecessaryTypeIgnoreComment = 'warning'
+
+[dependency-groups]
+dev = [
+    "aiohutils[test]>=0.22.1",
+]
