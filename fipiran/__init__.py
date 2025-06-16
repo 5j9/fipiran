@@ -9,6 +9,7 @@ from pandas import options as _o
 
 _o.mode.copy_on_write = True
 _o.future.infer_string = True  # type: ignore
+_o.mode.string_storage = 'pyarrow'
 
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
@@ -28,7 +29,7 @@ async def _read(url, **kwargs) -> bytes:
     return await r.read()
 
 
-async def _api(path) -> dict | list:
+async def _api(path) -> _Any:
     r = await _read(_API + path)
     try:
         return _jl(r)
