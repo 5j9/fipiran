@@ -1,3 +1,4 @@
+from functools import partial as _partial
 from typing import TypedDict as _TypedDict
 
 from aiohutils.pd import html_to_df as _hd
@@ -9,17 +10,25 @@ from . import _fipiran
 _jstrptime = _jdt.strptime
 
 
+class FundAutoComplete(_TypedDict):
+    RegNo: int
+    Name: str
+
+
 async def auto_complete_fund(
     id_: str,
-) -> list[_TypedDict('FundAutoComplete', {'RegNo': int, 'Name': str})]:
+) -> list[FundAutoComplete]:
     return await _fipiran('DataService/AutoCompletefund', (('id', id_),), True)
+
+
+class IndexAutoComplete(_TypedDict):
+    LVal30: str
+    InstrumentID: str
 
 
 async def auto_complete_index(
     id_: str,
-) -> list[
-    _TypedDict('IndexAutoComplete', {'LVal30': str, 'InstrumentID': str})
-]:
+) -> list[IndexAutoComplete]:
     return await _fipiran(
         'DataService/AutoCompleteindex', (('id', id_),), True
     )
@@ -55,16 +64,19 @@ async def export_index(
     )
     df = _hd(xls)
     df['dateissue'] = (
-        df['dateissue'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
+        df['dateissue'].astype(str).map(_partial(_jstrptime, '%Y%m%d'))
     )
     return df
 
 
+class SymbolAutoComplete(_TypedDict):
+    LVal18AFC: str
+    InstrumentID: str
+
+
 async def auto_complete_symbol(
     id_: str,
-) -> list[
-    _TypedDict('SymbolAutoComplete', {'LVal18AFC': str, 'InstrumentID': str})
-]:
+) -> list[SymbolAutoComplete]:
     return await _fipiran(
         'DataService/AutoCompletesymbol', (('id', id_),), True
     )
@@ -100,7 +112,7 @@ async def export_symbol(
         ),
     )
     df = _hd(xls)
-    df['PDate'] = df['PDate'].apply(str).apply(_jstrptime, args=('%Y%m%d',))
+    df['PDate'] = df['PDate'].map(str).map(_partial(_jstrptime, '%Y%m%d'))
     df['GDate'] = _tdt(df['GDate'], format='%Y%m%d')
     return df
 
