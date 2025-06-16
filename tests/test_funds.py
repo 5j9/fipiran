@@ -1,10 +1,11 @@
 from aiohutils.tests import file
 from numpy import dtype
-from pandas import DataFrame, Int64Dtype, StringDtype
+from pandas import DataFrame, Int64Dtype
 
 from fipiran.funds import (
     _KNOWN_DTYPES,
     Fund,
+    _str,
     average_returns,
     dependency_graph_data,
     fund_types,
@@ -13,7 +14,6 @@ from fipiran.funds import (
 )
 
 fund = Fund(11215)
-string = StringDtype()
 
 
 def test_repr():
@@ -86,7 +86,7 @@ EXPECTED_INFERRED_DTYPES = {
     'other': 'float64',
     'prosoectusLink': None,
     'stock': None,
-    'websiteAddress': 'string',
+    'websiteAddress': _str,
 }
 
 
@@ -99,7 +99,7 @@ def assert_dtypes(df: DataFrame):
             if et is None:
                 df[col].isna().all()
             else:
-                assert df[col].dtype == et, f'{col=}'
+                assert df[col].dtype == et, f'{col=} {df[col].dtype=} {et=}'
         except:  # a good breakpoint
             raise
 
@@ -163,6 +163,6 @@ async def test_fund_types():
     df = await fund_types()
     assert [*df.dtypes.items()] == [
         ('fundType', dtype('int64')),
-        ('name', string),
-        ('isActive', bool),
+        ('name', _str),
+        ('isActive', dtype('bool')),
     ]

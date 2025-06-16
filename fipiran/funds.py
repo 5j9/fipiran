@@ -4,14 +4,15 @@ from pandas import NA as _NA, DataFrame as _Df, to_datetime as _tdt
 
 from fipiran import _api
 
+_str = 'string'
 _KNOWN_DTYPES = {
     # 'initiationDate': 'datetime64', fails on some funds
     'alpha': 'float64',
     'annualEfficiency': 'float64',
-    'auditor': 'string',
+    'auditor': _str,
     'beta': 'float64',
     'cancelNav': 'float64',
-    'custodian': 'string',
+    'custodian': _str,
     'dailyEfficiency': 'float64',
     # date cannot be set using astype, see:
     # https://github.com/pandas-dev/pandas/issues/53127
@@ -20,16 +21,16 @@ _KNOWN_DTYPES = {
     'efficiency': 'float64',
     'fundSize': 'Int64',
     'fundType': 'int64',
-    'guarantor': 'string',
+    'guarantor': _str,
     'guarantorSeoRegisterNo': 'Int64',
     'initiationDate': 'O',
-    'insCode': 'string',
+    'insCode': _str,
     'investedUnits': 'Int64',
     'issueNav': 'float64',
-    'manager': 'string',
+    'manager': _str,
     'managerSeoRegisterNo': 'Int64',
     'monthlyEfficiency': 'float64',
-    'name': 'string',
+    'name': _str,
     'netAsset': 'Int64',
     'quarterlyEfficiency': 'float64',
     'rankLastUpdate': 'O',
@@ -38,12 +39,12 @@ _KNOWN_DTYPES = {
     'rankOf36Month': 'float64',
     'rankOf48Month': 'float64',
     'rankOf60Month': 'float64',
-    'regNo': 'string',
+    'regNo': _str,
     'sixMonthEfficiency': 'float64',
-    'smallSymbolName': 'string',
+    'smallSymbolName': _str,
     'statisticalNav': 'float64',
-    'tempGuarantorName': 'string',
-    'tempManagerName': 'string',
+    'tempGuarantorName': _str,
+    'tempManagerName': _str,
     'typeOfInvest': 'category',
     'weeklyEfficiency': 'float64',
 }
@@ -108,7 +109,7 @@ def _fix_website_address(df: _Df):
     df['websiteAddress'] = (
         df['websiteAddress']
         .map(lambda lst: lst[0] if lst else _NA)
-        .astype('string')
+        .astype(_str)
     )
 
 

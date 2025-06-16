@@ -9,7 +9,6 @@ from pandas import options as _o
 
 _o.mode.copy_on_write = True
 _o.future.infer_string = True  # type: ignore
-_o.mode.string_storage = 'pyarrow'
 
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
