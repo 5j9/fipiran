@@ -67,6 +67,11 @@ class Fund:
         return df
 
     async def navps_history(self, /, *, all_=True) -> _Df:
+        """Return NAVPS history as DataFrame.
+
+        DataFrame will have date as index and the following columns:
+        issueNav,cancelNav,statisticalNav
+        """
         j = await _api(
             f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
