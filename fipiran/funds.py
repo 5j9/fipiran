@@ -1,4 +1,4 @@
-from warnings import warn as _warn
+from warnings import deprecated as _deprecated
 
 from pandas import NA as _NA, DataFrame as _Df, to_datetime as _tdt
 
@@ -70,7 +70,7 @@ class Fund:
         """Return NAVPS history as DataFrame.
 
         DataFrame will have date as index and the following columns:
-        issueNav,cancelNav,statisticalNav
+        issueNav, cancelNav, statisticalNav
         """
         j = await _api(
             f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}'
@@ -80,14 +80,19 @@ class Fund:
         df.set_index('date', inplace=True)
         return df
 
+    @_deprecated(
+        '`issue_cancel_history` is deprecated, use `navps_history` instead',
+        category=DeprecationWarning,
+    )
     async def issue_cancel_history(self, /, *, all_=True) -> _Df:
-        _warn(
-            '`issue_cancel_history` is deprecated, use `navps_history` instead',
-            DeprecationWarning,
-        )
         return await self.navps_history(all_=all_)
 
     async def nav_history(self, /, *, all_=True) -> _Df:
+        """Return NAV history as a DataFrame.
+
+        Result columns: netAsset, unitsRedDAY, unitsSubDAY.
+        `date` will be the index.
+        """
         j = await _api(
             f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}'
         )
