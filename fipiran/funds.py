@@ -132,6 +132,62 @@ def _apply_types(df: _Df) -> _Df:
 async def funds() -> _Df:
     """Return the data available at https://fund.fipiran.ir/mf/list.
 
+    The DataFrame will have the following columns:
+
+    regNo: str
+    name: str
+    rankOf12Month: None
+    rankOf24Month: None
+    rankOf36Month: None
+    rankOf48Month: None
+    rankOf60Month: None
+    rankLastUpdate: datetime
+    fundType: int
+    typeOfInvest: str
+    fundSize: Union[int, None]
+    initiationDate: datetime
+    dailyEfficiency: Union[None, float]
+    weeklyEfficiency: Union[None, float]
+    monthlyEfficiency: Union[None, float]
+    quarterlyEfficiency: Union[None, float]
+    sixMonthEfficiency: Union[None, float]
+    annualEfficiency: Union[None, float]
+    statisticalNav: Union[None, float]
+    efficiency: Union[None, float]
+    cancelNav: Union[None, float]
+    issueNav: Union[None, float]
+    dividendIntervalPeriod: Union[int, None]
+    guaranteedEarningRate: None
+    date: datetime
+    netAsset: Union[int, None]
+    estimatedEarningRate: Union[None, float]
+    investedUnits: Union[int, None]
+    articlesOfAssociationLink: None
+    prosoectusLink: None
+    websiteAddress: List[UnnammedUnionBD03A8]
+    manager: str
+    managerSeoRegisterNo: Union[None, str]
+    guarantorSeoRegisterNo: Union[None, str]
+    auditor: str
+    custodian: str
+    guarantor: str
+    beta: Union[None, float]
+    alpha: Union[None, float]
+    isCompleted: bool
+    fiveBest: Union[None, float]
+    stock: Union[None, float]
+    bond: Union[None, float]
+    other: Union[None, float]
+    cash: Union[None, float]
+    deposit: Union[None, float]
+    fundUnit: Union[None, float]
+    commodity: Union[None, float]
+    fundPublisher: int
+    smallSymbolName: Union[None, str]
+    insCode: Union[None, str]
+    fundWatch: None
+
+
     Also see fipiran.data_service.mutual_fund_list function.
     """
     j = await _api('fund/fundcompare')
