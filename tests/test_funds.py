@@ -231,18 +231,50 @@ async def test_fund_types():
 def test_common_fund_info_fields():
     """
     Tests that no subclass of _CommonFundInfo redefines a field already
-    defined in the base class.
-
-    It uses __pydantic_fields__ for the parent (all inherited fields)
-    and __annotations__ for the subclass (only fields defined directly
-    on the subclass). The intersection of these two sets represents
-    fields that were redefined.
+    defined in the base class. And asserts that no field is common among
+    the direct subclasses; such fields should be moved to the base class.
     """
     parent_fields = set(_CommonFundInfo.__pydantic_fields__.keys())
+
+    # Use a dictionary to store the directly defined fields for each subclass
+    subclass_fields: dict[str, set] = {}
+
     for subclass in _CommonFundInfo.__subclasses__():
+        # Get fields defined directly on the subclass (not inherited)
         subclass_directly_defined_fields = set(subclass.__annotations__.keys())
+
+        # --- PART 1: Check for redefined fields in the parent ---
         redefined_fields = parent_fields & subclass_directly_defined_fields
         assert not redefined_fields, (
             f'Subclass {subclass.__name__} illegally redefines fields already in '
             f'_CommonFundInfo: {redefined_fields}'
         )
+
+        # Store the directly defined fields for Part 2
+        subclass_fields[subclass.__name__] = subclass_directly_defined_fields
+
+    # --- PART 2: Check for common fields among all subclasses ---
+    # Start with the fields of the first subclass as the initial 'common' set
+    # and then find the intersection with all subsequent subclasses.
+
+    # Get a list of the sets of fields
+    all_subclass_field_sets = list(subclass_fields.values())
+
+    if not all_subclass_field_sets:
+        # No subclasses found, nothing to check for commonality
+        return
+
+    # Initialize the common_fields set with the first set
+    common_fields = all_subclass_field_sets[0]
+
+    # Iterate through the rest of the sets to find the intersection
+    for field_set in all_subclass_field_sets[1:]:
+        common_fields = common_fields & field_set
+
+    # Types are different for these two fields. Redefinition is unavoidable.
+    common_fields -= {'guarantor', 'manager'}
+
+    assert not common_fields, (
+        f'The following fields are common among all subclasses and should be '
+        f'moved to the base class _CommonFundInfo: {common_fields}'
+    )
