@@ -4,6 +4,7 @@ from datetime import datetime as _datetime
 from enum import Flag as _Flag, auto as _auto
 from typing import Literal as _Literal
 
+from pandas import DataFrame as _Df
 from pydantic import BaseModel as _BaseModel, RootModel as _RootModel
 
 from fipiran import _api
@@ -224,8 +225,8 @@ class Symbol:
             model=Publisher,
         )
 
-    async def history(self, *, limit: int = 99999) -> list[HistoryItem]:
-        return (
+    async def history(self, *, limit: int = 99999) -> _Df:
+        items = (
             await _api(
                 'instrument/instrumenthistory',
                 params={
@@ -236,6 +237,7 @@ class Symbol:
                 model=_History,
             )
         ).items
+        return _Df(vars(i) for i in items)
 
     async def statements(self, limit: int = 100) -> list[Statement]:
         return (

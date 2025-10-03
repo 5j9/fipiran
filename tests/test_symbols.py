@@ -4,6 +4,7 @@ from aiohutils.tests import file
 
 from fipiran.symbols import (
     Symbol,
+    _History,
     index_compare,
     industries,
     search,
@@ -52,7 +53,11 @@ async def test_publisher():
 
 @file('symbol_history.json')
 async def test_history():
-    await fmelli.history()
+    df = await fmelli.history()
+    unexpected_cols = (
+        set(df.columns.names) == _History.__pydantic_fields__.keys()
+    )
+    assert not unexpected_cols
 
 
 @file('symbol_statements.json')
