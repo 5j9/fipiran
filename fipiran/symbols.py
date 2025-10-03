@@ -237,7 +237,9 @@ class Symbol:
                 model=_History,
             )
         ).items
-        return _Df(vars(i) for i in items)
+        df = _Df(vars(i) for i in items)
+        df.set_index('transactionDate', inplace=True)
+        return df
 
     async def statements(self, limit: int = 100) -> list[Statement]:
         return (
