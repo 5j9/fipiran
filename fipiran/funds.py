@@ -5,16 +5,16 @@ from datetime import datetime as _datetime
 from pandas import NA as _NA, DataFrame as _Df
 from pydantic import RootModel as _RootModel
 
-from fipiran import _api, _LoosModel
+from fipiran import _api, _LooseModel
 
 
-class _SpecificFundInfo(_LoosModel):
+class _SpecificFundInfo(_LooseModel):
     status: int
     message: str
     item: SpecificFundInfo
 
 
-class _CommonFundInfo(_LoosModel, extra='allow'):
+class _CommonFundInfo(_LooseModel, extra='allow'):
     date: _datetime
     regNo: str
     name: str
@@ -102,7 +102,7 @@ class SpecificFundInfo(_CommonFundInfo):
     mutualFundLicenses: list[MutualFundLicense]
 
 
-class MutualFundLicense(_LoosModel):
+class MutualFundLicense(_LooseModel):
     id: int
     regNo: str
     isExpired: bool
@@ -116,27 +116,27 @@ class MutualFundLicense(_LoosModel):
     mutualFund: None
 
 
-class AlphaBeta(_LoosModel):
+class AlphaBeta(_LooseModel):
     date: _datetime
     beta: float
     alpha: float
 
 
-class AssetsOnDate(_LoosModel):
+class AssetsOnDate(_LooseModel):
     date: _datetime
     netAsset: int
     unitsSubDAY: int
     unitsRedDAY: int
 
 
-class NavOnDate(_LoosModel):
+class NavOnDate(_LooseModel):
     date: _datetime
     issueNav: float
     cancelNav: float
     statisticalNav: float
 
 
-class PortfolioOnDate(_LoosModel):
+class PortfolioOnDate(_LooseModel):
     date: _datetime
     fiveBest: float
     stock: float
@@ -222,7 +222,7 @@ def _fix_website_address(df: _Df):
     )
 
 
-class _Funds(_LoosModel):
+class _Funds(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -270,7 +270,7 @@ async def funds() -> _Df:
     return df
 
 
-class _FundTypes(_LoosModel):
+class _FundTypes(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -279,7 +279,7 @@ class _FundTypes(_LoosModel):
     items: list[FundType]
 
 
-class FundType(_LoosModel):
+class FundType(_LooseModel):
     fundType: int
     name: str
     isActive: bool
@@ -292,7 +292,7 @@ async def fund_types() -> _Df:
     return _Df([vars(i) for i in m.items])
 
 
-class AverageReturns(_LoosModel):
+class AverageReturns(_LooseModel):
     id: int
     fundTypeId: int | None
     netAsset: int | None
@@ -321,7 +321,7 @@ async def average_returns() -> _Df:
     return df.astype({'netAsset': 'Int64'}, copy=False)
 
 
-class _TreeMap(_LoosModel):
+class _TreeMap(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -367,7 +367,7 @@ async def map_data() -> _Df:
     return df
 
 
-class _DepData(_LoosModel):
+class _DepData(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -383,7 +383,7 @@ class DepItem(_CommonFundInfo):
     guarantor: Guarantor | None
 
 
-class Manager(_LoosModel):
+class Manager(_LooseModel):
     managerId: int
     cfiId: int | None
     managerSeoRegisterNo: None | str
@@ -406,7 +406,7 @@ class Manager(_LoosModel):
     isCompleted: bool
 
 
-class Guarantor(_LoosModel):
+class Guarantor(_LooseModel):
     guarantorId: int
     cfiId: int | None
     guarantorSeoRegisterNo: str

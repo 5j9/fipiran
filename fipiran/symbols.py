@@ -7,7 +7,7 @@ from typing import Literal as _Literal
 from pandas import DataFrame as _Df
 from pydantic import RootModel as _RootModel
 
-from fipiran import _api, _LoosModel as _LooseModel
+from fipiran import _api, _LooseModel
 
 
 class _InstrumentInfo(_LooseModel):

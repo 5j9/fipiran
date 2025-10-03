@@ -8,7 +8,7 @@ from pandas import options as _o
 from pydantic import BaseModel as _BaseModel
 
 
-class _LoosModel(_BaseModel, extra='allow'):
+class _LooseModel(_BaseModel, extra='allow'):
     pass
 
 
