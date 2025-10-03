@@ -7,6 +7,11 @@ from aiohutils.session import SessionManager
 from pandas import options as _o
 from pydantic import BaseModel as _BaseModel
 
+
+class _LoosModel(_BaseModel, extra='allow'):
+    pass
+
+
 _o.mode.copy_on_write = True
 _o.future.infer_string = True  # type: ignore
 
