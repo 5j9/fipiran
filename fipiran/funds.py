@@ -14,7 +14,7 @@ class _SpecificFundInfo(_LooseModel):
     item: SpecificFundInfo
 
 
-class _CommonFundInfo(_LooseModel, extra='allow'):
+class _CommonFundInfo(_LooseModel):
     date: _datetime
     regNo: str
     name: str
