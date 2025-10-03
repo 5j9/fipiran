@@ -5,25 +5,25 @@ from enum import Flag as _Flag, auto as _auto
 from typing import Literal as _Literal
 
 from pandas import DataFrame as _Df
-from pydantic import BaseModel as _BaseModel, RootModel as _RootModel
+from pydantic import RootModel as _RootModel
 
-from fipiran import _api
+from fipiran import _api, _LoosModel as _LooseModel
 
 
-class _InstrumentInfo(_BaseModel):
+class _InstrumentInfo(_LooseModel):
     status: int
     message: str
     item: list[InstrumentInfo]
 
 
-class InstrumentInfo(_BaseModel):
+class InstrumentInfo(_LooseModel):
     instrument: Instrument
     instrumentTransaction: InstrumentTransaction
     instrument5BestLimits: list[Instrument5BestLimit]
     instrumentClientTypes: list[InstrumentClientType]
 
 
-class Instrument(_BaseModel):
+class Instrument(_LooseModel):
     insCode: str
     smallSymbolName: str
     symbolFullName: str
@@ -39,7 +39,7 @@ class Instrument(_BaseModel):
     status: int
 
 
-class InstrumentTransaction(_BaseModel):
+class InstrumentTransaction(_LooseModel):
     insCode: str
     transactionDate: _datetime
     numberOfTransactions: float
@@ -59,7 +59,7 @@ class InstrumentTransaction(_BaseModel):
     hEven: int
 
 
-class Instrument5BestLimit(_BaseModel):
+class Instrument5BestLimit(_LooseModel):
     rowNumber: int
     demandVolume: int
     numberRequests: int
@@ -69,7 +69,7 @@ class Instrument5BestLimit(_BaseModel):
     supplyVolume: int
 
 
-class InstrumentClientType(_BaseModel):
+class InstrumentClientType(_LooseModel):
     numberIndividualsBuyers: int
     numberNonIndividualBuyers: int
     sumIndividualBuyVolume: int
@@ -80,7 +80,7 @@ class InstrumentClientType(_BaseModel):
     sumNonIndividualSellVolume: int
 
 
-class Statistics(_BaseModel):
+class Statistics(_LooseModel):
     weekly: PeriodStatistics
     monthly: PeriodStatistics
     quarterly: PeriodStatistics
@@ -88,7 +88,7 @@ class Statistics(_BaseModel):
     annual: PeriodStatistics
 
 
-class PeriodStatistics(_BaseModel):
+class PeriodStatistics(_LooseModel):
     priceMax: float
     priceMin: float
     numberOfTransactions: float
@@ -96,7 +96,7 @@ class PeriodStatistics(_BaseModel):
     transactionValue: float
 
 
-class Publisher(_BaseModel):
+class Publisher(_LooseModel):
     name: str
     activitySubject: str
     executiveManager: str
@@ -114,7 +114,7 @@ class Publisher(_BaseModel):
     isinCode: str
 
 
-class Efficiency(_BaseModel):
+class Efficiency(_LooseModel):
     weeklyEfficiency: float
     monthlyEfficiency: float
     quarterlyEfficiency: float
@@ -122,7 +122,7 @@ class Efficiency(_BaseModel):
     annualEfficiency: float
 
 
-class _History(_BaseModel):
+class _History(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -131,7 +131,7 @@ class _History(_BaseModel):
     items: list[HistoryItem]
 
 
-class HistoryItem(_BaseModel):
+class HistoryItem(_LooseModel):
     insCode: str
     transactionDate: _datetime
     numberOfTransactions: float | None
@@ -150,7 +150,7 @@ class HistoryItem(_BaseModel):
     hEven: int | None
 
 
-class _Statements(_BaseModel):
+class _Statements(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -159,7 +159,7 @@ class _Statements(_BaseModel):
     items: list[Statement]
 
 
-class Statement(_BaseModel):
+class Statement(_LooseModel):
     title: str
     publishDateTime: _datetime
     letterType: int
@@ -177,7 +177,7 @@ class Statement(_BaseModel):
     attachments: list[Attachment]
 
 
-class Attachment(_BaseModel):
+class Attachment(_LooseModel):
     title: str
     attachmentDateTime: _datetime
     url: str
@@ -356,7 +356,7 @@ SymbolStatus.api_map = {
 }
 
 
-class _Search(_BaseModel):
+class _Search(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -365,7 +365,7 @@ class _Search(_BaseModel):
     items: list[SearchResults]
 
 
-class SearchResults(_BaseModel):
+class SearchResults(_LooseModel):
     instruments: list[Instrument]
     instrumentTransactions: list[InstrumentTransaction]
 
@@ -434,7 +434,7 @@ async def search(
     return (r.instruments, r.instrumentTransactions)
 
 
-class IndexData(_BaseModel):
+class IndexData(_LooseModel):
     insCode: str
     title: str
     date: _datetime
@@ -466,7 +466,7 @@ class IndexData(_BaseModel):
     annualEfficiency: float
 
 
-class _IndexCompare(_BaseModel):
+class _IndexCompare(_LooseModel):
     status: int
     message: str
     pageNumber: int
@@ -482,7 +482,7 @@ async def index_compare() -> list[IndexData]:
     return items
 
 
-class Industry(_BaseModel):
+class Industry(_LooseModel):
     industryGroupCode: str
     title: str
 
@@ -493,7 +493,7 @@ async def industries() -> list[Industry]:
     ).root
 
 
-class SubIndustry(_BaseModel):
+class SubIndustry(_LooseModel):
     industrySubCode: str
     title: str
     industryGroupCode: str
