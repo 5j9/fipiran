@@ -16,20 +16,22 @@ Usage
 .. code-block:: python
 
     import asyncio
+
     from fipiran.symbols import Symbol
 
+
     async def main():
-        company_info = await Symbol('فملی').company_info()
-        print(company_info)
+        symbol = await Symbol.from_name('فملی')
+        company_info = await symbol.info()
+        print(company_info.model_dump_json(indent=2))
+
 
     asyncio.run(main())
 
-There are four modules:
+There are two main modules:
 
-- data_service
 - funds
 - symbols
-- codal
 
 Use an asyncio-aware REPL, like ``python -m asyncio``, to run the code samples below.
 
@@ -38,17 +40,28 @@ Example 1:
 .. code-block:: python
 
     >>> from fipiran.symbols import Symbol
-    >>> await Symbol('فملی').company_info()
-    {'نام نماد': 'فملی',
-     'نام شرکت': 'ملی صنایع مس ایران',
-     'مدیر عامل': 'اردشیر سعدمحمدی',
-     'تلفن': '021-88724410',
-     'فکس': '021-88729014',
-     'آدرس': 'مجتمع مس سرچشمه و مجتمع مس میدوک در استان کرمان و مجتمع مس سونگون در تبریز شهرستان ورزقان واقع شده اند.',
-     'وب سایت': 'www.nicico.com',
-     'ایمیل': 'office@nicico.com',
-     'سال مالی': '12/29',
-     'موضوع فعالیت': 'اکتشافات،  استخراج و  بهره برداری از معادن  مس  ایران'}
+    >>> symbol = await Symbol.from_name('فملی')
+    >>> history = await symbol.history(limit=1)
+    >>> for entry in history:
+            print(entry.model_dump_json(indent=2))
+    {
+    "insCode": "35425587644337450",
+    "transactionDate": "2025-10-01T00:00:00",
+    "numberOfTransactions": 11586.0,
+    "numberOfVolume": 575913522.0,
+    "transactionValue": 3847273607390.0,
+    "closingPrice": 6680.0,
+    "adjPriceForward": 7554.014596889284,
+    "adjPriceBackward": 7554.0145968,
+    "lastTransaction": 6720.0,
+    "changePrice": 190.0,
+    "priceMin": 6410.0,
+    "priceMax": 6720.0,
+    "priceFirst": 6530.0,
+    "priceYesterday": 6530.0,
+    "lastStatus": 0,
+    "hEven": 122949
+    }
 
 Example 2:
 
