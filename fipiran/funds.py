@@ -232,6 +232,7 @@ class _Funds(_LooseModel):
 
 
 class FundInfo(_CommonFundInfo):
+    smallSymbolName: str | None
     guaranteedEarningRate: None | int
     estimatedEarningRate: float | None
     investedUnits: int | None
@@ -354,7 +355,6 @@ class TreeMapItem(_CommonFundInfo):
     fundUnit: float | None
     commodity: float | None
     fundPublisher: int
-    smallSymbolName: None = None
     insCode: None = None
     fundWatch: None
 

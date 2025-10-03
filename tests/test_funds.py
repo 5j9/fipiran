@@ -157,7 +157,7 @@ def assert_dtypes(df: DataFrame):
 
 
 @file('fundcompare.json')
-async def test_funds():
+async def test_funds_funds():
     df = await funds()
     assert len(df) > 300
     unexpected_fields = set(df.columns) - FundInfo.__pydantic_fields__.keys()
