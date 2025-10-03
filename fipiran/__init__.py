@@ -1,8 +1,7 @@
 __version__ = '0.23.2.dev0'
 
-from json import JSONDecodeError as _JSONDecodeError, loads as _jl
-from logging import error as _error
-from typing import Any as _Any, overload as _overload
+from json import loads as _jl
+from typing import Any as _Any
 
 from aiohutils.session import SessionManager
 from pandas import options as _o
@@ -29,19 +28,8 @@ async def _read(url, **kwargs) -> bytes:
     return await r.read()
 
 
-# todo: make model required
-@_overload
-async def _api(path, *, model: None = None, **kwargs) -> _Any: ...
-@_overload
-async def _api[T: _BaseModel](path, *, model: type[T], **kwargs) -> T: ...
-async def _api(path, *, model: type[_BaseModel] | None = None, **kwargs):
+async def _api[T: _BaseModel](path, *, model: type[T], **kwargs) -> T:
     r = await _read(_API + path, **kwargs)
-    if model is None:
-        try:
-            return _jl(r)
-        except _JSONDecodeError:
-            _error(f'{r = }')
-            raise
     return model.model_validate_json(r)
 
 

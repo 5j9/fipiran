@@ -3,15 +3,59 @@ from numpy import dtype
 from pandas import DataFrame, Int64Dtype
 
 from fipiran.funds import (
-    _KNOWN_DTYPES,
     Fund,
-    _str,
+    SpecificFundInfo,
     average_returns,
     dependency_graph_data,
     fund_types,
     funds,
     map_data,
 )
+
+_str = 'string'
+_KNOWN_DTYPES = {
+    # 'initiationDate': 'datetime64', fails on some funds
+    'alpha': 'float64',
+    'annualEfficiency': 'float64',
+    'auditor': _str,
+    'beta': 'float64',
+    'cancelNav': 'float64',
+    'custodian': _str,
+    'dailyEfficiency': 'float64',
+    # date cannot be set using astype, see:
+    # https://github.com/pandas-dev/pandas/issues/53127
+    'date': 'O',
+    'dividendIntervalPeriod': 'Int64',
+    'efficiency': 'float64',
+    'fundSize': 'Int64',
+    'fundType': 'int64',
+    'guarantor': _str,
+    'guarantorSeoRegisterNo': 'Int64',
+    'initiationDate': 'O',
+    'insCode': _str,
+    'investedUnits': 'Int64',
+    'issueNav': 'float64',
+    'manager': _str,
+    'managerSeoRegisterNo': 'Int64',
+    'monthlyEfficiency': 'float64',
+    'name': _str,
+    'netAsset': 'Int64',
+    'quarterlyEfficiency': 'float64',
+    'rankLastUpdate': 'O',
+    'rankOf12Month': 'float64',
+    'rankOf24Month': 'float64',
+    'rankOf36Month': 'float64',
+    'rankOf48Month': 'float64',
+    'rankOf60Month': 'float64',
+    'regNo': _str,
+    'sixMonthEfficiency': 'float64',
+    'smallSymbolName': _str,
+    'statisticalNav': 'float64',
+    'tempGuarantorName': _str,
+    'tempManagerName': _str,
+    'typeOfInvest': 'category',
+    'weeklyEfficiency': 'float64',
+}
 
 fund = Fund(11215)
 
@@ -66,8 +110,8 @@ async def test_nav_history():
 @file('getfund_atlas.json')
 async def test_info():
     info = await fund.info()
-    assert len(info) >= 63
-    assert type(info) is dict
+    assert len(vars(info)) >= 63
+    assert type(info) is SpecificFundInfo
 
 
 EXPECTED_INFERRED_DTYPES = {

@@ -1,53 +1,151 @@
-from warnings import deprecated as _deprecated
+from __future__ import annotations as _
 
-from pandas import NA as _NA, DataFrame as _Df, to_datetime as _tdt
+from datetime import datetime as _datetime
+
+from pandas import NA as _NA, DataFrame as _Df
+from pydantic import BaseModel as _BaseModel, RootModel as _RootModel
 
 from fipiran import _api
 
-_str = 'string'
-_KNOWN_DTYPES = {
-    # 'initiationDate': 'datetime64', fails on some funds
-    'alpha': 'float64',
-    'annualEfficiency': 'float64',
-    'auditor': _str,
-    'beta': 'float64',
-    'cancelNav': 'float64',
-    'custodian': _str,
-    'dailyEfficiency': 'float64',
-    # date cannot be set using astype, see:
-    # https://github.com/pandas-dev/pandas/issues/53127
-    'date': 'O',
-    'dividendIntervalPeriod': 'Int64',
-    'efficiency': 'float64',
-    'fundSize': 'Int64',
-    'fundType': 'int64',
-    'guarantor': _str,
-    'guarantorSeoRegisterNo': 'Int64',
-    'initiationDate': 'O',
-    'insCode': _str,
-    'investedUnits': 'Int64',
-    'issueNav': 'float64',
-    'manager': _str,
-    'managerSeoRegisterNo': 'Int64',
-    'monthlyEfficiency': 'float64',
-    'name': _str,
-    'netAsset': 'Int64',
-    'quarterlyEfficiency': 'float64',
-    'rankLastUpdate': 'O',
-    'rankOf12Month': 'float64',
-    'rankOf24Month': 'float64',
-    'rankOf36Month': 'float64',
-    'rankOf48Month': 'float64',
-    'rankOf60Month': 'float64',
-    'regNo': _str,
-    'sixMonthEfficiency': 'float64',
-    'smallSymbolName': _str,
-    'statisticalNav': 'float64',
-    'tempGuarantorName': _str,
-    'tempManagerName': _str,
-    'typeOfInvest': 'category',
-    'weeklyEfficiency': 'float64',
-}
+
+class _SpecificFundInfo(_BaseModel):
+    status: int
+    message: str
+    item: SpecificFundInfo
+
+
+class _CommonFundInfo(_BaseModel):
+    regNo: str
+    name: str
+    rankOf12Month: None | int
+    rankOf24Month: None | int
+    rankOf36Month: None | int
+    rankOf48Month: None | int
+    rankOf60Month: None | int
+    initiationDate: _datetime
+
+
+class SpecificFundInfo(_CommonFundInfo):
+    fundSize: int
+    fundType: int
+    executiveManager: str
+    articlesOfAssociationLink: None
+    prosoectusLink: None
+    lastModificationTime: _datetime
+    date: _datetime
+    dailyEfficiency: float
+    weeklyEfficiency: float
+    monthlyEfficiency: float
+    quarterlyEfficiency: float
+    sixMonthEfficiency: float
+    annualEfficiency: float
+    dividendIntervalPeriod: int
+    estimatedEarningRate: None
+    guaranteedEarningRate: None
+    insInvNo: int
+    insInvPercent: float
+    legalPercent: float
+    marketMaker: str
+    naturalPercent: float
+    netAsset: int
+    retInvNo: int
+    retInvPercent: float
+    investedUnits: int
+    unitsRedDAY: int
+    unitsRedFromFirst: int
+    unitsSubDAY: int
+    unitsSubFromFirst: int
+    efficiency: float
+    cancelNav: float
+    issueNav: float
+    statisticalNav: float
+    fiveBest: float
+    stock: float
+    bond: float
+    other: float
+    cash: float
+    deposit: float
+    fundUnit: float | None
+    commodity: float | None
+    typeOfInvest: str
+    rankLastUpdate: _datetime
+    manager: str
+    managerSeoRegisterNo: str
+    guarantorSeoRegisterNo: None
+    auditor: str
+    websiteAddress: list[str]
+    custodian: str
+    guarantor: str
+    investmentManager: str
+    beta: float
+    alpha: float
+    fundWatch: None
+    seoRegisterDate: _datetime
+    registrationNumber: str
+    registerDate: _datetime
+    nationalId: str
+    isCompleted: bool
+    insCode: str
+    baseUnitsSubscriptionNAV: None
+    baseUnitsCancelNAV: None
+    baseUnitsTotalNetAssetValue: None
+    baseTotalUnit: None
+    baseUnitsTotalSubscription: None
+    baseUnitsTotalCancel: None
+    superUnitsSubscriptionNAV: None
+    superUnitsCancelNAV: None
+    superUnitsTotalNetAssetValue: None
+    superTotalUnit: None
+    superUnitsTotalSubscription: None
+    superUnitsTotalCancel: None
+    fundPublisher: int
+    mutualFundLicenses: list[MutualFundLicense]
+
+
+class MutualFundLicense(_BaseModel):
+    id: int
+    regNo: str
+    isExpired: bool
+    startDate: _datetime
+    expireDate: None
+    licenseNo: str
+    licenseStatusId: int
+    licenseStatusDescription: None
+    licenseTypeId: int
+    newLicenseTypeId: None
+    mutualFund: None
+
+
+class AlphaBeta(_BaseModel):
+    date: _datetime
+    beta: float
+    alpha: float
+
+
+class AssetsOnDate(_BaseModel):
+    date: _datetime
+    netAsset: int
+    unitsSubDAY: int
+    unitsRedDAY: int
+
+
+class NavOnDate(_BaseModel):
+    date: _datetime
+    issueNav: float
+    cancelNav: float
+    statisticalNav: float
+
+
+class PortfolioOnDate(_BaseModel):
+    date: _datetime
+    fiveBest: float
+    stock: float
+    bond: float
+    other: float
+    cash: float
+    deposit: float
+    fundUnit: float | None
+    commodity: float | None
 
 
 class Fund:
@@ -60,58 +158,61 @@ class Fund:
         return f'{type(self).__name__}({self.reg_no!r})'
 
     async def asset_allocation_history(self) -> _Df:
-        """Return a dict where values are percentage of each kind of asset."""
-        j = await _api(f'chart/portfoliochart?regno={self.reg_no}')
-        df = _Df(j)
-        df['date'] = _tdt(df['date'], format='ISO8601')
+        """Return a dict where values are percentage of each kind of asset.
+
+        See funds.PortfolioOnDate for column names.
+        """
+        m = await _api(
+            f'chart/portfoliochart?regno={self.reg_no}',
+            model=_RootModel[list[PortfolioOnDate]],
+        )
+        df = _Df(vars(i) for i in m.root)
         return df
 
     async def navps_history(self, /, *, all_=True) -> _Df:
         """Return NAVPS history as DataFrame.
 
-        DataFrame will have date as index and the following columns:
-        issueNav, cancelNav, statisticalNav
+        See funds.NavOnDate for column names.
         """
-        j = await _api(
-            f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}'
+        m = await _api(
+            f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}',
+            model=_RootModel[list[NavOnDate]],
         )
-        df = _Df(j, copy=False)
-        df['date'] = _tdt(df['date'])
+        df = _Df(vars(i) for i in m.root)
         df.set_index('date', inplace=True)
         return df
-
-    @_deprecated(
-        '`issue_cancel_history` is deprecated, use `navps_history` instead',
-        category=DeprecationWarning,
-    )
-    async def issue_cancel_history(self, /, *, all_=True) -> _Df:
-        return await self.navps_history(all_=all_)
 
     async def nav_history(self, /, *, all_=True) -> _Df:
         """Return NAV history as a DataFrame.
 
-        Result columns: netAsset, unitsRedDAY, unitsSubDAY.
-        `date` will be the index.
+        See funds.AssetsOnDate for column names.
         """
-        j = await _api(
-            f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}'
+        m = await _api(
+            f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}',
+            model=_RootModel[list[AssetsOnDate]],
         )
-        df = _Df(j, copy=False)
-        df['date'] = _tdt(df['date'])
+        df = _Df(vars(i) for i in m.root)
         df.set_index('date', inplace=True)
         return df
 
     async def alpha_beta(self, /, *, all_=True) -> _Df:
-        j = await _api(
-            f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}'
-        )
-        df = _Df(j, copy=False)
-        df['date'] = _tdt(df['date'])
+        """See funds.AlphaBeta for column names."""
+        items = (
+            await _api(
+                f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}',
+                model=_RootModel[list[AlphaBeta]],
+            )
+        ).root
+        df = _Df(vars(i) for i in items)
         df.set_index('date', inplace=True)
         return df
 
-    async def info(self) -> dict:
-        return (await _api(f'fund/getfund?regno={self.reg_no}'))['item']
+    async def info(self) -> SpecificFundInfo:
+        return (
+            await _api(
+                f'fund/getfund?regno={self.reg_no}', model=_SpecificFundInfo
+            )
+        ).item
 
 
 def _fix_website_address(df: _Df):
@@ -121,104 +222,271 @@ def _fix_website_address(df: _Df):
     )
 
 
-def _apply_types(df: _Df) -> _Df:
-    col_names = df.columns
-    return df.astype(
-        {cn: _KNOWN_DTYPES[cn] for cn in col_names if cn in _KNOWN_DTYPES},
-        copy=False,
-    )
+class _Funds(_BaseModel):
+    status: int
+    message: str
+    pageNumber: int
+    pageSize: int
+    totalCount: int
+    items: list[FundInfo]
+
+
+class FundInfo(_CommonFundInfo):
+    rankLastUpdate: _datetime
+    fundType: int
+    typeOfInvest: str
+    fundSize: int | None
+    dailyEfficiency: float | None
+    weeklyEfficiency: float | None
+    monthlyEfficiency: float | None
+    quarterlyEfficiency: float | None
+    sixMonthEfficiency: float | None
+    annualEfficiency: float | None
+    statisticalNav: float | None
+    efficiency: float | None
+    cancelNav: float | None
+    issueNav: float | None
+    dividendIntervalPeriod: int | None
+    guaranteedEarningRate: None | int
+    date: _datetime
+    netAsset: int | None
+    estimatedEarningRate: float | None
+    investedUnits: int | None
+    articlesOfAssociationLink: None
+    prosoectusLink: None
+    websiteAddress: list[str]
+    manager: str
+    managerSeoRegisterNo: str | None
+    guarantorSeoRegisterNo: str | None
+    auditor: str
+    custodian: str
+    guarantor: str
+    beta: float | None
+    alpha: float | None
+    isCompleted: bool
+    fiveBest: float | None
+    stock: float | None
+    bond: float | None
+    other: float | None
+    cash: float | None
+    deposit: float | None
+    fundUnit: float | None
+    commodity: float | None
+    fundPublisher: int
+    smallSymbolName: str | None = None
+    insCode: str | None = None
+    fundWatch: None
 
 
 async def funds() -> _Df:
     """Return the data available at https://www.fipiran.com/mf/list.
 
-    The DataFrame will have the following columns:
-
-    regNo: str
-    name: str
-    rankOf12Month: None
-    rankOf24Month: None
-    rankOf36Month: None
-    rankOf48Month: None
-    rankOf60Month: None
-    rankLastUpdate: datetime
-    fundType: int
-    typeOfInvest: str
-    fundSize: Union[int, None]
-    initiationDate: datetime
-    dailyEfficiency: Union[None, float]
-    weeklyEfficiency: Union[None, float]
-    monthlyEfficiency: Union[None, float]
-    quarterlyEfficiency: Union[None, float]
-    sixMonthEfficiency: Union[None, float]
-    annualEfficiency: Union[None, float]
-    statisticalNav: Union[None, float]
-    efficiency: Union[None, float]
-    cancelNav: Union[None, float]
-    issueNav: Union[None, float]
-    dividendIntervalPeriod: Union[int, None]
-    guaranteedEarningRate: None
-    date: datetime
-    netAsset: Union[int, None]
-    estimatedEarningRate: Union[None, float]
-    investedUnits: Union[int, None]
-    articlesOfAssociationLink: None
-    prosoectusLink: None
-    websiteAddress: List[UnnammedUnionBD03A8]
-    manager: str
-    managerSeoRegisterNo: Union[None, str]
-    guarantorSeoRegisterNo: Union[None, str]
-    auditor: str
-    custodian: str
-    guarantor: str
-    beta: Union[None, float]
-    alpha: Union[None, float]
-    isCompleted: bool
-    fiveBest: Union[None, float]
-    stock: Union[None, float]
-    bond: Union[None, float]
-    other: Union[None, float]
-    cash: Union[None, float]
-    deposit: Union[None, float]
-    fundUnit: Union[None, float]
-    commodity: Union[None, float]
-    fundPublisher: int
-    smallSymbolName: Union[None, str]
-    insCode: Union[None, str]
-    fundWatch: None
-
-
-    Also see fipiran.data_service.mutual_fund_list function.
+    See funds.FundInfo for column names.
     """
-    j = await _api('fund/fundcompare')
-    df = _apply_types(_Df(j['items'], copy=False))
-    df['date'] = _tdt(df['date'], format='ISO8601')
+    m = await _api('fund/fundcompare', model=_Funds)
+    assert m.totalCount <= m.pageSize
+    df = _Df([vars(i) for i in m.items])
     _fix_website_address(df)
     return df
+
+
+class _FundTypes(_BaseModel):
+    status: int
+    message: str
+    pageNumber: int
+    pageSize: int
+    totalCount: int
+    items: list[FundType]
+
+
+class FundType(_BaseModel):
+    fundType: int
+    name: str
+    isActive: bool
 
 
 async def fund_types() -> _Df:
-    j = await _api('fund/fundtype')
-    return _Df(j['items'], copy=False)
+    """See funds.FundType for column names."""
+    m = await _api('fund/fundtype', model=_FundTypes)
+    assert m.totalCount <= m.pageSize
+    return _Df([vars(i) for i in m.items])
+
+
+class AverageReturns(_BaseModel):
+    id: int
+    fundTypeId: int
+    netAsset: int | None
+    stock: None | float
+    bond: None | float
+    cash: None | float
+    deposit: None | float
+    dailyEfficiency: None | float
+    weeklyEfficiency: None | float
+    monthlyEfficiency: None | float
+    quarterlyEfficiency: None | float
+    sixMonthEfficiency: None | float
+    annualEfficiency: None | float
+    efficiency: None | float
 
 
 async def average_returns() -> _Df:
-    """Return a Dataframe for https://www.fipiran.ir/mf/efficiency."""
-    j = await _api('fund/averagereturns')
-    df = _Df(j, copy=False)
+    """Return a Dataframe for https://www.fipiran.ir/mf/efficiency.
+
+    See AverageReturns for column names.
+    """
+    m = await _api(
+        'fund/averagereturns', model=_RootModel[list[AverageReturns]]
+    )
+    df = _Df(vars(i) for i in m.root)
     return df.astype({'netAsset': 'Int64'}, copy=False)
 
 
+class _TreeMap(_BaseModel):
+    status: int
+    message: str
+    pageNumber: int
+    pageSize: int
+    totalCount: int
+    items: list[TreeMapItem]
+
+
+class TreeMapItem(_CommonFundInfo):
+    rankLastUpdate: _datetime
+    fundType: int
+    typeOfInvest: str
+    fundSize: int
+    dailyEfficiency: float
+    weeklyEfficiency: float
+    monthlyEfficiency: float
+    quarterlyEfficiency: float
+    sixMonthEfficiency: float
+    annualEfficiency: float
+    statisticalNav: float
+    efficiency: float
+    cancelNav: float
+    issueNav: float
+    dividendIntervalPeriod: int
+    guaranteedEarningRate: None | int
+    date: _datetime
+    netAsset: int
+    estimatedEarningRate: float | None
+    investedUnits: int
+    articlesOfAssociationLink: None
+    prosoectusLink: None
+    websiteAddress: list[str]
+    manager: str
+    managerSeoRegisterNo: None | str
+    guarantorSeoRegisterNo: None | str
+    auditor: str
+    custodian: str
+    guarantor: str
+    beta: float | None
+    alpha: float | None
+    isCompleted: bool
+    fiveBest: float
+    stock: float | None
+    bond: float | None
+    other: float
+    cash: float
+    deposit: float
+    fundUnit: float | None
+    commodity: float | None
+    fundPublisher: int
+    smallSymbolName: None = None
+    insCode: None = None
+    fundWatch: None
+
+
 async def map_data() -> _Df:
-    j = await _api('fund/treemap')
-    df = _apply_types(_Df(j['items'], copy=False))
-    df['date'] = _tdt(df['date'], format='ISO8601')
+    """See TreeMapItem for column names."""
+    m = await _api('fund/treemap', model=_TreeMap)
+    df = _Df(vars(i) for i in m.items)
     _fix_website_address(df)
     return df
 
 
+class _DepData(_BaseModel):
+    status: int
+    message: str
+    pageNumber: int
+    pageSize: int
+    totalCount: int
+    items: list[DepItem]
+
+
+class DepItem(_CommonFundInfo):
+    fundType: int
+    fundSize: int | None
+    dailyEfficiency: None | float
+    weeklyEfficiency: None | float
+    monthlyEfficiency: None | float
+    quarterlyEfficiency: None | float
+    sixMonthEfficiency: None | float
+    annualEfficiency: None | float
+    efficiency: None | float
+    cancelNav: None | float
+    issueNav: None | float
+    statisticalNav: None | float
+    tempGuarantorName: None | str
+    tempManagerName: str
+    date: _datetime
+    netAsset: int | None
+    manager: None | Manager
+    guarantor: Guarantor | None
+    rankLastUpdate: _datetime
+    typeOfInvest: str
+    beta: None | float
+    alpha: None | float
+    dividendIntervalPeriod: int | None
+
+
+class Manager(_BaseModel):
+    managerId: int
+    cfiId: int | None
+    managerSeoRegisterNo: None | str
+    name: str
+    managerNationalCode: None | str
+    type: int | None
+    seoRegisterDate: None | _datetime
+    registeredCapital: int | None
+    webSite: None | str
+    email: None | str
+    ceo: None | str
+    tel: None | str
+    address: None | str
+    nationalId: None | str
+    registrationNumber: None | str
+    registerPlace: None
+    registerPlaceId: None
+    registerDate: None | _datetime
+    cfiLastModificationTime: None | _datetime
+    isCompleted: bool
+
+
+class Guarantor(_BaseModel):
+    guarantorId: int
+    cfiId: int | None
+    guarantorSeoRegisterNo: str
+    name: str
+    guarantorNationalCode: None | str
+    type: int | None
+    seoRegisterDate: None | _datetime
+    registeredCapital: int | None
+    webSite: None | str
+    email: None | str
+    ceo: None | str
+    tel: None | str
+    address: None | str
+    nationalId: None | str
+    registrationNumber: None | str
+    registerPlace: None
+    registerPlaceId: None
+    registerDate: None | _datetime
+    cfiLastModificationTime: None | _datetime
+    isCompleted: bool
+
+
 async def dependency_graph_data() -> _Df:
-    j = await _api('fund/dependencygraph')
-    df = _apply_types(_Df(j['items'], copy=False))
-    df['date'] = _tdt(df['date'], format='ISO8601')
-    return df
+    """See DepItem for column names."""
+    m = await _api('fund/dependencygraph', model=_DepData)
+    return _Df(vars(i) for i in m.items)
