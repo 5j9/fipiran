@@ -130,7 +130,7 @@ def _apply_types(df: _Df) -> _Df:
 
 
 async def funds() -> _Df:
-    """Return the data available at https://fund.fipiran.ir/mf/list.
+    """Return the data available at https://www.fipiran.com/mf/list.
 
     The DataFrame will have the following columns:
 
@@ -203,7 +203,7 @@ async def fund_types() -> _Df:
 
 
 async def average_returns() -> _Df:
-    """Return a Dataframe for https://fund.fipiran.ir/mf/efficiency."""
+    """Return a Dataframe for https://www.fipiran.ir/mf/efficiency."""
     j = await _api('fund/averagereturns')
     df = _Df(j, copy=False)
     return df.astype({'netAsset': 'Int64'}, copy=False)

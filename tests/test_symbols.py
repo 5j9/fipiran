@@ -1,148 +1,75 @@
-from unittest.mock import patch
+from datetime import datetime
 
 from aiohutils.tests import file
-from jdatetime import datetime as jdatetime
-from numpy import dtype
-from pandas import DataFrame
-from pytest import raises
 
-from fipiran.symbols import Symbol, search
+from fipiran.symbols import (
+    Symbol,
+    index_compare,
+    industries,
+    search,
+    sub_industries,
+)
+
+fmelli = Symbol('35425587644337450')
 
 
-@file('shcarbon.html')
+@file('shcarbon_search.json')
 async def test_search():
     term = 'کربن'
-    symbols = await search(term)
-    for symbol in symbols:
-        assert term in symbol.l30 or term in symbol.l30
+    instruments, transactions = await search(symbol=term)
+    assert len(instruments) == len(transactions)
+    assert instruments
+    for inst in instruments:
+        assert term in inst.smallSymbolName
 
 
-def test_symbol_from_name():
-    assert f'{Symbol("فملی")!r}' == "Symbol('فملی')"
-
-
-@file('SymbolFMelli.html')
-async def test_inscode_cache():
-    s = Symbol('فملی')
-    assert s._inscode is None
-    assert await s.inscode == 35425587644337450
-    assert s._inscode == 35425587644337450
-
-
-@file('priceDataFMelli.html')
-async def test_symbol_price_data():
-    s = Symbol('فملی', 35425587644337450)
-    price_data = await s.price_data()
-    assert [*price_data.keys()] == [
-        'PriceMin',
-        'PriceMax',
-        'PDrCotVal',
-        'PriceFirst',
-        'PClosing',
-        'changepdr',
-        'changepc',
-        'prevPrice',
-        'ZTotTran',
-        'QTotTran5J',
-        'QTotCap',
-        'Deven',
-        'tmin',
-        'tmax',
-    ]
-    assert type(price_data.pop('Deven')) is jdatetime
-    for key in ('changepdr', 'changepc'):
-        assert type(price_data.pop(key)) in (int, float)
-    assert all(type(v) is int for v in price_data.values())
-
-
-@file('BestLimitDataFMelli.html')
-async def test_symbol_best_limit_data():
-    d1, d2 = await Symbol('فملی', 35425587644337450).best_limit_data()
-    assert type(d1) is type(d2) is DataFrame
-
-
-@file('RefrenceDataFmelli.html')
-async def test_symbol_reference_data():
-    data = await Symbol('فملی', 35425587644337450).reference_data()
-    assert data.keys() == {
-        'نام نماد',
-        'نام شرکت',
-        'نام صنعت',
-        'وضعیت',
-        'بازار',
-        'حجم مبنا',
-        'کد معاملاتی نماد',
-    }
-    for v in data.values():
-        assert type(v) is str
-    assert data['نام نماد'] == 'فملی'
-    assert data['کد معاملاتی نماد'] == 'IRO1MSMI0001'
-
-
-@file('statistic30Fmelli.html')
-async def test_symbol_statistics():
+@file('fmelli_from_name.json')
+async def test_symbol_from_name():
     assert (
-        type(await Symbol('فملی', 35425587644337450).statistic(30))
-        is DataFrame
+        f'{await Symbol.from_name("فملی")!r}' == "Symbol('35425587644337450')"
     )
 
 
-@file('CompanyInfoIndexSarv.html')
-async def test_company_info():
-    info = await Symbol('سرو', 64942549055019553).company_info()
-    assert info == {
-        'نام نماد': 'سرو',
-        'نام شرکت': 'سرو سودمند مدبران',
-        'مدیر عامل': 'رضا درخشان فر',
-        'تلفن': '021-26231274',
-        'فکس': '',
-        'آدرس': '',
-        'وب سایت': '',
-        'ایمیل': '',
-        'سال مالی': '09/30',
-        'موضوع فعالیت': (
-            'موضوع فعالیت صندوق، سرمایه\u200cگذاری در انواع اوراق'
-            ' بهادار از جمله سهام و حق تقدم'
-            ' سهام پذیرفته¬شده در بورس تهران و '
-            'فرابورس ایران، گواهی سپرده کالایی،'
-            ' اوراق بهادار با درآمد ثابت، سپرده\u200cها و گواهی¬های'
-            ' سپردۀ بانکی است.'
-        ),
-    }
+@file('symbol_info.json')
+async def test_info():
+    await fmelli.info()
 
 
-@file('HistoryPricePaging_sarv.json')
-async def test_price_history():
-    ph = await Symbol('سرو').price_history(rows=3)
-    data = ph['data']
-    assert len(data) == 3
-    assert [*data.dtypes.items()] == [
-        ('DEven', 'string'),
-        ('ZTotTran', dtype('float64')),
-        ('QTotTran5J', dtype('float64')),
-        ('QTotCap', dtype('float64')),
-        ('PClosing', dtype('float64')),
-        ('PcCh', dtype('float64')),
-        ('PcChPercent', dtype('float64')),
-        ('PDrCotVal', dtype('float64')),
-        ('LTPCh', dtype('float64')),
-        ('LTPChPercent', dtype('float64')),
-        ('PriceYesterday', dtype('float64')),
-        ('PriceMin', dtype('float64')),
-        ('PriceMax', dtype('float64')),
-        ('PriceFirst', dtype('float64')),
-    ]
-    assert data.index.dtype == dtype('<M8[ns]')
-    assert ph['records'] > 500
-    assert ph['total'] > 198
+@file('symbol_statistics.json')
+async def test_statistics():
+    await fmelli.statistics(date=datetime.today())
 
 
-@patch('fipiran.symbols._fipiran', side_effect=NotImplementedError)
-async def test_price_history_url(get_mock):
-    with raises(NotImplementedError):
-        # l18 uses persian ی and ک
-        await Symbol('دارا یکم').price_history()
-    get_mock.assert_called_once_with(  # needs to be called with arabic ي and ك
-        'Symbol/HistoryPricePaging?symbolpara=دارا يكم&rows=365&page=1',
-        json_resp=True,
-    )
+@file('symbol_efficiency.json')
+async def test_efficiency():
+    await fmelli.efficiency(date=datetime.today())
+
+
+@file('symbol_publisher.json')
+async def test_publisher():
+    await fmelli.publisher()
+
+
+@file('symbol_history.json')
+async def test_history():
+    await fmelli.history()
+
+
+@file('symbol_statements.json')
+async def test_statements():
+    await fmelli.statements()
+
+
+@file('sub_industries.json')
+async def test_sub_industries():
+    await sub_industries()
+
+
+@file('industries.json')
+async def test_industries():
+    await industries()
+
+
+@file('index_compare.json')
+async def test_index_compare():
+    await index_compare()
