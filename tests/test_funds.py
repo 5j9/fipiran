@@ -3,8 +3,12 @@ from numpy import dtype
 from pandas import DataFrame, Int64Dtype
 
 from fipiran.funds import (
+    DepItem,
     Fund,
+    FundInfo,
     SpecificFundInfo,
+    TreeMapItem,
+    _CommonFundInfo,
     average_returns,
     dependency_graph_data,
     fund_types,
@@ -112,6 +116,10 @@ async def test_info():
     info = await fund.info()
     assert len(vars(info)) >= 63
     assert type(info) is SpecificFundInfo
+    unexpected_fields = (
+        vars(info).keys() - SpecificFundInfo.__pydantic_fields__.keys()
+    )
+    assert not unexpected_fields
 
 
 EXPECTED_INFERRED_DTYPES = {
@@ -152,6 +160,8 @@ def assert_dtypes(df: DataFrame):
 async def test_funds():
     df = await funds()
     assert len(df) > 300
+    unexpected_fields = set(df.columns) - FundInfo.__pydantic_fields__.keys()
+    assert not unexpected_fields
     assert_dtypes(df)
 
 
@@ -182,6 +192,10 @@ async def test_map_data():
     df = await map_data()
     assert_dtypes(df)
     assert len(df) > 286
+    unexpected_fields = (
+        set(df.columns) - TreeMapItem.__pydantic_fields__.keys()
+    )
+    assert not unexpected_fields
 
 
 @file('dependencygraph.json')
@@ -189,6 +203,8 @@ async def test_dependency_graph_data():
     df = await dependency_graph_data()
     assert_dtypes(df)
     assert len(df) > 286
+    unexpeced_keys = set(df.columns) - DepItem.__pydantic_fields__.keys()
+    assert not unexpeced_keys
 
 
 @file('alpha_beta.json')
@@ -210,3 +226,23 @@ async def test_fund_types():
         ('name', _str),
         ('isActive', dtype('bool')),
     ]
+
+
+def test_common_fund_info_fields():
+    """
+    Tests that no subclass of _CommonFundInfo redefines a field already
+    defined in the base class.
+
+    It uses __pydantic_fields__ for the parent (all inherited fields)
+    and __annotations__ for the subclass (only fields defined directly
+    on the subclass). The intersection of these two sets represents
+    fields that were redefined.
+    """
+    parent_fields = set(_CommonFundInfo.__pydantic_fields__.keys())
+    for subclass in _CommonFundInfo.__subclasses__():
+        subclass_directly_defined_fields = set(subclass.__annotations__.keys())
+        redefined_fields = parent_fields & subclass_directly_defined_fields
+        assert not redefined_fields, (
+            f'Subclass {subclass.__name__} illegally redefines fields already in '
+            f'_CommonFundInfo: {redefined_fields}'
+        )

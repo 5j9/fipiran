@@ -14,40 +14,48 @@ class _SpecificFundInfo(_BaseModel):
     item: SpecificFundInfo
 
 
-class _CommonFundInfo(_BaseModel):
+class _CommonFundInfo(_BaseModel, extra='allow'):
+    date: _datetime
     regNo: str
     name: str
-    rankOf12Month: None | int
-    rankOf24Month: None | int
-    rankOf36Month: None | int
-    rankOf48Month: None | int
-    rankOf60Month: None | int
+    rankOf12Month: int | None
+    rankOf24Month: int | None
+    rankOf36Month: int | None
+    rankOf48Month: int | None
+    rankOf60Month: int | None
     initiationDate: _datetime
+    fundType: int | None
+    typeOfInvest: str
+    dailyEfficiency: float | None
+    weeklyEfficiency: float | None
+    monthlyEfficiency: float | None
+    quarterlyEfficiency: float | None
+    sixMonthEfficiency: float | None
+    annualEfficiency: float | None
+    efficiency: float | None
+    cancelNav: float | None
+    issueNav: float | None
+    statisticalNav: float | None
+    dividendIntervalPeriod: int | None
+    netAsset: int | None
+    fundSize: int | None
+    beta: float | None
+    alpha: float | None
 
 
 class SpecificFundInfo(_CommonFundInfo):
-    fundSize: int
-    fundType: int
+    smallSymbolName: str | None = None
+    guaranteedEarningRate: int | None
     executiveManager: str
     articlesOfAssociationLink: None
     prosoectusLink: None
     lastModificationTime: _datetime
-    date: _datetime
-    dailyEfficiency: float
-    weeklyEfficiency: float
-    monthlyEfficiency: float
-    quarterlyEfficiency: float
-    sixMonthEfficiency: float
-    annualEfficiency: float
-    dividendIntervalPeriod: int
     estimatedEarningRate: None
-    guaranteedEarningRate: None
     insInvNo: int
     insInvPercent: float
     legalPercent: float
     marketMaker: str
     naturalPercent: float
-    netAsset: int
     retInvNo: int
     retInvPercent: float
     investedUnits: int
@@ -55,10 +63,6 @@ class SpecificFundInfo(_CommonFundInfo):
     unitsRedFromFirst: int
     unitsSubDAY: int
     unitsSubFromFirst: int
-    efficiency: float
-    cancelNav: float
-    issueNav: float
-    statisticalNav: float
     fiveBest: float
     stock: float
     bond: float
@@ -67,8 +71,6 @@ class SpecificFundInfo(_CommonFundInfo):
     deposit: float
     fundUnit: float | None
     commodity: float | None
-    typeOfInvest: str
-    rankLastUpdate: _datetime
     manager: str
     managerSeoRegisterNo: str
     guarantorSeoRegisterNo: None
@@ -77,8 +79,6 @@ class SpecificFundInfo(_CommonFundInfo):
     custodian: str
     guarantor: str
     investmentManager: str
-    beta: float
-    alpha: float
     fundWatch: None
     seoRegisterDate: _datetime
     registrationNumber: str
@@ -232,24 +232,7 @@ class _Funds(_BaseModel):
 
 
 class FundInfo(_CommonFundInfo):
-    rankLastUpdate: _datetime
-    fundType: int
-    typeOfInvest: str
-    fundSize: int | None
-    dailyEfficiency: float | None
-    weeklyEfficiency: float | None
-    monthlyEfficiency: float | None
-    quarterlyEfficiency: float | None
-    sixMonthEfficiency: float | None
-    annualEfficiency: float | None
-    statisticalNav: float | None
-    efficiency: float | None
-    cancelNav: float | None
-    issueNav: float | None
-    dividendIntervalPeriod: int | None
     guaranteedEarningRate: None | int
-    date: _datetime
-    netAsset: int | None
     estimatedEarningRate: float | None
     investedUnits: int | None
     articlesOfAssociationLink: None
@@ -261,8 +244,6 @@ class FundInfo(_CommonFundInfo):
     auditor: str
     custodian: str
     guarantor: str
-    beta: float | None
-    alpha: float | None
     isCompleted: bool
     fiveBest: float | None
     stock: float | None
@@ -273,7 +254,6 @@ class FundInfo(_CommonFundInfo):
     fundUnit: float | None
     commodity: float | None
     fundPublisher: int
-    smallSymbolName: str | None = None
     insCode: str | None = None
     fundWatch: None
 
@@ -314,7 +294,7 @@ async def fund_types() -> _Df:
 
 class AverageReturns(_BaseModel):
     id: int
-    fundTypeId: int
+    fundTypeId: int | None
     netAsset: int | None
     stock: None | float
     bond: None | float
@@ -351,24 +331,8 @@ class _TreeMap(_BaseModel):
 
 
 class TreeMapItem(_CommonFundInfo):
-    rankLastUpdate: _datetime
-    fundType: int
-    typeOfInvest: str
-    fundSize: int
-    dailyEfficiency: float
-    weeklyEfficiency: float
-    monthlyEfficiency: float
-    quarterlyEfficiency: float
-    sixMonthEfficiency: float
-    annualEfficiency: float
-    statisticalNav: float
-    efficiency: float
-    cancelNav: float
-    issueNav: float
-    dividendIntervalPeriod: int
+    guaranteedEarningRate: int | None
     guaranteedEarningRate: None | int
-    date: _datetime
-    netAsset: int
     estimatedEarningRate: float | None
     investedUnits: int
     articlesOfAssociationLink: None
@@ -380,8 +344,6 @@ class TreeMapItem(_CommonFundInfo):
     auditor: str
     custodian: str
     guarantor: str
-    beta: float | None
-    alpha: float | None
     isCompleted: bool
     fiveBest: float
     stock: float | None
@@ -415,29 +377,10 @@ class _DepData(_BaseModel):
 
 
 class DepItem(_CommonFundInfo):
-    fundType: int
-    fundSize: int | None
-    dailyEfficiency: None | float
-    weeklyEfficiency: None | float
-    monthlyEfficiency: None | float
-    quarterlyEfficiency: None | float
-    sixMonthEfficiency: None | float
-    annualEfficiency: None | float
-    efficiency: None | float
-    cancelNav: None | float
-    issueNav: None | float
-    statisticalNav: None | float
     tempGuarantorName: None | str
     tempManagerName: str
-    date: _datetime
-    netAsset: int | None
     manager: None | Manager
     guarantor: Guarantor | None
-    rankLastUpdate: _datetime
-    typeOfInvest: str
-    beta: None | float
-    alpha: None | float
-    dividendIntervalPeriod: int | None
 
 
 class Manager(_BaseModel):
