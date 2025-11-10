@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from aiohutils.tests import file
+from pytest_aiohutils import file
 
 from fipiran.symbols import (
     Symbol,

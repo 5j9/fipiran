@@ -1,6 +1,6 @@
-from aiohutils.tests import file
 from numpy import dtype
 from pandas import DataFrame, Int64Dtype
+from pytest_aiohutils import file
 
 from fipiran.funds import (
     DepItem,

@@ -78,5 +78,5 @@ module-root = ""
 module-name = "fipiran"
 [dependency-groups]
 dev = [
-    "aiohutils[test]>=0.22.1",
+    "pytest-aiohutils >= 0.22.1",
 ]
