@@ -9,7 +9,11 @@ from pydantic import BaseModel as _BaseModel
 
 
 class _LooseModel(_BaseModel, extra='allow'):
-    pass
+    def __init__(self, **data):
+        for field_name in type(self).model_fields:
+            if field_name not in data:
+                data[field_name] = None
+        super().__init__(**data)
 
 
 _o.mode.copy_on_write = True
