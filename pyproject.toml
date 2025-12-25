@@ -72,6 +72,8 @@ reportUnnecessaryComparison = 'warning'
 reportUnnecessaryContains = 'warning'
 reportUnnecessaryIsInstance = 'warning'
 reportUnnecessaryTypeIgnoreComment = 'warning'
+venvPath = "."
+venv = ".venv"
 
 [tool.uv.build-backend]
 module-root = ""
