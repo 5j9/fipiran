@@ -378,7 +378,7 @@ class _DepData(_LooseModel):
 
 class DepItem(_CommonFundInfo):
     tempGuarantorName: None | str
-    tempManagerName: str
+    tempManagerName: str | None
     manager: None | Manager
     guarantor: Guarantor | None
 
