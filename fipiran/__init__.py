@@ -1,4 +1,4 @@
-__version__ = '1.0.4.dev1'
+__version__ = '2.0.0'
 
 from json import loads as _jl
 from typing import Any as _Any
