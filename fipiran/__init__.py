@@ -4,7 +4,6 @@ from json import loads as _jl
 from typing import Any as _Any
 
 from aiohutils.session import SessionManager
-from pandas import options as _o
 from pydantic import BaseModel as _BaseModel
 
 
@@ -15,9 +14,6 @@ class _LooseModel(_BaseModel, extra='allow'):
                 data[field_name] = None
         super().__init__(**data)
 
-
-_o.mode.copy_on_write = True
-_o.future.infer_string = True  # type: ignore
 
 _FIPIRAN = 'https://www.fipiran.ir/'
 _YK = ''.maketrans('يك', 'یک')
@@ -33,7 +29,7 @@ session_manager = SessionManager(
 
 
 async def _read(url, **kwargs) -> bytes:
-    r = await session_manager.get(url, **kwargs)
+    r = await session_manager.request('get', url, **kwargs)
     return await r.read()
 
 

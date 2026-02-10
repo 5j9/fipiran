@@ -73,7 +73,7 @@ def test_repr():
 async def test_asset_allocation_history():
     df = await fund.asset_allocation_history()
     assert [*df.dtypes.items()] == [
-        ('date', dtype('<M8[ns]')),
+        ('date', dtype('<M8[us]')),
         ('fiveBest', dtype('float64')),
         ('stock', dtype('float64')),
         ('bond', dtype('float64')),
@@ -96,7 +96,7 @@ async def test_navps():
     assert (df['cancelNav'] <= df['issueNav']).all()
     assert len(df) >= 360
     assert df.index.name == 'date'
-    assert df.index.dtype == '<M8[ns]'
+    assert df.index.dtype == '<M8[us]'
 
 
 @file('getfundnetassetchart_atlas.json')
@@ -108,7 +108,7 @@ async def test_nav_history():
         ('unitsRedDAY', dtype('int64')),
     ]
     assert len(df) >= 360
-    assert df.index.dtype == '<M8[ns]'
+    assert df.index.dtype == '<M8[us]'
 
 
 @file('getfund_atlas.json')
@@ -215,7 +215,7 @@ async def test_alpha_beta():
         ('alpha', dtype('float64')),
     ]
     assert df.index.name == 'date'
-    assert df.index.dtype == dtype('<M8[ns]')
+    assert df.index.dtype == dtype('<M8[us]')
 
 
 @file('fund_types.json')

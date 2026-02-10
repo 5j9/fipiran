@@ -15,7 +15,7 @@ dependencies = [
     "aiohutils >= 0.24.0",
     "jdatetime",
     "lxml",
-    "pandas[pyarrow] >= 2.2.1",
+    "pandas[pyarrow] >= 3.0.0",
     "pydantic",
 ]
 version = "1.0.4.dev1"

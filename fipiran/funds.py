@@ -319,7 +319,7 @@ async def average_returns() -> _Df:
         'fund/averagereturns', model=_RootModel[list[AverageReturns]]
     )
     df = _Df(vars(i) for i in m.root)
-    return df.astype({'netAsset': 'Int64'}, copy=False)
+    return df.astype({'netAsset': 'Int64'})
 
 
 class _TreeMap(_LooseModel):
