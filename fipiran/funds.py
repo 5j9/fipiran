@@ -18,11 +18,11 @@ class _CommonFundInfo(_LooseModel):
     date: _datetime
     regNo: str
     name: str
-    rankOf12Month: int | None
-    rankOf24Month: int | None
-    rankOf36Month: int | None
-    rankOf48Month: int | None
-    rankOf60Month: int | None
+    rankOf12Month: float | None
+    rankOf24Month: float | None
+    rankOf36Month: float | None
+    rankOf48Month: float | None
+    rankOf60Month: float | None
     initiationDate: _datetime
     fundType: int | None
     typeOfInvest: str
