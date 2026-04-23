@@ -15,9 +15,9 @@ class _LooseModel(_BaseModel, extra='allow'):
         super().__init__(**data)
 
 
-_FIPIRAN = 'https://www.fipiran.ir/'
+_FIPIRAN = 'https://www.fipiran.com/'
 _YK = ''.maketrans('يك', 'یک')
-_API = 'https://www.fipiran.ir/services/'
+_API = 'https://www.fipiran.com/services/'
 
 
 session_manager = SessionManager(

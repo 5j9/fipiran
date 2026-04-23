@@ -311,7 +311,7 @@ class AverageReturns(_LooseModel):
 
 
 async def average_returns() -> _Df:
-    """Return a Dataframe for https://www.fipiran.ir/mf/efficiency.
+    """Return a Dataframe for https://www.fipiran.com/mf/efficiency.
 
     See AverageReturns for column names.
     """
