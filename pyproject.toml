@@ -18,7 +18,7 @@ dependencies = [
     "pandas[pyarrow] >= 3.0.0",
     "pydantic",
 ]
-version = "2.0.1.dev1"
+version = "2.0.1"
 
 authors = [{ name = '5j9', email = '5j9@users.noreply.github.com' }]
 
