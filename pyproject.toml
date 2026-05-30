@@ -15,7 +15,7 @@ dependencies = [
     "aiohutils >= 0.24.0",
     "jdatetime",
     "lxml",
-    "pandas[pyarrow] >= 3.0.0",
+    "polars>=1.41.2",
     "pydantic",
 ]
 version = "2.0.2.dev1"
@@ -26,8 +26,8 @@ authors = [{ name = '5j9', email = '5j9@users.noreply.github.com' }]
 text = "GNU General Public License v3 (GPLv3)"
 
 [project.readme]
-file = "README.rst"
-content-type = "text/x-rst"
+file = "README.md"
+content-type = "text/markdown"
 
 [project.urls]
 Homepage = "https://github.com/5j9/fipiran"

@@ -2,7 +2,7 @@ from __future__ import annotations as _
 
 from datetime import datetime as _datetime
 
-from pandas import NA as _NA, DataFrame as _Df
+import polars as _pl
 from pydantic import RootModel as _RootModel
 
 from fipiran import _api, _LooseModel
@@ -144,8 +144,6 @@ class PortfolioOnDate(_LooseModel):
     other: float
     cash: float
     deposit: float
-    fundUnit: float | None
-    commodity: float | None
 
 
 class Fund:
@@ -157,8 +155,8 @@ class Fund:
     def __repr__(self):
         return f'{type(self).__name__}({self.reg_no!r})'
 
-    async def asset_allocation_history(self) -> _Df:
-        """Return a dict where values are percentage of each kind of asset.
+    async def asset_allocation_history(self) -> _pl.LazyFrame:
+        """Return a LazyFrame of asset type percentages.
 
         See funds.PortfolioOnDate for column names.
         """
@@ -166,11 +164,12 @@ class Fund:
             f'chart/portfoliochart?regno={self.reg_no}',
             model=_RootModel[list[PortfolioOnDate]],
         )
-        df = _Df(vars(i) for i in m.root)
-        return df
+        return _pl.LazyFrame(
+            [vars(i) for i in m.root], infer_schema_length=None
+        )
 
-    async def navps_history(self, /, *, all_=True) -> _Df:
-        """Return NAVPS history as DataFrame.
+    async def navps_history(self, /, *, all_=True) -> _pl.LazyFrame:
+        """Return NAVPS history as a LazyFrame sorted by date.
 
         See funds.NavOnDate for column names.
         """
@@ -178,12 +177,12 @@ class Fund:
             f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}',
             model=_RootModel[list[NavOnDate]],
         )
-        df = _Df(vars(i) for i in m.root)
-        df.set_index('date', inplace=True)
-        return df
+        return _pl.LazyFrame(
+            [vars(i) for i in m.root], infer_schema_length=None
+        ).sort('date')
 
-    async def nav_history(self, /, *, all_=True) -> _Df:
-        """Return NAV history as a DataFrame.
+    async def nav_history(self, /, *, all_=True) -> _pl.LazyFrame:
+        """Return NAV history as a LazyFrame sorted by date.
 
         See funds.AssetsOnDate for column names.
         """
@@ -191,21 +190,17 @@ class Fund:
             f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}',
             model=_RootModel[list[AssetsOnDate]],
         )
-        df = _Df(vars(i) for i in m.root)
-        df.set_index('date', inplace=True)
-        return df
+        return _pl.LazyFrame(vars(i) for i in m.root).sort('date')
 
-    async def alpha_beta(self, /, *, all_=True) -> _Df:
-        """See funds.AlphaBeta for column names."""
+    async def alpha_beta(self, /, *, all_=True) -> _pl.LazyFrame:
+        """Return alpha/beta history as a LazyFrame sorted by date."""
         items = (
             await _api(
                 f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}',
                 model=_RootModel[list[AlphaBeta]],
             )
         ).root
-        df = _Df(vars(i) for i in items)
-        df.set_index('date', inplace=True)
-        return df
+        return _pl.LazyFrame(vars(i) for i in items).sort('date')
 
     async def info(self) -> SpecificFundInfo:
         return (
@@ -215,10 +210,9 @@ class Fund:
         ).item
 
 
-def _fix_website_address(df: _Df):
-    # assert df['websiteAddress'].map(len).max() == 1
-    df['websiteAddress'] = df['websiteAddress'].map(
-        lambda lst: lst[0] if lst else _NA  # type: ignore
+def _fix_website_address(lf: _pl.LazyFrame) -> _pl.LazyFrame:
+    return lf.with_columns(
+        _pl.col('websiteAddress').list.get(0, null_on_oob=True)
     )
 
 
@@ -259,16 +253,15 @@ class FundInfo(_CommonFundInfo):
     fundWatch: None
 
 
-async def funds() -> _Df:
-    """Return the data available at https://www.fipiran.com/mf/list.
+async def funds() -> _pl.LazyFrame:
+    """Return a LazyFrame representing https://www.fipiran.com/mf/list.
 
     See funds.FundInfo for column names.
     """
     m = await _api('fund/fundcompare', model=_Funds)
     assert m.totalCount <= m.pageSize
-    df = _Df([vars(i) for i in m.items])
-    _fix_website_address(df)
-    return df
+    lf = _pl.LazyFrame([vars(i) for i in m.items], infer_schema_length=None)
+    return _fix_website_address(lf)
 
 
 class _FundTypes(_LooseModel):
@@ -286,11 +279,11 @@ class FundType(_LooseModel):
     isActive: bool
 
 
-async def fund_types() -> _Df:
+async def fund_types() -> _pl.LazyFrame:
     """See funds.FundType for column names."""
     m = await _api('fund/fundtype', model=_FundTypes)
     assert m.totalCount <= m.pageSize
-    return _Df([vars(i) for i in m.items])
+    return _pl.LazyFrame([vars(i) for i in m.items])
 
 
 class AverageReturns(_LooseModel):
@@ -310,16 +303,17 @@ class AverageReturns(_LooseModel):
     efficiency: None | float
 
 
-async def average_returns() -> _Df:
-    """Return a Dataframe for https://www.fipiran.com/mf/efficiency.
+async def average_returns() -> _pl.LazyFrame:
+    """Return a LazyFrame for https://www.fipiran.com/mf/efficiency.
 
     See AverageReturns for column names.
     """
     m = await _api(
         'fund/averagereturns', model=_RootModel[list[AverageReturns]]
     )
-    df = _Df(vars(i) for i in m.root)
-    return df.astype({'netAsset': 'Int64'})
+    return _pl.LazyFrame(vars(i) for i in m.root).with_columns(
+        _pl.col('netAsset').cast(_pl.Int64)
+    )
 
 
 class _TreeMap(_LooseModel):
@@ -359,12 +353,11 @@ class TreeMapItem(_CommonFundInfo):
     fundWatch: None
 
 
-async def map_data() -> _Df:
+async def map_data() -> _pl.LazyFrame:
     """See TreeMapItem for column names."""
     m = await _api('fund/treemap', model=_TreeMap)
-    df = _Df(vars(i) for i in m.items)
-    _fix_website_address(df)
-    return df
+    lf = _pl.LazyFrame([vars(i) for i in m.items], infer_schema_length=None)
+    return _fix_website_address(lf)
 
 
 class _DepData(_LooseModel):
@@ -429,7 +422,7 @@ class Guarantor(_LooseModel):
     isCompleted: bool
 
 
-async def dependency_graph_data() -> _Df:
+async def dependency_graph_data() -> _pl.LazyFrame:
     """See DepItem for column names."""
     m = await _api('fund/dependencygraph', model=_DepData)
-    return _Df(vars(i) for i in m.items)
+    return _pl.LazyFrame(vars(i) for i in m.items)

@@ -1,10 +1,11 @@
 from datetime import datetime
 
+import polars as pl
 from pytest_aiohutils import file
 
 from fipiran.symbols import (
+    HistoryItem,
     Symbol,
-    _History,
     index_compare,
     industries,
     search,
@@ -17,18 +18,32 @@ fmelli = Symbol('35425587644337450')
 @file('shcarbon_search.json')
 async def test_search():
     term = 'کربن'
-    instruments, transactions = await search(symbol=term)
-    assert len(instruments) == len(transactions)
-    assert instruments
-    for inst in instruments:
-        assert term in inst.smallSymbolName
+    instruments_lf, transactions_lf = await search(symbol=term)
+
+    assert isinstance(instruments_lf, pl.LazyFrame)
+    assert isinstance(transactions_lf, pl.LazyFrame)
+
+    # Check total lengths lazily
+    inst_count = instruments_lf.select(pl.len()).collect().item()
+    tx_count = transactions_lf.select(pl.len()).collect().item()
+
+    assert inst_count == tx_count
+    assert inst_count > 0
+
+    # Assert all returned instruments contain the term using native Polars expressions
+    matched_count = (
+        instruments_lf.filter(pl.col('smallSymbolName').str.contains(term))
+        .select(pl.len())
+        .collect()
+        .item()
+    )
+    assert matched_count == inst_count
 
 
 @file('fmelli_from_name.json')
 async def test_symbol_from_name():
-    assert (
-        f'{await Symbol.from_name("فملی")!r}' == "Symbol('35425587644337450')"
-    )
+    sym = await Symbol.from_name('فملی')
+    assert repr(sym) == "Symbol('35425587644337450')"
 
 
 @file('symbol_info.json')
@@ -53,10 +68,12 @@ async def test_publisher():
 
 @file('symbol_history.json')
 async def test_history():
-    df = await fmelli.history()
-    unexpected_cols = (
-        set(df.columns.names) == _History.__pydantic_fields__.keys()
-    )
+    lf = await fmelli.history()
+    assert isinstance(lf, pl.LazyFrame)
+
+    # Check against HistoryItem fields (the rows inside the list)
+    columns = set(lf.collect_schema().names())
+    unexpected_cols = columns - HistoryItem.__pydantic_fields__.keys()
     assert not unexpected_cols
 
 
@@ -67,14 +84,20 @@ async def test_statements():
 
 @file('sub_industries.json')
 async def test_sub_industries():
-    await sub_industries()
+    lf = await sub_industries()
+    assert isinstance(lf, pl.LazyFrame)
+    assert lf.select(pl.len()).collect().item() > 0
 
 
 @file('industries.json')
 async def test_industries():
-    await industries()
+    lf = await industries()
+    assert isinstance(lf, pl.LazyFrame)
+    assert lf.select(pl.len()).collect().item() > 0
 
 
 @file('index_compare.json')
 async def test_index_compare():
-    await index_compare()
+    lf = await index_compare()
+    assert isinstance(lf, pl.LazyFrame)
+    assert lf.select(pl.len()).collect().item() > 0

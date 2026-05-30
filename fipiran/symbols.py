@@ -4,7 +4,7 @@ from datetime import datetime as _datetime
 from enum import Flag as _Flag, auto as _auto
 from typing import Literal as _Literal
 
-from pandas import DataFrame as _Df
+import polars as _pl
 from pydantic import RootModel as _RootModel
 
 from fipiran import _api, _LooseModel
@@ -34,8 +34,8 @@ class Instrument(_LooseModel):
     symbolStatus: str
     type: int
     marketCode: int
-    staticThresholdMaxPrice: None
-    staticThresholdMinPrice: None
+    staticThresholdMaxPrice: float | None
+    staticThresholdMinPrice: float | None
     status: int
 
 
@@ -225,7 +225,7 @@ class Symbol:
             model=Publisher,
         )
 
-    async def history(self, *, limit: int = 99999) -> _Df:
+    async def history(self, *, limit: int = 99999) -> _pl.LazyFrame:
         items = (
             await _api(
                 'instrument/instrumenthistory',
@@ -237,9 +237,10 @@ class Symbol:
                 model=_History,
             )
         ).items
-        df = _Df(vars(i) for i in items)
-        df.set_index('transactionDate', inplace=True)
-        return df
+        # LazyFrame handles historical data fields safely across all variations
+        return _pl.LazyFrame(
+            (vars(i) for i in items), infer_schema_length=None
+        )
 
     async def statements(self, limit: int = 100) -> list[Statement]:
         return (
@@ -256,8 +257,10 @@ class Symbol:
 
     @staticmethod
     async def from_name(name: str, /):
-        instruments, _ = await search(symbol=name, limit=1)
-        return Symbol(instruments[0].insCode)
+        instruments_lf, _ = await search(symbol=name, limit=1)
+        # Collect the first element eagerly for the class factory method
+        first_ins_code = instruments_lf.select('insCode').collect().item(0, 0)
+        return Symbol(first_ins_code)
 
 
 class CSVFlag(_Flag):
@@ -268,7 +271,6 @@ class CSVFlag(_Flag):
         cls = type(self)
         if cls.ALL in self:  # type: ignore
             return ''
-        # breakpoint()
         return ','.join([cls.api_map[flag.name] for flag in self])
 
 
@@ -398,10 +400,10 @@ async def search(
         'priceMin',
         'priceMax',
     ] = 'smallSymbolName',
-) -> tuple[list[Instrument], list[InstrumentTransaction]]:
+) -> tuple[_pl.LazyFrame, _pl.LazyFrame]:
     """https://www.fipiran.com/symbol/list.
 
-    You can use the following functions for finding the appropriate
+    Use the following functions for finding the appropriate
     code for the following parameters:
         industry: symbols.industries
         sub_industry: symbols.sub_industries
@@ -429,11 +431,20 @@ async def search(
         params['subIndustry'] = sub_industry
     if industry is not None:
         params['industry'] = industry
+
     m = await _api(
         'instrument/instrumentcompare', params=params, model=_Search
     )
     r = m.items[0]
-    return (r.instruments, r.instrumentTransactions)
+
+    instruments_lf = _pl.LazyFrame(
+        (vars(i) for i in r.instruments), infer_schema_length=None
+    )
+    transactions_lf = _pl.LazyFrame(
+        (vars(i) for i in r.instrumentTransactions), infer_schema_length=None
+    )
+
+    return (instruments_lf, transactions_lf)
 
 
 class IndexData(_LooseModel):
@@ -477,11 +488,11 @@ class _IndexCompare(_LooseModel):
     items: list[IndexData]
 
 
-async def index_compare() -> list[IndexData]:
+async def index_compare() -> _pl.LazyFrame:
     m = await _api('index/indexcompare', model=_IndexCompare)
     items = m.items
     assert m.totalCount <= len(items)
-    return items
+    return _pl.LazyFrame((vars(i) for i in items), infer_schema_length=None)
 
 
 class Industry(_LooseModel):
@@ -489,10 +500,11 @@ class Industry(_LooseModel):
     title: str
 
 
-async def industries() -> list[Industry]:
-    return (
-        await _api('instrument/getindustry', model=_RootModel[list[Industry]])
-    ).root
+async def industries() -> _pl.LazyFrame:
+    res = await _api(
+        'instrument/getindustry', model=_RootModel[list[Industry]]
+    )
+    return _pl.LazyFrame((vars(i) for i in res.root), infer_schema_length=None)
 
 
 class SubIndustry(_LooseModel):
@@ -502,9 +514,8 @@ class SubIndustry(_LooseModel):
     date: _datetime
 
 
-async def sub_industries() -> list[SubIndustry]:
-    return (
-        await _api(
-            'instrument/getindustrysub', model=_RootModel[list[SubIndustry]]
-        )
-    ).root
+async def sub_industries() -> _pl.LazyFrame:
+    res = await _api(
+        'instrument/getindustrysub', model=_RootModel[list[SubIndustry]]
+    )
+    return _pl.LazyFrame((vars(i) for i in res.root), infer_schema_length=None)

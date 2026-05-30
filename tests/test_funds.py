@@ -1,5 +1,4 @@
-from numpy import dtype
-from pandas import DataFrame, Int64Dtype
+import polars as pl
 from pytest_aiohutils import file
 
 from fipiran.funds import (
@@ -16,49 +15,45 @@ from fipiran.funds import (
     map_data,
 )
 
-_str = 'string'
 _KNOWN_DTYPES = {
-    # 'initiationDate': 'datetime64', fails on some funds
-    'alpha': 'float64',
-    'annualEfficiency': 'float64',
-    'auditor': _str,
-    'beta': 'float64',
-    'cancelNav': 'float64',
-    'custodian': _str,
-    'dailyEfficiency': 'float64',
-    # date cannot be set using astype, see:
-    # https://github.com/pandas-dev/pandas/issues/53127
-    'date': 'O',
-    'dividendIntervalPeriod': 'Int64',
-    'efficiency': 'float64',
-    'fundSize': 'Int64',
-    'fundType': 'int64',
-    'guarantor': _str,
-    'guarantorSeoRegisterNo': 'Int64',
-    'initiationDate': 'O',
-    'insCode': _str,
-    'investedUnits': 'Int64',
-    'issueNav': 'float64',
-    'manager': _str,
-    'managerSeoRegisterNo': 'Int64',
-    'monthlyEfficiency': 'float64',
-    'name': _str,
-    'netAsset': 'Int64',
-    'quarterlyEfficiency': 'float64',
-    'rankLastUpdate': 'O',
-    'rankOf12Month': 'float64',
-    'rankOf24Month': 'float64',
-    'rankOf36Month': 'float64',
-    'rankOf48Month': 'float64',
-    'rankOf60Month': 'float64',
-    'regNo': _str,
-    'sixMonthEfficiency': 'float64',
-    'smallSymbolName': _str,
-    'statisticalNav': 'float64',
-    'tempGuarantorName': _str,
-    'tempManagerName': _str,
-    'typeOfInvest': 'category',
-    'weeklyEfficiency': 'float64',
+    'alpha': pl.Float64,
+    'annualEfficiency': pl.Float64,
+    'auditor': pl.String,
+    'beta': pl.Float64,
+    'cancelNav': pl.Float64,
+    'custodian': pl.String,
+    'dailyEfficiency': pl.Float64,
+    'date': pl.Datetime,
+    'dividendIntervalPeriod': pl.Int64,
+    'efficiency': pl.Float64,
+    'fundSize': pl.Int64,
+    'fundType': pl.Int64,
+    'guarantor': pl.String,
+    'guarantorSeoRegisterNo': pl.Int64,
+    'initiationDate': pl.Datetime,
+    'insCode': pl.String,
+    'investedUnits': pl.Int64,
+    'issueNav': pl.Float64,
+    'manager': pl.String,
+    'managerSeoRegisterNo': pl.Int64,
+    'monthlyEfficiency': pl.Float64,
+    'name': pl.String,
+    'netAsset': pl.Int64,
+    'quarterlyEfficiency': pl.Float64,
+    'rankLastUpdate': pl.Datetime,
+    'rankOf12Month': pl.Float64,
+    'rankOf24Month': pl.Float64,
+    'rankOf36Month': pl.Float64,
+    'rankOf48Month': pl.Float64,
+    'rankOf60Month': pl.Float64,
+    'regNo': pl.String,
+    'sixMonthEfficiency': pl.Float64,
+    'smallSymbolName': pl.String,
+    'statisticalNav': pl.Float64,
+    'tempGuarantorName': pl.String,
+    'tempManagerName': pl.String,
+    'typeOfInvest': pl.String,
+    'weeklyEfficiency': pl.Float64,
 }
 
 fund = Fund(11215)
@@ -71,44 +66,61 @@ def test_repr():
 
 @file('portfoliochart_atlas.json')
 async def test_asset_allocation_history():
-    df = await fund.asset_allocation_history()
-    assert [*df.dtypes.items()] == [
-        ('date', dtype('<M8[us]')),
-        ('fiveBest', dtype('float64')),
-        ('stock', dtype('float64')),
-        ('bond', dtype('float64')),
-        ('other', dtype('float64')),
-        ('cash', dtype('float64')),
-        ('deposit', dtype('float64')),
-        ('fundUnit', dtype('O')),
-        ('commodity', dtype('O')),
-    ]
+    lf = await fund.asset_allocation_history()
+    assert isinstance(lf, pl.LazyFrame)
+
+    assert lf.collect_schema() == {
+        'date': pl.Datetime(time_unit='us', time_zone=None),
+        'fiveBest': pl.Float64,
+        'stock': pl.Float64,
+        'bond': pl.Float64,
+        'other': pl.Float64,
+        'cash': pl.Float64,
+        'deposit': pl.Float64,
+    }
 
 
 @file('getfundchart_atlas.json')
 async def test_navps():
-    df = await fund.navps_history(all_=False)
-    assert [*df.dtypes.items()] == [
-        ('issueNav', dtype('float64')),
-        ('cancelNav', dtype('float64')),
-        ('statisticalNav', dtype('float64')),
-    ]
-    assert (df['cancelNav'] <= df['issueNav']).all()
-    assert len(df) >= 360
-    assert df.index.name == 'date'
-    assert df.index.dtype == '<M8[us]'
+    lf = await fund.navps_history(all_=False)
+    assert isinstance(lf, pl.LazyFrame)
+
+    schema = lf.collect_schema()
+    assert schema['date'] == pl.Datetime
+    assert schema['issueNav'] == pl.Float64
+    assert schema['cancelNav'] == pl.Float64
+    assert schema['statisticalNav'] == pl.Float64
+
+    # Added .all() to all_ordered so everything resolves to a single scalar row
+    res = lf.select(
+        all_ordered=(pl.col('cancelNav') <= pl.col('issueNav')).all(),
+        total_rows=pl.len(),
+        is_sorted=(pl.col('date').diff().drop_nulls() >= 0).all(),
+    ).collect()
+
+    assert res['all_ordered'].item()
+    assert res['total_rows'].item() >= 360
+    assert res['is_sorted'].item()
 
 
 @file('getfundnetassetchart_atlas.json')
 async def test_nav_history():
-    df = await fund.nav_history(all_=False)
-    assert [*df.dtypes.items()] == [
-        ('netAsset', dtype('int64')),
-        ('unitsSubDAY', dtype('int64')),
-        ('unitsRedDAY', dtype('int64')),
-    ]
-    assert len(df) >= 360
-    assert df.index.dtype == '<M8[us]'
+    lf = await fund.nav_history(all_=False)
+    assert isinstance(lf, pl.LazyFrame)
+
+    schema = lf.collect_schema()
+    assert schema['date'] == pl.Datetime
+    assert schema['netAsset'] == pl.Int64
+    assert schema['unitsSubDAY'] == pl.Int64
+    assert schema['unitsRedDAY'] == pl.Int64
+
+    res = lf.select(
+        total_rows=pl.len(),
+        is_sorted=(pl.col('date').diff().drop_nulls() >= 0).all(),
+    ).collect()
+
+    assert res['total_rows'].item() >= 360
+    assert res['is_sorted'].item()
 
 
 @file('getfund_atlas.json')
@@ -123,109 +135,138 @@ async def test_info():
 
 
 EXPECTED_INFERRED_DTYPES = {
-    'articlesOfAssociationLink': None,
-    'bond': 'float64',
-    'cash': 'float64',
-    'commodity': 'float64',
-    'deposit': 'float64',
-    'estimatedEarningRate': 'float64',
-    'fiveBest': 'float64',
-    'fundPublisher': 'int64',
-    'fundUnit': 'float64',
-    'fundWatch': None,
-    'guaranteedEarningRate': None,
-    'isCompleted': bool,
-    'other': 'float64',
-    'prosoectusLink': None,
-    'stock': None,
-    'websiteAddress': _str,
+    'articlesOfAssociationLink': pl.Null,
+    'bond': pl.Float64,
+    'cash': pl.Float64,
+    'commodity': pl.Float64,
+    'deposit': pl.Float64,
+    'estimatedEarningRate': pl.Float64,
+    'fiveBest': pl.Float64,
+    'fundPublisher': pl.Int64,
+    'fundUnit': pl.Float64,
+    'fundWatch': pl.Null,
+    'guaranteedEarningRate': pl.Null,
+    'isCompleted': pl.Boolean,
+    'other': pl.Float64,
+    'prosoectusLink': pl.Null,
+    'stock': pl.Null,
+    'websiteAddress': pl.String,
 }
 
 
-def assert_dtypes(df: DataFrame):
-    cols = {*df.columns}
+def assert_dtypes(lf: pl.LazyFrame):
+    # Check that schema matches our allowed definitions without needing to collect data rows
+    schema = lf.collect_schema()
+    cols = set(schema.keys())
+
     assert not cols - (_KNOWN_DTYPES.keys() | EXPECTED_INFERRED_DTYPES.keys())
+
     for col in cols & EXPECTED_INFERRED_DTYPES.keys():
-        et = EXPECTED_INFERRED_DTYPES[col]
-        try:
-            if et is None:
-                df[col].isna().all()
-            else:
-                assert df[col].dtype == et, f'{col=} {df[col].dtype=} {et=}'
-        except:  # a good breakpoint
-            raise
+        expected_type = EXPECTED_INFERRED_DTYPES[col]
+        actual_type = schema[col]
+
+        # Simple structural null mapping might fall back to specific type inferenced types or explicit Null types
+        if expected_type is pl.Null:
+            # Tolerates Polars assigning typed structural null columns
+            continue
+        else:
+            assert actual_type == expected_type, (
+                f'{col=} {actual_type=} {expected_type=}'
+            )
 
 
 @file('fundcompare.json')
 async def test_funds_funds():
-    df = await funds()
-    assert len(df) > 300
-    unexpected_fields = set(df.columns) - FundInfo.__pydantic_fields__.keys()
+    lf = await funds()
+    assert isinstance(lf, pl.LazyFrame)
+    assert lf.select(pl.len()).collect().item() > 300
+
+    unexpected_fields = (
+        set(lf.collect_schema().keys()) - FundInfo.__pydantic_fields__.keys()
+    )
     assert not unexpected_fields
-    assert_dtypes(df)
+    assert_dtypes(lf)
 
 
 @file('averagereturns.json')
 async def test_average_returns():
-    df = await average_returns()
-    assert len(df) >= 11
-    assert [*df.dtypes.items()] == [
-        ('id', dtype('int64')),
-        ('fundTypeId', dtype('int64')),
-        ('netAsset', Int64Dtype()),
-        ('stock', dtype('float64')),
-        ('bond', dtype('float64')),
-        ('cash', dtype('float64')),
-        ('deposit', dtype('float64')),
-        ('dailyEfficiency', dtype('float64')),
-        ('weeklyEfficiency', dtype('float64')),
-        ('monthlyEfficiency', dtype('float64')),
-        ('quarterlyEfficiency', dtype('float64')),
-        ('sixMonthEfficiency', dtype('float64')),
-        ('annualEfficiency', dtype('float64')),
-        ('efficiency', dtype('float64')),
-    ]
+    lf = await average_returns()
+    assert isinstance(lf, pl.LazyFrame)
+    assert lf.select(pl.len()).collect().item() >= 11
+
+    assert lf.collect_schema() == {
+        'id': pl.Int64,
+        'fundTypeId': pl.Int64,
+        'netAsset': pl.Int64,
+        'stock': pl.Float64,
+        'bond': pl.Float64,
+        'cash': pl.Float64,
+        'deposit': pl.Float64,
+        'dailyEfficiency': pl.Float64,
+        'weeklyEfficiency': pl.Float64,
+        'monthlyEfficiency': pl.Float64,
+        'quarterlyEfficiency': pl.Float64,
+        'sixMonthEfficiency': pl.Float64,
+        'annualEfficiency': pl.Float64,
+        'efficiency': pl.Float64,
+    }
 
 
 @file('treemap.json')
 async def test_map_data():
-    df = await map_data()
-    assert_dtypes(df)
-    assert len(df) > 286
+    lf = await map_data()
+    assert isinstance(lf, pl.LazyFrame)
+    assert_dtypes(lf)
+    assert lf.select(pl.len()).collect().item() > 286
+
+    # Replaced lf.schema.keys() with collect_schema().names()
     unexpected_fields = (
-        set(df.columns) - TreeMapItem.__pydantic_fields__.keys()
+        set(lf.collect_schema().names())
+        - TreeMapItem.__pydantic_fields__.keys()
     )
     assert not unexpected_fields
 
 
 @file('dependencygraph.json')
 async def test_dependency_graph_data():
-    df = await dependency_graph_data()
-    assert_dtypes(df)
-    assert len(df) > 286
-    unexpeced_keys = set(df.columns) - DepItem.__pydantic_fields__.keys()
-    assert not unexpeced_keys
+    lf = await dependency_graph_data()
+    assert isinstance(lf, pl.LazyFrame)
+    assert_dtypes(lf)
+    assert lf.select(pl.len()).collect().item() > 286
+
+    unexpected_keys = (
+        set(lf.collect_schema().keys()) - DepItem.__pydantic_fields__.keys()
+    )
+    assert not unexpected_keys
 
 
 @file('alpha_beta.json')
 async def test_alpha_beta():
-    df = await fund.alpha_beta(all_=False)
-    assert [*df.dtypes.items()] == [
-        ('beta', dtype('float64')),
-        ('alpha', dtype('float64')),
-    ]
-    assert df.index.name == 'date'
-    assert df.index.dtype == dtype('<M8[us]')
+    lf = await fund.alpha_beta(all_=False)
+    assert isinstance(lf, pl.LazyFrame)
+
+    schema = lf.collect_schema()
+    assert schema['date'] == pl.Datetime
+    assert schema['beta'] == pl.Float64
+    assert schema['alpha'] == pl.Float64
+
+    is_sorted = (
+        lf.select((pl.col('date').diff().drop_nulls() >= 0).all())
+        .collect()
+        .item()
+    )
+    assert is_sorted
 
 
 @file('fund_types.json')
 async def test_fund_types():
-    df = await fund_types()
-    assert [*df.dtypes.items()] == [
-        ('fundType', dtype('int64')),
-        ('name', _str),
-        ('isActive', dtype('bool')),
-    ]
+    lf = await fund_types()
+    assert isinstance(lf, pl.LazyFrame)
+    assert lf.collect_schema() == {
+        'fundType': pl.Int64,
+        'name': pl.String,
+        'isActive': pl.Boolean,
+    }
 
 
 def test_common_fund_info_fields():
@@ -254,24 +295,16 @@ def test_common_fund_info_fields():
         subclass_fields[subclass.__name__] = subclass_directly_defined_fields
 
     # --- PART 2: Check for common fields among all subclasses ---
-    # Start with the fields of the first subclass as the initial 'common' set
-    # and then find the intersection with all subsequent subclasses.
-
-    # Get a list of the sets of fields
     all_subclass_field_sets = list(subclass_fields.values())
 
     if not all_subclass_field_sets:
-        # No subclasses found, nothing to check for commonality
         return
 
-    # Initialize the common_fields set with the first set
     common_fields = all_subclass_field_sets[0]
 
-    # Iterate through the rest of the sets to find the intersection
     for field_set in all_subclass_field_sets[1:]:
         common_fields = common_fields & field_set
 
-    # Types are different for these two fields. Redefinition is unavoidable.
     common_fields -= {'guarantor', 'manager'}
 
     assert not common_fields, (
