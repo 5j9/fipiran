@@ -357,7 +357,7 @@ class TreeMapItem(_CommonFundInfo):
     fundUnit: float | None
     commodity: float | None
     fundPublisher: int
-    insCode: None = None
+    insCode: str | None = None
     fundWatch: None
 
 
