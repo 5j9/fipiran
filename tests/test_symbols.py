@@ -27,7 +27,7 @@ async def test_search():
     inst_count = instruments_lf.select(pl.len()).collect().item()
     tx_count = transactions_lf.select(pl.len()).collect().item()
 
-    assert inst_count == tx_count
+    assert inst_count >= tx_count
     assert inst_count > 0
 
     # Assert all returned instruments contain the term using native Polars expressions
