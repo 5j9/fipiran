@@ -258,7 +258,15 @@ async def funds() -> _pl.LazyFrame:
 
     See funds.FundInfo for column names.
     """
-    m = await _api('fund/fundcompare', model=_Funds)
+    m = await _api(
+        'fund/fundcompare/',
+        model=_Funds,
+        method='post',
+        json={
+            'regNos': [],
+            'showMarketMakers': False,
+        },
+    )
     assert m.totalCount <= m.pageSize
     lf = _pl.LazyFrame([vars(i) for i in m.items], infer_schema_length=None)
     return _fix_website_address(lf)

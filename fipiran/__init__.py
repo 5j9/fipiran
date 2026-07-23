@@ -28,8 +28,8 @@ session_manager = SessionManager(
 )
 
 
-async def _read(url, **kwargs) -> bytes:
-    r = await session_manager.request('get', url, **kwargs)
+async def _read(url, method: str = 'get', **kwargs) -> bytes:
+    r = await session_manager.request(method, url, **kwargs)
     return await r.read()
 
 
