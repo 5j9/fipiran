@@ -5,6 +5,7 @@ from enum import Flag as _Flag, auto as _auto
 from typing import Literal as _Literal
 
 import polars as _pl
+from polars import col as _col
 from pydantic import RootModel as _RootModel
 
 from fipiran import _api, _LooseModel
@@ -55,8 +56,8 @@ class InstrumentTransaction(_LooseModel):
     priceFirst: float
     priceYesterday: float
     priceYesterdayBackward: float
-    lastStatus: int
-    hEven: int
+    lastStatus: int | None
+    hEven: int | None
 
 
 class Instrument5BestLimit(_LooseModel):
@@ -257,10 +258,16 @@ class Symbol:
 
     @staticmethod
     async def from_name(name: str, /):
-        instruments_lf, _ = await search(symbol=name, limit=1)
-        # Collect the first element eagerly for the class factory method
-        first_ins_code = instruments_lf.select('insCode').collect().item(0, 0)
-        return Symbol(first_ins_code)
+        lf, _ = await search(symbol=name, limit=25)
+        # choose exact match if present, otherwise first row
+        df = (
+            lf.with_columns((_col('smallSymbolName') == name).alias('exact'))
+            .sort('exact', descending=True)
+            .select('insCode')
+            .limit(1)
+            .collect()
+        )
+        return Symbol(df.item(0, 0))
 
 
 class CSVFlag(_Flag):
@@ -409,7 +416,7 @@ async def search(
         sub_industry: symbols.sub_industries
         idx_code: symbols.index_compare
     """
-    params = {
+    params: dict = {
         'pageIndex': 0,
         'pageSize': limit,
         'sort': sort,

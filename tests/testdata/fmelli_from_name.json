@@ -1,1 +1,155 @@
-{"status":200,"message":"","pageNumber":1,"pageSize":1,"totalCount":4,"items":[{"instruments":[{"insCode":"35425587644337450","smallSymbolName":"فملی","symbolFullName":"ملی‌ صنایع‌ مس‌ ایران‌","industryGroupCode":"27 ","industryGroupName":null,"industrySubCode":"2720","industrySubName":null,"symbolStatus":"A","type":300,"marketCode":1,"staticThresholdMaxPrice":null,"staticThresholdMinPrice":null,"status":1}],"instrumentTransactions":[{"insCode":"35425587644337450","transactionDate":"2025-10-01T00:00:00","numberOfTransactions":11586,"numberOfVolume":575913522,"transactionValue":3847273607390.00,"closingPrice":6680.00,"adjPriceForward":null,"adjPriceBackward":null,"lastTransaction":6720.00,"changePrice":190.00,"priceMin":6410.00,"priceMax":6720.00,"priceFirst":6530.00,"priceYesterday":6530.00,"priceYesterdayBackward":0,"lastStatus":1,"hEven":122949}]}]}
+{
+    "status": 200,
+    "message": "",
+    "pageNumber": 1,
+    "pageSize": 25,
+    "totalCount": 6,
+    "items": [
+        {
+            "instruments": [
+                {
+                    "insCode": "71039268929862095",
+                    "smallSymbolName": "ظفملی504",
+                    "symbolFullName": "اختیارخ ت فملی-10303-05/04/06",
+                    "industryGroupCode": "27 ",
+                    "industrySubCode": "2720",
+                    "symbolStatus": "A",
+                    "type": 605,
+                    "marketCode": 3,
+                    "status": 1
+                },
+                {
+                    "insCode": "52377701829178221",
+                    "smallSymbolName": "ظفملی54",
+                    "symbolFullName": "اختیارخ ت فملی-9117-05/04/31",
+                    "industryGroupCode": "27 ",
+                    "industrySubCode": "2720",
+                    "symbolStatus": "A",
+                    "type": 605,
+                    "marketCode": 3,
+                    "status": 1
+                },
+                {
+                    "insCode": "35425587644337450",
+                    "smallSymbolName": "فملی",
+                    "symbolFullName": "ملی‌ صنایع‌ مس‌ ایران‌",
+                    "industryGroupCode": "27 ",
+                    "industrySubCode": "2720",
+                    "symbolStatus": "A",
+                    "type": 300,
+                    "marketCode": 1,
+                    "status": 1
+                },
+                {
+                    "insCode": "8731565448647588",
+                    "smallSymbolName": "فملیح",
+                    "symbolFullName": "ح . ملی‌ صنایع‌ مس‌ ایران‌",
+                    "industryGroupCode": "27 ",
+                    "industrySubCode": "2720",
+                    "symbolStatus": "IS",
+                    "type": 400,
+                    "marketCode": 1,
+                    "status": 1
+                },
+                {
+                    "insCode": "28136558680826634",
+                    "smallSymbolName": "هفملی503",
+                    "symbolFullName": "اختیارف ت فملی-10076-05/03/06",
+                    "industryGroupCode": "27 ",
+                    "industrySubCode": "2720",
+                    "symbolStatus": "A",
+                    "type": 600,
+                    "marketCode": 3,
+                    "status": 1
+                },
+                {
+                    "insCode": "46716801277508900",
+                    "smallSymbolName": "هفملی504",
+                    "symbolFullName": "اختیارف ت فملی-9455-05/04/17",
+                    "industryGroupCode": "27 ",
+                    "industrySubCode": "2720",
+                    "symbolStatus": "A",
+                    "type": 600,
+                    "marketCode": 3,
+                    "status": 1
+                }
+            ],
+            "instrumentTransactions": [
+                {
+                    "insCode": "35425587644337450",
+                    "transactionDate": "2026-07-20T00:00:00",
+                    "numberOfTransactions": 21219.00,
+                    "numberOfVolume": 610266046.00,
+                    "transactionValue": 12491882006730.00,
+                    "closingPrice": 20470.00,
+                    "adjPriceForward": 23148.3052093298865314,
+                    "adjPriceBackward": 23148.3052093,
+                    "lastTransaction": 20470.00,
+                    "changePrice": 590.00,
+                    "priceMin": 20320.00,
+                    "priceMax": 20470.00,
+                    "priceFirst": 20470.00,
+                    "priceYesterday": 19880.00,
+                    "priceYesterdayBackward": 22481.1093093,
+                    "lastStatus": 1,
+                    "hEven": 122958
+                },
+                {
+                    "insCode": "8731565448647588",
+                    "transactionDate": "2023-03-26T00:00:00",
+                    "numberOfTransactions": 989.00,
+                    "numberOfVolume": 44912254.00,
+                    "transactionValue": 73901219100.00,
+                    "closingPrice": 1645.00,
+                    "adjPriceForward": 1645.0000000000000000,
+                    "adjPriceBackward": 1645.0000000,
+                    "lastTransaction": 1650.00,
+                    "changePrice": 230.00,
+                    "priceMin": 1600.00,
+                    "priceMax": 1650.00,
+                    "priceFirst": 1600.00,
+                    "priceYesterday": 1415.00,
+                    "priceYesterdayBackward": 1415.0000000,
+                    "lastStatus": 0,
+                    "hEven": 0
+                },
+                {
+                    "insCode": "28136558680826634",
+                    "transactionDate": "2024-11-27T00:00:00",
+                    "numberOfTransactions": 2.00,
+                    "numberOfVolume": 735294100.00,
+                    "transactionValue": 735294100.00,
+                    "closingPrice": 1.00,
+                    "adjPriceForward": 1.0000000000000000,
+                    "adjPriceBackward": 1.0000000,
+                    "lastTransaction": 1.00,
+                    "changePrice": -999.00,
+                    "priceMin": 1.00,
+                    "priceMax": 1.00,
+                    "priceFirst": 1.00,
+                    "priceYesterday": 1000.00,
+                    "priceYesterdayBackward": 1000.0000000
+                },
+                {
+                    "insCode": "46716801277508900",
+                    "transactionDate": "2025-08-03T00:00:00",
+                    "numberOfTransactions": 1.00,
+                    "numberOfVolume": 136120000.00,
+                    "transactionValue": 187301120000.00,
+                    "closingPrice": 1376.00,
+                    "adjPriceForward": 1376.0000000000000000,
+                    "adjPriceBackward": 1376.0000000,
+                    "lastTransaction": 1376.00,
+                    "changePrice": 1375.00,
+                    "priceMin": 1376.00,
+                    "priceMax": 1376.00,
+                    "priceFirst": 1376.00,
+                    "priceYesterday": 1.00,
+                    "priceYesterdayBackward": 1.0000000,
+                    "lastStatus": 0,
+                    "hEven": 122132
+                }
+            ]
+        }
+    ]
+}
