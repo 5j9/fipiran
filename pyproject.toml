@@ -18,7 +18,7 @@ dependencies = [
     "polars>=1.41.2",
     "pydantic",
 ]
-version = "3.0.1"
+version = "3.0.2.dev1"
 
 authors = [{ name = '5j9', email = '5j9@users.noreply.github.com' }]
 
