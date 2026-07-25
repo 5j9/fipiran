@@ -147,7 +147,7 @@ class PortfolioOnDate(_LooseModel):
 
 
 class Fund:
-    __slots__ = 'reg_no'
+    __slots__ = ('reg_no',)
 
     def __init__(self, reg_no: int | str):
         self.reg_no = reg_no
@@ -227,7 +227,7 @@ class _Funds(_LooseModel):
 
 class FundInfo(_CommonFundInfo):
     smallSymbolName: str | None
-    guaranteedEarningRate: None | int
+    guaranteedEarningRate: int | None
     estimatedEarningRate: float | None
     investedUnits: int | None
     articlesOfAssociationLink: None
@@ -298,17 +298,17 @@ class AverageReturns(_LooseModel):
     id: int
     fundTypeId: int | None
     netAsset: int | None
-    stock: None | float
-    bond: None | float
-    cash: None | float
-    deposit: None | float
-    dailyEfficiency: None | float
-    weeklyEfficiency: None | float
-    monthlyEfficiency: None | float
-    quarterlyEfficiency: None | float
-    sixMonthEfficiency: None | float
-    annualEfficiency: None | float
-    efficiency: None | float
+    stock: float | None
+    bond: float | None
+    cash: float | None
+    deposit: float | None
+    dailyEfficiency: float | None
+    weeklyEfficiency: float | None
+    monthlyEfficiency: float | None
+    quarterlyEfficiency: float | None
+    sixMonthEfficiency: float | None
+    annualEfficiency: float | None
+    efficiency: float | None
 
 
 async def average_returns() -> _pl.LazyFrame:
@@ -335,15 +335,14 @@ class _TreeMap(_LooseModel):
 
 class TreeMapItem(_CommonFundInfo):
     guaranteedEarningRate: int | None
-    guaranteedEarningRate: None | int
     estimatedEarningRate: float | None
     investedUnits: int
     articlesOfAssociationLink: None
     prosoectusLink: None
     websiteAddress: list[str]
     manager: str
-    managerSeoRegisterNo: None | str
-    guarantorSeoRegisterNo: None | str
+    managerSeoRegisterNo: str | None
+    guarantorSeoRegisterNo: str | None
     auditor: str
     custodian: str
     guarantor: str
@@ -378,32 +377,32 @@ class _DepData(_LooseModel):
 
 
 class DepItem(_CommonFundInfo):
-    tempGuarantorName: None | str
+    tempGuarantorName: str | None
     tempManagerName: str | None
-    manager: None | Manager
+    manager: Manager | None
     guarantor: Guarantor | None
 
 
 class Manager(_LooseModel):
     managerId: int
     cfiId: int | None
-    managerSeoRegisterNo: None | str
+    managerSeoRegisterNo: str | None
     name: str
-    managerNationalCode: None | str
+    managerNationalCode: str | None
     type: int | None
-    seoRegisterDate: None | _datetime
+    seoRegisterDate: _datetime | None
     registeredCapital: int | None
-    webSite: None | str
-    email: None | str
-    ceo: None | str
-    tel: None | str
-    address: None | str
-    nationalId: None | str
-    registrationNumber: None | str
+    webSite: str | None
+    email: str | None
+    ceo: str | None
+    tel: str | None
+    address: str | None
+    nationalId: str | None
+    registrationNumber: str | None
     registerPlace: None
     registerPlaceId: None
-    registerDate: None | _datetime
-    cfiLastModificationTime: None | _datetime
+    registerDate: _datetime | None
+    cfiLastModificationTime: _datetime | None
     isCompleted: bool
 
 
@@ -412,21 +411,21 @@ class Guarantor(_LooseModel):
     cfiId: int | None
     guarantorSeoRegisterNo: str
     name: str
-    guarantorNationalCode: None | str
+    guarantorNationalCode: str | None
     type: int | None
-    seoRegisterDate: None | _datetime
+    seoRegisterDate: _datetime | None
     registeredCapital: int | None
-    webSite: None | str
-    email: None | str
-    ceo: None | str
-    tel: None | str
-    address: None | str
-    nationalId: None | str
-    registrationNumber: None | str
+    webSite: str | None
+    email: str | None
+    ceo: str | None
+    tel: str | None
+    address: str | None
+    nationalId: str | None
+    registrationNumber: str | None
     registerPlace: None
     registerPlaceId: None
-    registerDate: None | _datetime
-    cfiLastModificationTime: None | _datetime
+    registerDate: _datetime | None
+    cfiLastModificationTime: _datetime | None
     isCompleted: bool
 
 

@@ -19,10 +19,12 @@ $ uv add fipiran
 import asyncio
 from fipiran.symbols import Symbol
 
+
 async def main():
     symbol = await Symbol.from_name('فملی')
     company_info = await symbol.info()
     print(company_info.model_dump_json(indent=2))
+
 
 asyncio.run(main())
 ```

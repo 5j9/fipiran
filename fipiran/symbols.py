@@ -47,8 +47,8 @@ class InstrumentTransaction(_LooseModel):
     numberOfVolume: float
     transactionValue: float
     closingPrice: float
-    adjPriceForward: None | float
-    adjPriceBackward: None | float
+    adjPriceForward: float | None
+    adjPriceBackward: float | None
     lastTransaction: float
     changePrice: float
     priceMin: float
@@ -103,12 +103,12 @@ class Publisher(_LooseModel):
     executiveManager: str
     auditorName: str
     financialManager: str
-    website: None | str
-    address: None | str
+    website: str | None
+    address: str | None
     shareOfficeAddress: str
-    telNo: None | str
-    faxNo: None | str
-    email: None | str
+    telNo: str | None
+    faxNo: str | None
+    email: str | None
     listedCapital: int
     financialYear: str
     nationalCode: str
@@ -185,7 +185,7 @@ class Attachment(_LooseModel):
 
 
 class Symbol:
-    __slots__ = 'ins_code'
+    __slots__ = ('ins_code',)
 
     def __init__(self, ins_code: str):
         self.ins_code = ins_code
