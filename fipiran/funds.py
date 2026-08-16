@@ -3,7 +3,7 @@ from __future__ import annotations as _
 from datetime import datetime as _datetime
 
 import polars as _pl
-from pydantic import RootModel as _RootModel
+from pydantic import BaseModel as _BaseModel, RootModel as _RootModel
 
 from fipiran import _api, _LooseModel
 
@@ -46,18 +46,18 @@ class _CommonFundInfo(_LooseModel):
 class SpecificFundInfo(_CommonFundInfo):
     smallSymbolName: str | None = None
     guaranteedEarningRate: int | None
-    executiveManager: str
+    # executiveManager: str
     articlesOfAssociationLink: None
     prosoectusLink: None
     lastModificationTime: _datetime
     estimatedEarningRate: None
     insInvNo: int
-    insInvPercent: float
+    # insInvPercent: float
     legalPercent: float
-    marketMaker: str
+    # marketMaker: str
     naturalPercent: float
     retInvNo: int
-    retInvPercent: float
+    # retInvPercent: float
     investedUnits: int
     unitsRedDAY: int
     unitsRedFromFirst: int
@@ -85,7 +85,7 @@ class SpecificFundInfo(_CommonFundInfo):
     registerDate: _datetime
     nationalId: str
     isCompleted: bool
-    insCode: str
+    # insCode: str
     baseUnitsSubscriptionNAV: None
     baseUnitsCancelNAV: None
     baseUnitsTotalNetAssetValue: None
@@ -147,21 +147,35 @@ class PortfolioOnDate(_LooseModel):
 
 
 class Fund:
-    __slots__ = ('reg_no',)
+    __slots__ = ('group_id', 'reg_no')
 
-    def __init__(self, reg_no: int | str):
+    def __init__(self, reg_no: int | str, group_id: str | int = '0'):
         self.reg_no = reg_no
+        self.group_id = group_id
 
     def __repr__(self):
-        return f'{type(self).__name__}({self.reg_no!r})'
+        return f'{type(self).__name__}({self.reg_no!r}, {self.group_id!r})'
+
+    async def _api[T: _BaseModel](
+        self, path, *, model: type[T], **kwargs
+    ) -> T:
+        params = {'regno': self.reg_no, 'groupId': self.group_id}
+        kw_params = kwargs.get('params')
+        if kw_params is not None:
+            params |= kw_params
+        return await _api(
+            path=path,
+            params=params,
+            model=model,
+        )
 
     async def asset_allocation_history(self) -> _pl.LazyFrame:
         """Return a LazyFrame of asset type percentages.
 
         See funds.PortfolioOnDate for column names.
         """
-        m = await _api(
-            f'chart/portfoliochart?regno={self.reg_no}',
+        m = await self._api(
+            'chart/portfoliochart',
             model=_RootModel[list[PortfolioOnDate]],
         )
         return _pl.LazyFrame(
@@ -173,8 +187,9 @@ class Fund:
 
         See funds.NavOnDate for column names.
         """
-        m = await _api(
-            f'chart/getfundchart?regno={self.reg_no}&showAll={str(all_).lower()}',
+        m = await self._api(
+            'chart/getfundchart',
+            params={'showAll': str(all_).lower()},
             model=_RootModel[list[NavOnDate]],
         )
         return _pl.LazyFrame(
@@ -186,8 +201,9 @@ class Fund:
 
         See funds.AssetsOnDate for column names.
         """
-        m = await _api(
-            f'chart/getfundnetassetchart?regno={self.reg_no}&showAll={str(all_).lower()}',
+        m = await self._api(
+            'chart/getfundnetassetchart',
+            params={'showAll': str(all_).lower()},
             model=_RootModel[list[AssetsOnDate]],
         )
         return _pl.LazyFrame(vars(i) for i in m.root).sort('date')
@@ -195,19 +211,16 @@ class Fund:
     async def alpha_beta(self, /, *, all_=True) -> _pl.LazyFrame:
         """Return alpha/beta history as a LazyFrame sorted by date."""
         items = (
-            await _api(
-                f'chart/alphabetachart?regno={self.reg_no}&showAll={str(all_).lower()}',
+            await self._api(
+                'chart/alphabetachart',
+                params={'showAll': str(all_).lower()},
                 model=_RootModel[list[AlphaBeta]],
             )
         ).root
         return _pl.LazyFrame(vars(i) for i in items).sort('date')
 
     async def info(self) -> SpecificFundInfo:
-        return (
-            await _api(
-                f'fund/getfund?regno={self.reg_no}', model=_SpecificFundInfo
-            )
-        ).item
+        return (await self._api('fund/getfund', model=_SpecificFundInfo)).item
 
 
 def _fix_website_address(lf: _pl.LazyFrame) -> _pl.LazyFrame:

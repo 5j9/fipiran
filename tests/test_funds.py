@@ -1,5 +1,5 @@
 import polars as pl
-from pytest_aiohutils import file
+from pytest_aiohutils import file, files
 
 from fipiran.funds import (
     DepItem,
@@ -60,8 +60,8 @@ fund = Fund(11215)
 
 
 def test_repr():
-    assert repr(fund) == 'Fund(11215)'
-    assert repr(Fund('11215')) == "Fund('11215')"
+    assert repr(fund) == "Fund(11215, '0')"
+    assert repr(Fund('11215')) == "Fund('11215', '0')"
 
 
 @file('portfoliochart_atlas.json')
@@ -311,3 +311,13 @@ def test_common_fund_info_fields():
         f'The following fields are common among all subclasses and should be '
         f'moved to the base class _CommonFundInfo: {common_fields}'
     )
+
+
+@files('resana_info.json', 'chatr_info.json')
+async def test_group_id():
+    resana = Fund(12286, 3)
+    chatr = Fund(12286, 4)
+    resana_info = await resana.info()
+    chatr_info = await chatr.info()
+    assert resana_info.regNo == chatr_info.regNo
+    assert resana_info.issueNav != chatr_info.issueNav
