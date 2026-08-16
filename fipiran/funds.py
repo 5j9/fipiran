@@ -349,7 +349,7 @@ class _TreeMap(_LooseModel):
 class TreeMapItem(_CommonFundInfo):
     guaranteedEarningRate: int | None
     estimatedEarningRate: float | None
-    investedUnits: int
+    # investedUnits: int
     articlesOfAssociationLink: None
     prosoectusLink: None
     websiteAddress: list[str]
@@ -360,12 +360,12 @@ class TreeMapItem(_CommonFundInfo):
     custodian: str
     guarantor: str
     isCompleted: bool
-    fiveBest: float
+    # fiveBest: float
     stock: float | None
     bond: float | None
-    other: float
-    cash: float
-    deposit: float
+    # other: float
+    # cash: float
+    # deposit: float
     fundUnit: float | None
     commodity: float | None
     fundPublisher: int

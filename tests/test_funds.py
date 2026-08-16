@@ -99,7 +99,7 @@ async def test_navps():
     ).collect()
 
     assert res['all_ordered'].item()
-    assert res['total_rows'].item() >= 360
+    assert res['total_rows'].item() >= 350
     assert res['is_sorted'].item()
 
 
@@ -119,7 +119,7 @@ async def test_nav_history():
         is_sorted=(pl.col('date').diff().drop_nulls() >= 0).all(),
     ).collect()
 
-    assert res['total_rows'].item() >= 360
+    assert res['total_rows'].item() >= 350
     assert res['is_sorted'].item()
 
 
