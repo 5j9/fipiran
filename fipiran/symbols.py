@@ -29,7 +29,6 @@ class Instrument(_LooseModel):
     smallSymbolName: str
     symbolFullName: str
     industryGroupCode: str
-    industryGroupName: str | None
     industrySubCode: str
     industrySubName: str | None
     symbolStatus: str
