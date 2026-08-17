@@ -28,6 +28,7 @@ _KNOWN_DTYPES = {
     'efficiency': pl.Float64,
     'fundSize': pl.Int64,
     'fundType': pl.Int64,
+    'groupId': pl.Int64,
     'guarantor': pl.String,
     'guarantorSeoRegisterNo': pl.Int64,
     'initiationDate': pl.Datetime,
@@ -159,7 +160,14 @@ def assert_dtypes(lf: pl.LazyFrame):
     schema = lf.collect_schema()
     cols = set(schema.keys())
 
-    assert not cols - (_KNOWN_DTYPES.keys() | EXPECTED_INFERRED_DTYPES.keys())
+    unknown = sorted(
+        (col, schema[col])
+        for col in cols
+        if col not in _KNOWN_DTYPES and col not in EXPECTED_INFERRED_DTYPES
+    )
+    assert not unknown, 'Unknown columns:\n' + '\n'.join(
+        f'  {col}: {dtype}' for col, dtype in unknown
+    )
 
     for col in cols & EXPECTED_INFERRED_DTYPES.keys():
         expected_type = EXPECTED_INFERRED_DTYPES[col]

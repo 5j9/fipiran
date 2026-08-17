@@ -366,36 +366,32 @@ class _TreeMap(_LooseModel):
 
 
 class TreeMapItem(_CommonFundInfo):
-    investedUnits: int
-    fiveBest: float
-    other: float
-    cash: float
-    deposit: float
-    rankLastUpdate: _datetime
-    guaranteedEarningRate: int | None
-    estimatedEarningRate: float | None
-    # investedUnits: int
-    articlesOfAssociationLink: None
-    prosoectusLink: None
-    websiteAddress: list[str]
-    manager: str
-    managerSeoRegisterNo: str | None
-    guarantorSeoRegisterNo: str | None
+    articlesOfAssociationLink: None = None
     auditor: str
+    bond: float | None = None
+    cash: float | None = None
+    commodity: float | None = None
     custodian: str
-    guarantor: str
-    isCompleted: bool
-    # fiveBest: float
-    stock: float | None
-    bond: float | None
-    # other: float
-    # cash: float
-    # deposit: float
-    fundUnit: float | None
-    commodity: float | None
+    deposit: float | None = None
+    estimatedEarningRate: float | None = None
+    fiveBest: float | None = None
     fundPublisher: int
-    insCode: str | None = None
+    fundUnit: float | None = None
     fundWatch: None = None
+    groupId: int
+    guaranteedEarningRate: int | None = None
+    guarantor: str
+    guarantorSeoRegisterNo: str | None = None
+    insCode: str | None = None
+    investedUnits: int | None = None
+    isCompleted: bool
+    manager: str
+    managerSeoRegisterNo: str | None = None
+    other: float | None = None
+    prosoectusLink: None = None
+    rankLastUpdate: _datetime
+    stock: float | None = None
+    websiteAddress: list[str]
 
 
 async def map_data() -> _pl.LazyFrame:
