@@ -438,56 +438,56 @@ class _DepData(_LooseModel):
 
 class DepItem(_CommonFundInfo):
     rankLastUpdate: _datetime
-    tempGuarantorName: str | None
+    tempGuarantorName: str | None = None
     tempManagerName: str | None
     manager: Manager | None
-    guarantor: Guarantor | None
+    guarantor: Guarantor | None = None
 
 
 class Manager(_LooseModel):
-    managerId: int
-    cfiId: int | None
-    managerSeoRegisterNo: str | None
-    name: str
-    managerNationalCode: str | None
-    type: int | None
-    seoRegisterDate: _datetime | None
-    registeredCapital: int | None
-    webSite: str | None
-    email: str | None
-    ceo: str | None
-    tel: str | None
-    address: str | None
-    nationalId: str | None
-    registrationNumber: str | None
-    registerPlace: None
-    registerPlaceId: None
-    registerDate: _datetime | None
-    cfiLastModificationTime: _datetime | None
+    address: str | None = None
+    ceo: str | None = None
+    cfiId: int | None = None
+    cfiLastModificationTime: _datetime | None = None
+    email: str | None = None
     isCompleted: bool
+    managerId: int
+    managerNationalCode: str | None = None
+    managerSeoRegisterNo: str | None = None
+    name: str
+    nationalId: str | None = None
+    registerDate: _datetime | None = None
+    registeredCapital: int | None = None
+    registerPlace: None = None
+    registerPlaceId: None = None
+    registrationNumber: str | None = None
+    seoRegisterDate: _datetime | None = None
+    tel: str | None = None
+    type: int | None = None
+    webSite: str | None = None
 
 
 class Guarantor(_LooseModel):
+    address: str | None = None
+    ceo: str | None = None
+    cfiId: int | None = None
+    cfiLastModificationTime: _datetime | None = None
+    email: str | None = None
     guarantorId: int
-    cfiId: int | None
+    guarantorNationalCode: str | None = None
     guarantorSeoRegisterNo: str
-    name: str
-    guarantorNationalCode: str | None
-    type: int | None
-    seoRegisterDate: _datetime | None
-    registeredCapital: int | None
-    webSite: str | None
-    email: str | None
-    ceo: str | None
-    tel: str | None
-    address: str | None
-    nationalId: str | None
-    registrationNumber: str | None
-    registerPlace: None
-    registerPlaceId: None
-    registerDate: _datetime | None
-    cfiLastModificationTime: _datetime | None
     isCompleted: bool
+    name: str
+    nationalId: str | None = None
+    registerDate: _datetime | None = None
+    registeredCapital: int | None = None
+    registerPlace: None = None
+    registerPlaceId: None = None
+    registrationNumber: str | None = None
+    seoRegisterDate: _datetime | None = None
+    tel: str | None = None
+    type: int | None = None
+    webSite: str | None = None
 
 
 async def dependency_graph_data() -> _pl.LazyFrame:
