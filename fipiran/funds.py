@@ -355,18 +355,18 @@ async def fund_types() -> _pl.LazyFrame:
 class AverageReturns(_LooseModel):
     id: int
     fundTypeId: int | None
-    netAsset: int | None
-    stock: float | None
-    bond: float | None
-    cash: float | None
-    deposit: float | None
-    dailyEfficiency: float | None
-    weeklyEfficiency: float | None
-    monthlyEfficiency: float | None
-    quarterlyEfficiency: float | None
-    sixMonthEfficiency: float | None
-    annualEfficiency: float | None
-    efficiency: float | None
+    netAsset: int | None = None
+    stock: float | None = None
+    bond: float | None = None
+    cash: float | None = None
+    deposit: float | None = None
+    dailyEfficiency: float | None = None
+    weeklyEfficiency: float | None = None
+    monthlyEfficiency: float | None = None
+    quarterlyEfficiency: float | None = None
+    sixMonthEfficiency: float | None = None
+    annualEfficiency: float | None = None
+    efficiency: float | None = None
 
 
 async def average_returns() -> _pl.LazyFrame:
