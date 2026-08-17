@@ -133,22 +133,22 @@ class _History(_LooseModel):
 
 
 class HistoryItem(_LooseModel):
+    adjPriceBackward: float | None = None
+    adjPriceForward: float | None = None
+    changePrice: float | None = None
+    closingPrice: float | None = None
+    hEven: int | None = None
     insCode: str
+    lastStatus: int | None = None
+    lastTransaction: float | None = None
+    numberOfTransactions: float | None = None
+    numberOfVolume: float | None = None
+    priceFirst: float | None = None
+    priceMax: float | None = None
+    priceMin: float | None = None
+    priceYesterday: float | None = None
     transactionDate: _datetime
-    numberOfTransactions: float | None
-    numberOfVolume: float | None
-    transactionValue: float | None
-    closingPrice: float | None
-    adjPriceForward: float | None
-    adjPriceBackward: float | None
-    lastTransaction: float | None
-    changePrice: float | None
-    priceMin: float | None
-    priceMax: float | None
-    priceFirst: float | None
-    priceYesterday: float | None
-    lastStatus: int | None
-    hEven: int | None
+    transactionValue: float | None = None
 
 
 class _Statements(_LooseModel):
