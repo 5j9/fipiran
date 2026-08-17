@@ -12,124 +12,124 @@ from fipiran import _api, _LooseModel
 
 
 class _InstrumentInfo(_LooseModel):
-    status: int
-    message: str
     item: list[InstrumentInfo]
+    message: str
+    status: int
 
 
 class InstrumentInfo(_LooseModel):
     instrument: Instrument
-    instrumentTransaction: InstrumentTransaction
     instrument5BestLimits: list[Instrument5BestLimit]
     instrumentClientTypes: list[InstrumentClientType]
+    instrumentTransaction: InstrumentTransaction
 
 
 class Instrument(_LooseModel):
-    insCode: str
-    smallSymbolName: str
-    symbolFullName: str
     industryGroupCode: str
+    industryGroupName: str | None = None
     industrySubCode: str
     industrySubName: str | None = None
-    industryGroupName: str | None = None
-    symbolStatus: str
-    type: int
+    insCode: str
     marketCode: int
+    smallSymbolName: str
     staticThresholdMaxPrice: float | None = None
     staticThresholdMinPrice: float | None = None
     status: int
+    symbolFullName: str
+    symbolStatus: str
+    type: int
 
 
 class InstrumentTransaction(_LooseModel):
+    adjPriceBackward: float | None
+    adjPriceForward: float | None
+    changePrice: float
+    closingPrice: float
+    hEven: int | None = None
     insCode: str
-    transactionDate: _datetime
+    lastStatus: int | None = None
+    lastTransaction: float
     numberOfTransactions: float
     numberOfVolume: float
-    transactionValue: float
-    closingPrice: float
-    adjPriceForward: float | None
-    adjPriceBackward: float | None
-    lastTransaction: float
-    changePrice: float
-    priceMin: float
-    priceMax: float
     priceFirst: float
+    priceMax: float
+    priceMin: float
     priceYesterday: float
     priceYesterdayBackward: float
-    lastStatus: int | None = None
-    hEven: int | None = None
+    transactionDate: _datetime
+    transactionValue: float
 
 
 class Instrument5BestLimit(_LooseModel):
-    rowNumber: int
+    demandPrice: int
     demandVolume: int
     numberRequests: int
-    demandPrice: int
-    supplyPrice: int
     numberSupply: int
+    rowNumber: int
+    supplyPrice: int
     supplyVolume: int
 
 
 class InstrumentClientType(_LooseModel):
     numberIndividualsBuyers: int
-    numberNonIndividualBuyers: int
-    sumIndividualBuyVolume: int
-    sumNonIndividualBuyVolume: int
     numberIndividualsSellers: int
+    numberNonIndividualBuyers: int
     numberNonIndividualSellers: int
+    sumIndividualBuyVolume: int
     sumIndividualSellVolume: int
+    sumNonIndividualBuyVolume: int
     sumNonIndividualSellVolume: int
 
 
 class Statistics(_LooseModel):
-    weekly: PeriodStatistics
+    annual: PeriodStatistics
     monthly: PeriodStatistics
     quarterly: PeriodStatistics
     sixMonth: PeriodStatistics
-    annual: PeriodStatistics
+    weekly: PeriodStatistics
 
 
 class PeriodStatistics(_LooseModel):
-    priceMax: float
-    priceMin: float
     numberOfTransactions: float
     numberOfVolume: float
+    priceMax: float
+    priceMin: float
     transactionValue: float
 
 
 class Publisher(_LooseModel):
-    name: str
     activitySubject: str
-    executiveManager: str
-    auditorName: str
-    financialManager: str
-    website: str | None
     address: str | None
+    auditorName: str
+    email: str | None
+    executiveManager: str
+    faxNo: str | None
+    financialManager: str
+    financialYear: str
+    isinCode: str
+    listedCapital: int
+    name: str
+    nationalCode: str
     shareOfficeAddress: str
     telNo: str | None
-    faxNo: str | None
-    email: str | None
-    listedCapital: int
-    financialYear: str
-    nationalCode: str
-    isinCode: str
+    website: str | None
 
 
 class Efficiency(_LooseModel):
-    weeklyEfficiency: float
+    annualEfficiency: float
     monthlyEfficiency: float
     quarterlyEfficiency: float
     sixMonthEfficiency: float
-    annualEfficiency: float
+    weeklyEfficiency: float
 
 
 class _History(_LooseModel):
-    status: int
+    items: list[HistoryItem]
     message: str
     pageNumber: int
     pageSize: int
+    status: int
     totalCount: int
-    items: list[HistoryItem]
 
 
 class HistoryItem(_LooseModel):
@@ -152,30 +152,30 @@ class HistoryItem(_LooseModel):
 
 
 class _Statements(_LooseModel):
-    status: int
+    items: list[Statement]
     message: str
     pageNumber: int
     pageSize: int
+    status: int
     totalCount: int
-    items: list[Statement]
 
 
 class Statement(_LooseModel):
-    title: str
-    publishDateTime: _datetime
-    letterType: int
-    letterName: str
-    letterKind: int
-    isAudited: bool
-    period: int
+    attachments: list[Attachment]
+    attachmentUrl: str
     auditorId: int
     auditorName: str
-    yearEndToDate: _datetime | None = None
-    htmlUrl: str
-    pdfUrl: str
     excelUrl: str
-    attachmentUrl: str
-    attachments: list[Attachment]
+    htmlUrl: str
+    isAudited: bool
+    letterKind: int
+    letterName: str
+    letterType: int
+    pdfUrl: str
+    period: int
+    publishDateTime: _datetime
+    title: str
+    yearEndToDate: _datetime | None = None
 
 
 class Attachment(_LooseModel):
