@@ -45,9 +45,9 @@ extend-select = [
     'RUF',  # Ruff-specific rules (RUF)
 ]
 ignore = [
+    'B023', # function-uses-loop-variable
     'BLE001', # blind-except
-    'DTZ002', # call-datetime-today
-    'DTZ005', # call-datetime-now-without-tzinfo
+    'DTZ', # flake8-datetimez
     'E721', # Do not compare types, use `isinstance()`
     'PLW1510', # subprocess-run-without-check
     'RUF001', # ambiguous-unicode-character-string
@@ -62,7 +62,6 @@ ignore = [
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-
 
 [tool.pytest]
 addopts = ["--quiet", "--tb=short"]
