@@ -170,7 +170,7 @@ class Statement(_LooseModel):
     period: int
     auditorId: int
     auditorName: str
-    yearEndToDate: _datetime | None
+    yearEndToDate: _datetime | None = None
     htmlUrl: str
     pdfUrl: str
     excelUrl: str
