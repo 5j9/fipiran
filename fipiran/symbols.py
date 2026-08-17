@@ -30,12 +30,13 @@ class Instrument(_LooseModel):
     symbolFullName: str
     industryGroupCode: str
     industrySubCode: str
-    industrySubName: str | None
+    industrySubName: str | None = None
+    industryGroupName: str | None = None
     symbolStatus: str
     type: int
     marketCode: int
-    staticThresholdMaxPrice: float | None
-    staticThresholdMinPrice: float | None
+    staticThresholdMaxPrice: float | None = None
+    staticThresholdMinPrice: float | None = None
     status: int
 
 
@@ -55,8 +56,8 @@ class InstrumentTransaction(_LooseModel):
     priceFirst: float
     priceYesterday: float
     priceYesterdayBackward: float
-    lastStatus: int | None
-    hEven: int | None
+    lastStatus: int | None = None
+    hEven: int | None = None
 
 
 class Instrument5BestLimit(_LooseModel):

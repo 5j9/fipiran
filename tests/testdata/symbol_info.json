@@ -1,1 +1,99 @@
-{"status":200,"message":"","item":[{"instrument":{"insCode":"35425587644337450","smallSymbolName":"فملی","symbolFullName":"ملی‌ صنایع‌ مس‌ ایران‌","industryGroupCode":"27 ","industryGroupName":"فلزات اساسی","industrySubCode":"2720","industrySubName":"تولید فلزات گرانبهای غیرآهن","symbolStatus":"A","type":300,"marketCode":1,"staticThresholdMaxPrice":null,"staticThresholdMinPrice":null,"status":1},"instrumentTransaction":{"insCode":"35425587644337450","transactionDate":"2025-10-01T00:00:00","numberOfTransactions":11586,"numberOfVolume":575913522,"transactionValue":3847273607390.00,"closingPrice":6680.00,"adjPriceForward":7554.0145968892839291731972706,"adjPriceBackward":7554.0145968892839291731972706,"lastTransaction":6720.00,"changePrice":190.00,"priceMin":6410.00,"priceMax":6720.00,"priceFirst":6530.00,"priceYesterday":6530.00,"priceYesterdayBackward":7384.3885206118299487276913439,"lastStatus":1,"hEven":122949},"instrument5BestLimits":[{"rowNumber":1,"demandVolume":37378721,"numberRequests":302,"demandPrice":6720,"supplyPrice":6720,"numberSupply":6,"supplyVolume":270718},{"rowNumber":2,"demandVolume":8240,"numberRequests":2,"demandPrice":6710,"supplyPrice":0,"numberSupply":0,"supplyVolume":0},{"rowNumber":3,"demandVolume":615852,"numberRequests":7,"demandPrice":6700,"supplyPrice":0,"numberSupply":0,"supplyVolume":0},{"rowNumber":4,"demandVolume":110769,"numberRequests":3,"demandPrice":6690,"supplyPrice":0,"numberSupply":0,"supplyVolume":0},{"rowNumber":5,"demandVolume":83650,"numberRequests":4,"demandPrice":6680,"supplyPrice":0,"numberSupply":0,"supplyVolume":0}],"instrumentClientTypes":[{"numberIndividualsBuyers":1867,"numberNonIndividualBuyers":43,"sumIndividualBuyVolume":230381630,"sumNonIndividualBuyVolume":345531892,"numberIndividualsSellers":3095,"numberNonIndividualSellers":47,"sumIndividualSellVolume":370597930,"sumNonIndividualSellVolume":205315592}]}]}
+{
+    "status": 200,
+    "message": "",
+    "item": [
+        {
+            "instrument": {
+                "insCode": "35425587644337450",
+                "smallSymbolName": "فملی",
+                "symbolFullName": "ملی‌ صنایع‌ مس‌ ایران‌",
+                "industryGroupCode": "27 ",
+                "industryGroupName": "فلزات اساسی",
+                "industrySubCode": "2720",
+                "industrySubName": "تولید فلزات گرانبهای غیرآهن",
+                "symbolStatus": "A",
+                "type": 300,
+                "marketCode": 1,
+                "status": 1
+            },
+            "instrumentTransaction": {
+                "insCode": "35425587644337450",
+                "transactionDate": "2026-08-16T00:00:00",
+                "numberOfTransactions": 81428.00,
+                "numberOfVolume": 1448896165.00,
+                "transactionValue": 27127321857320.00,
+                "closingPrice": 18720.00,
+                "adjPriceForward": 21169.334319426256759599139657,
+                "adjPriceBackward": 21169.334319426256759599139657,
+                "lastTransaction": 19070.00,
+                "changePrice": 290.00,
+                "priceMin": 18220.00,
+                "priceMax": 19100.00,
+                "priceFirst": 18500.00,
+                "priceYesterday": 18780.00,
+                "priceYesterdayBackward": 21237.184749937238351777342027,
+                "lastStatus": 0,
+                "hEven": 123001
+            },
+            "instrument5BestLimits": [
+                {
+                    "rowNumber": 1,
+                    "demandVolume": 13874846,
+                    "numberRequests": 532,
+                    "demandPrice": 19280,
+                    "supplyPrice": 19310,
+                    "numberSupply": 2,
+                    "supplyVolume": 4491
+                },
+                {
+                    "rowNumber": 2,
+                    "demandVolume": 465768,
+                    "numberRequests": 58,
+                    "demandPrice": 19270,
+                    "supplyPrice": 19330,
+                    "numberSupply": 1,
+                    "supplyVolume": 711
+                },
+                {
+                    "rowNumber": 3,
+                    "demandVolume": 382907,
+                    "numberRequests": 61,
+                    "demandPrice": 19260,
+                    "supplyPrice": 19340,
+                    "numberSupply": 23,
+                    "supplyVolume": 327599
+                },
+                {
+                    "rowNumber": 4,
+                    "demandVolume": 371603,
+                    "numberRequests": 45,
+                    "demandPrice": 19250,
+                    "supplyPrice": 19860,
+                    "numberSupply": 1,
+                    "supplyVolume": 7963
+                },
+                {
+                    "rowNumber": 5,
+                    "demandVolume": 329439,
+                    "numberRequests": 39,
+                    "demandPrice": 19240,
+                    "supplyPrice": 20470,
+                    "numberSupply": 1,
+                    "supplyVolume": 31000
+                }
+            ],
+            "instrumentClientTypes": [
+                {
+                    "numberIndividualsBuyers": 12768,
+                    "numberNonIndividualBuyers": 103,
+                    "sumIndividualBuyVolume": 520731355,
+                    "sumNonIndividualBuyVolume": 494961130,
+                    "numberIndividualsSellers": 6314,
+                    "numberNonIndividualSellers": 84,
+                    "sumIndividualSellVolume": 510986022,
+                    "sumNonIndividualSellVolume": 504706463
+                }
+            ]
+        }
+    ]
+}

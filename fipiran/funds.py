@@ -18,102 +18,120 @@ class _CommonFundInfo(_LooseModel):
     date: _datetime
     regNo: str
     name: str
-    rankOf12Month: float | None
-    rankOf24Month: float | None
-    rankOf36Month: float | None
-    rankOf48Month: float | None
-    rankOf60Month: float | None
+    rankOf12Month: float | None = None
+    rankOf24Month: float | None = None
+    rankOf36Month: float | None = None
+    rankOf48Month: float | None = None
+    rankOf60Month: float | None = None
     initiationDate: _datetime
-    fundType: int | None
+    fundType: int | None = None
     typeOfInvest: str
-    dailyEfficiency: float | None
-    weeklyEfficiency: float | None
-    monthlyEfficiency: float | None
-    quarterlyEfficiency: float | None
-    sixMonthEfficiency: float | None
-    annualEfficiency: float | None
-    efficiency: float | None
-    cancelNav: float | None
-    issueNav: float | None
-    statisticalNav: float | None
-    dividendIntervalPeriod: int | None
-    netAsset: int | None
-    fundSize: int | None
-    beta: float | None
-    alpha: float | None
+    dailyEfficiency: float | None = None
+    weeklyEfficiency: float | None = None
+    monthlyEfficiency: float | None = None
+    quarterlyEfficiency: float | None = None
+    sixMonthEfficiency: float | None = None
+    annualEfficiency: float | None = None
+    efficiency: float | None = None
+    cancelNav: float | None = None
+    issueNav: float | None = None
+    statisticalNav: float | None = None
+    dividendIntervalPeriod: int | None = None
+    netAsset: int | None = None
+    fundSize: int | None = None
+    beta: float | None = None
+    alpha: float | None = None
+
+
+class FundRank(_LooseModel):
+    id: int
+    regNo: str
+    reportFileContentType: str | None = None
+    calculationDetailsUrl: str
+    reportUrl: str
+    lastUpdate: _datetime
+    reportFileName: str | None = None
+    reportFile: str | None = None
+    rankOfSeason: float
+    rankOf36Month: float | None = None
+    rankOf24Month: float | None = None
+    rankOf12Month: float | None = None
 
 
 class SpecificFundInfo(_CommonFundInfo):
-    smallSymbolName: str | None = None
-    guaranteedEarningRate: int | None
-    # executiveManager: str
-    articlesOfAssociationLink: None
-    prosoectusLink: None
-    lastModificationTime: _datetime
-    estimatedEarningRate: None
+    articlesOfAssociationLink: None = None
+    auditor: str
+    baseTotalUnit: None = None
+    baseUnitsCancelNAV: None = None
+    baseUnitsSubscriptionNAV: None = None
+    baseUnitsTotalCancel: None = None
+    baseUnitsTotalNetAssetValue: None = None
+    baseUnitsTotalSubscription: None = None
+    bond: float
+    cash: float
+    commodity: float | None = None
+    custodian: str
+    deposit: float
+    estimatedEarningRate: None = None
+    executiveManager: str | None = None
+    fiveBest: float
+    fundPublisher: int
+    fundRank: FundRank | None = None
+    fundUnit: float | None = None
+    fundWatch: None = None
+    groupId: int
+    groupName: str | None = None
+    guaranteedEarningRate: int | None = None
+    guarantor: str
+    guarantorSeoRegisterNo: None = None
+    insCode: str | None = None
     insInvNo: int
-    # insInvPercent: float
-    legalPercent: float
-    # marketMaker: str
-    naturalPercent: float
-    retInvNo: int
-    # retInvPercent: float
+    insInvPercent: float | None = None
     investedUnits: int
+    investmentManager: str
+    isCompleted: bool
+    lastModificationTime: _datetime
+    legalPercent: float
+    manager: str
+    managerSeoRegisterNo: str
+    marketMaker: str | None = None
+    mutualFundLicenses: list[MutualFundLicense]
+    nationalId: str
+    naturalPercent: float
+    other: float
+    prosoectusLink: None = None
+    registerDate: _datetime
+    registrationNumber: str
+    retInvNo: int
+    retInvPercent: float | None = None
+    seoRegisterDate: _datetime
+    smallSymbolName: str | None = None
+    stock: float
+    superTotalUnit: None = None
+    superUnitsCancelNAV: None = None
+    superUnitsSubscriptionNAV: None = None
+    superUnitsTotalCancel: None = None
+    superUnitsTotalNetAssetValue: None = None
+    superUnitsTotalSubscription: None = None
     unitsRedDAY: int
     unitsRedFromFirst: int
     unitsSubDAY: int
     unitsSubFromFirst: int
-    fiveBest: float
-    stock: float
-    bond: float
-    other: float
-    cash: float
-    deposit: float
-    fundUnit: float | None
-    commodity: float | None
-    manager: str
-    managerSeoRegisterNo: str
-    guarantorSeoRegisterNo: None
-    auditor: str
     websiteAddress: list[str]
-    custodian: str
-    guarantor: str
-    investmentManager: str
-    fundWatch: None
-    seoRegisterDate: _datetime
-    registrationNumber: str
-    registerDate: _datetime
-    nationalId: str
-    isCompleted: bool
-    # insCode: str
-    baseUnitsSubscriptionNAV: None
-    baseUnitsCancelNAV: None
-    baseUnitsTotalNetAssetValue: None
-    baseTotalUnit: None
-    baseUnitsTotalSubscription: None
-    baseUnitsTotalCancel: None
-    superUnitsSubscriptionNAV: None
-    superUnitsCancelNAV: None
-    superUnitsTotalNetAssetValue: None
-    superTotalUnit: None
-    superUnitsTotalSubscription: None
-    superUnitsTotalCancel: None
-    fundPublisher: int
-    mutualFundLicenses: list[MutualFundLicense]
 
 
 class MutualFundLicense(_LooseModel):
     id: int
     regNo: str
+    expireDate: None = None
     isExpired: bool
     startDate: _datetime
-    expireDate: None
     licenseNo: str
     licenseStatusId: int
-    licenseStatusDescription: None
+    licenseStatusDescription: None = None
     licenseTypeId: int
-    newLicenseTypeId: None
-    mutualFund: None
+    newLicenseTypeId: None = None
+    mutualFund: None = None
 
 
 class AlphaBeta(_LooseModel):
@@ -239,31 +257,32 @@ class _Funds(_LooseModel):
 
 
 class FundInfo(_CommonFundInfo):
-    smallSymbolName: str | None
-    guaranteedEarningRate: int | None
-    estimatedEarningRate: float | None
-    investedUnits: int | None
-    articlesOfAssociationLink: None
-    prosoectusLink: None
+    rankLastUpdate: _datetime
+    smallSymbolName: str | None = None
+    guaranteedEarningRate: int | None = None
+    estimatedEarningRate: float | None = None
+    investedUnits: int | None = None
+    articlesOfAssociationLink: None = None
+    prosoectusLink: None = None
     websiteAddress: list[str]
     manager: str
-    managerSeoRegisterNo: str | None
-    guarantorSeoRegisterNo: str | None
+    managerSeoRegisterNo: str | None = None
+    guarantorSeoRegisterNo: str | None = None
     auditor: str
     custodian: str
     guarantor: str
     isCompleted: bool
-    fiveBest: float | None
-    stock: float | None
-    bond: float | None
-    other: float | None
-    cash: float | None
-    deposit: float | None
-    fundUnit: float | None
-    commodity: float | None
+    fiveBest: float | None = None
+    stock: float | None = None
+    bond: float | None = None
+    other: float | None = None
+    cash: float | None = None
+    deposit: float | None = None
+    fundUnit: float | None = None
+    commodity: float | None = None
     fundPublisher: int
     insCode: str | None = None
-    fundWatch: None
+    fundWatch: None = None
 
 
 async def funds() -> _pl.LazyFrame:
@@ -347,6 +366,12 @@ class _TreeMap(_LooseModel):
 
 
 class TreeMapItem(_CommonFundInfo):
+    investedUnits: int
+    fiveBest: float
+    other: float
+    cash: float
+    deposit: float
+    rankLastUpdate: _datetime
     guaranteedEarningRate: int | None
     estimatedEarningRate: float | None
     # investedUnits: int
@@ -370,7 +395,7 @@ class TreeMapItem(_CommonFundInfo):
     commodity: float | None
     fundPublisher: int
     insCode: str | None = None
-    fundWatch: None
+    fundWatch: None = None
 
 
 async def map_data() -> _pl.LazyFrame:
@@ -390,6 +415,7 @@ class _DepData(_LooseModel):
 
 
 class DepItem(_CommonFundInfo):
+    rankLastUpdate: _datetime
     tempGuarantorName: str | None
     tempManagerName: str | None
     manager: Manager | None
