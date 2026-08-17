@@ -1,9 +1,18 @@
 from __future__ import annotations as _
 
-from datetime import datetime as _datetime
+from datetime import (
+    datetime as _datetime,
+    timedelta as _timedelta,
+    timezone as _timezone,
+)
+from typing import Annotated as _Annotated
 
 import polars as _pl
-from pydantic import BaseModel as _BaseModel, RootModel as _RootModel
+from pydantic import (
+    AfterValidator as _AfterValidator,
+    BaseModel as _BaseModel,
+    RootModel as _RootModel,
+)
 
 from fipiran import _api, _LooseModel
 
@@ -256,33 +265,50 @@ class _Funds(_LooseModel):
     items: list[FundInfo]
 
 
+_TEHRAN = _timezone(_timedelta(hours=3, minutes=30))
+
+
+def _ensure_tehran(value: _datetime) -> _datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=_TEHRAN)
+    return value.astimezone(_TEHRAN)
+
+
+_TehranDatetime = _Annotated[
+    _datetime,
+    _AfterValidator(_ensure_tehran),
+]
+
+
 class FundInfo(_CommonFundInfo):
-    rankLastUpdate: _datetime
-    smallSymbolName: str | None = None
-    guaranteedEarningRate: int | None = None
-    estimatedEarningRate: float | None = None
-    investedUnits: int | None = None
     articlesOfAssociationLink: None = None
-    prosoectusLink: None = None
-    websiteAddress: list[str]
+    auditor: str
+    bond: float | None = None
+    cash: float | None = None
+    commodity: float | None = None
+    custodian: str
+    deposit: float | None = None
+    estimatedEarningRate: float | None = None
+    fiveBest: float | None = None
+    fundPublisher: int
+    fundUnit: float | None = None
+    fundWatch: None = None
+    groupId: int
+    guaranteedEarningRate: int | None = None
+    guarantor: str
+    guarantorSeoRegisterNo: str | None = None
+    insCode: str | None = None
+    investedUnits: int | None = None
+    isCompleted: bool
     manager: str
     managerSeoRegisterNo: str | None = None
-    guarantorSeoRegisterNo: str | None = None
-    auditor: str
-    custodian: str
-    guarantor: str
-    isCompleted: bool
-    fiveBest: float | None = None
-    stock: float | None = None
-    bond: float | None = None
     other: float | None = None
-    cash: float | None = None
-    deposit: float | None = None
-    fundUnit: float | None = None
-    commodity: float | None = None
-    fundPublisher: int
-    insCode: str | None = None
-    fundWatch: None = None
+    prosoectusLink: None = None
+    rankLastUpdate: _TehranDatetime
+    rankOfSeason: float
+    smallSymbolName: str | None = None
+    stock: float | None = None
+    websiteAddress: list[str]
 
 
 async def funds() -> _pl.LazyFrame:
