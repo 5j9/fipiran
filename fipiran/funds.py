@@ -7,7 +7,7 @@ from datetime import (
 )
 from typing import Annotated as _Annotated
 
-import polars as _pl
+from polars import Int64 as _Int64, LazyFrame as _LazyFrame, col as _col
 from pydantic import (
     AfterValidator as _AfterValidator,
     BaseModel as _BaseModel,
@@ -196,7 +196,7 @@ class Fund:
             model=model,
         )
 
-    async def asset_allocation_history(self) -> _pl.LazyFrame:
+    async def asset_allocation_history(self) -> _LazyFrame:
         """Return a LazyFrame of asset type percentages.
 
         See funds.PortfolioOnDate for column names.
@@ -205,11 +205,9 @@ class Fund:
             'chart/portfoliochart',
             model=_RootModel[list[PortfolioOnDate]],
         )
-        return _pl.LazyFrame(
-            [vars(i) for i in m.root], infer_schema_length=None
-        )
+        return _LazyFrame([vars(i) for i in m.root], infer_schema_length=None)
 
-    async def navps_history(self, /, *, all_=True) -> _pl.LazyFrame:
+    async def navps_history(self, /, *, all_=True) -> _LazyFrame:
         """Return NAVPS history as a LazyFrame sorted by date.
 
         See funds.NavOnDate for column names.
@@ -219,11 +217,11 @@ class Fund:
             params={'showAll': str(all_).lower()},
             model=_RootModel[list[NavOnDate]],
         )
-        return _pl.LazyFrame(
+        return _LazyFrame(
             [vars(i) for i in m.root], infer_schema_length=None
         ).sort('date')
 
-    async def nav_history(self, /, *, all_=True) -> _pl.LazyFrame:
+    async def nav_history(self, /, *, all_=True) -> _LazyFrame:
         """Return NAV history as a LazyFrame sorted by date.
 
         See funds.AssetsOnDate for column names.
@@ -233,9 +231,9 @@ class Fund:
             params={'showAll': str(all_).lower()},
             model=_RootModel[list[AssetsOnDate]],
         )
-        return _pl.LazyFrame(vars(i) for i in m.root).sort('date')
+        return _LazyFrame(vars(i) for i in m.root).sort('date')
 
-    async def alpha_beta(self, /, *, all_=True) -> _pl.LazyFrame:
+    async def alpha_beta(self, /, *, all_=True) -> _LazyFrame:
         """Return alpha/beta history as a LazyFrame sorted by date."""
         items = (
             await self._api(
@@ -244,15 +242,15 @@ class Fund:
                 model=_RootModel[list[AlphaBeta]],
             )
         ).root
-        return _pl.LazyFrame(vars(i) for i in items).sort('date')
+        return _LazyFrame(vars(i) for i in items).sort('date')
 
     async def info(self) -> SpecificFundInfo:
         return (await self._api('fund/getfund', model=_SpecificFundInfo)).item
 
 
-def _fix_website_address(lf: _pl.LazyFrame) -> _pl.LazyFrame:
+def _fix_website_address(lf: _LazyFrame) -> _LazyFrame:
     return lf.with_columns(
-        _pl.col('websiteAddress').list.get(0, null_on_oob=True)
+        _col('websiteAddress').list.get(0, null_on_oob=True)
     )
 
 
@@ -311,7 +309,7 @@ class FundInfo(_CommonFundInfo):
     websiteAddress: list[str]
 
 
-async def funds() -> _pl.LazyFrame:
+async def funds() -> _LazyFrame:
     """Return a LazyFrame representing https://www.fipiran.com/mf/list.
 
     See funds.FundInfo for column names.
@@ -326,7 +324,7 @@ async def funds() -> _pl.LazyFrame:
         },
     )
     assert m.totalCount <= m.pageSize
-    lf = _pl.LazyFrame([vars(i) for i in m.items], infer_schema_length=None)
+    lf = _LazyFrame([vars(i) for i in m.items], infer_schema_length=None)
     return _fix_website_address(lf)
 
 
@@ -345,11 +343,11 @@ class FundType(_LooseModel):
     isActive: bool
 
 
-async def fund_types() -> _pl.LazyFrame:
+async def fund_types() -> _LazyFrame:
     """See funds.FundType for column names."""
     m = await _api('fund/fundtype', model=_FundTypes)
     assert m.totalCount <= m.pageSize
-    return _pl.LazyFrame([vars(i) for i in m.items])
+    return _LazyFrame([vars(i) for i in m.items])
 
 
 class AverageReturns(_LooseModel):
@@ -369,7 +367,7 @@ class AverageReturns(_LooseModel):
     efficiency: float | None = None
 
 
-async def average_returns() -> _pl.LazyFrame:
+async def average_returns() -> _LazyFrame:
     """Return a LazyFrame for https://www.fipiran.com/mf/efficiency.
 
     See AverageReturns for column names.
@@ -377,8 +375,8 @@ async def average_returns() -> _pl.LazyFrame:
     m = await _api(
         'fund/averagereturns', model=_RootModel[list[AverageReturns]]
     )
-    return _pl.LazyFrame(vars(i) for i in m.root).with_columns(
-        _pl.col('netAsset').cast(_pl.Int64)
+    return _LazyFrame(vars(i) for i in m.root).with_columns(
+        _col('netAsset').cast(_Int64)
     )
 
 
@@ -420,10 +418,10 @@ class TreeMapItem(_CommonFundInfo):
     websiteAddress: list[str]
 
 
-async def map_data() -> _pl.LazyFrame:
+async def map_data() -> _LazyFrame:
     """See TreeMapItem for column names."""
     m = await _api('fund/treemap', model=_TreeMap)
-    lf = _pl.LazyFrame([vars(i) for i in m.items], infer_schema_length=None)
+    lf = _LazyFrame([vars(i) for i in m.items], infer_schema_length=None)
     return _fix_website_address(lf)
 
 
@@ -490,7 +488,7 @@ class Guarantor(_LooseModel):
     webSite: str | None = None
 
 
-async def dependency_graph_data() -> _pl.LazyFrame:
+async def dependency_graph_data() -> _LazyFrame:
     """See DepItem for column names."""
     m = await _api('fund/dependencygraph', model=_DepData)
-    return _pl.LazyFrame(vars(i) for i in m.items)
+    return _LazyFrame(vars(i) for i in m.items)
